@@ -19,9 +19,22 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        debug {
-            applicationIdSuffix ".debug"
-            versionNameSuffix "-debug"
+    }
+    flavorDimensions 'version'
+    productFlavors {
+        dev {
+            dimension 'version'
+            applicationId "com.ariesvelasquez.republikapc.dev"
+            versionCode 1
+            versionName "1.0-dev"
+            resValue "string", "flavored_app_name", "[Dev]Republika PC"
+        }
+        prod {
+            dimension 'version'
+            applicationId "com.ariesvelasquez.republikapc"
+            versionCode 1
+            versionName "1.0"
+            resValue "string", "flavored_app_name", "Republika PC"
         }
     }
 }
