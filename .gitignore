@@ -13,3 +13,9 @@
 .externalNativeBuild
 .idea/vcs.xml
 app/build.gradle
+.idea/codeStyles/Project.xml
+.idea/codeStyles/Project.xml
+.idea/encodings.xml
+gradle/wrapper/gradle-wrapper.properties
+gradle/wrapper/gradle-wrapper.properties
+*.properties
