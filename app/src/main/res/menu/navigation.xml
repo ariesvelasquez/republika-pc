@@ -2,18 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_tipid_pc"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="Home"/>
+        android:enabled="true"
+        android:title="@string/label_tipid_pc"/>
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_rigs"
         android:icon="@android:drawable/ic_menu_help"
-        android:title="Dashboard"/>
+        android:enabled="true"
+        android:title="@string/label_rigs"/>
 
     <item
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_settings"
         android:icon="@android:drawable/ic_menu_camera"
-        android:title="Notification"/>
+        android:enabled="true"
+
+        android:title="@string/label_settings"/>
 
 </menu>

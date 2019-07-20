@@ -1,3 +1,10 @@
 <resources>
 
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--Labels-->
+    <string name="label_tipid_pc">Tipid PC</string>
+    <string name="label_rigs">RIGS</string>
+    <string name="label_settings">Settings</string>
 </resources>

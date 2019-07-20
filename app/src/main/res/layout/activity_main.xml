@@ -41,6 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            app:itemIconTint="@drawable/bottom_navigation_selector"
+            app:itemTextColor="@drawable/bottom_navigation_selector"
             android:background="?android:attr/windowBackground"
             app:layout_behavior="ariesvelasquez.com.republikapc.BottomNavigationBehavior"
             app:menu="@menu/navigation"/>
