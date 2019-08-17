@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.screens
+package ariesvelasquez.com.republikapc.screens.tipidpc
 
 import android.content.Context
 import android.net.Uri
@@ -7,7 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import ariesvelasquez.com.githubrepobrowsermvvm.utils.getViewModel
 import ariesvelasquez.com.republikapc.R
+import timber.log.Timber
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,6 +32,10 @@ class TipidPCFragment : Fragment() {
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
 
+    private val tipidPcViewModel by lazy { getViewModel<TipidPcViewModel>() }
+
+    private lateinit var rootView: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -42,7 +49,27 @@ class TipidPCFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tipid_pc, container, false)
+        rootView = inflater.inflate(R.layout.fragment_tipid_pc, container, false)
+
+        Timber.e("fetched initial data. ")
+        // fetch initial items
+        tipidPcViewModel.getSellingItem2(10).observe(this, Observer {
+            if (it.status.isSuccessful()) {
+                it.data?.forEachIndexed { index, sellingItem ->
+                }
+            }
+        })
+//        tipidPcViewModel.getSellingItems(4)
+
+        // Observe selling items
+        // Test
+        tipidPcViewModel.sellingItemsLiveData.observe(this, Observer {
+            if (it.status.isSuccessful()) {
+
+            }
+        })
+
+        return rootView
     }
 
     // TODO: Rename method, update argument and hook method into UI event

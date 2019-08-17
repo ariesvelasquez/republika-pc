@@ -1,13 +1,16 @@
+final roomSchemaDir = "$projectDir/roomSchemas"
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "ariesvelasquez.com.republikapc"
-        minSdkVersion 19
-        targetSdkVersion 28
+        minSdkVersion android_min_sdk_version
+        targetSdkVersion android_target_sdk_version
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -23,6 +26,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     flavorDimensions 'version'
     productFlavors {
         dev {
@@ -38,30 +42,53 @@ android {
         }
     }
 
-    dependencies {
-        implementation fileTree(dir: 'libs', include: ['*.jar'])
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-        implementation 'androidx.core:core-ktx:1.1.0-alpha05'
-        testImplementation 'junit:junit:4.12'
-        androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
-        androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
 
-        // Android Library
-        implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
-        implementation "androidx.appcompat:appcompat:$app_compat_version"
-        implementation 'com.google.android.material:material:1.0.0'
-        implementation 'androidx.vectordrawable:vectordrawable:1.0.1'
-
-        // Jetpack
-        // Navigation
-//        implementation "android.arch.navigation:navigation-fragment-ktx:$navigation_version"
-//        implementation "android.arch.navigation:navigation-ui-ktx:$navigation_version"
-
-        // Timber
-        implementation 'com.jakewharton.timber:timber:4.7.1'
+kapt {
+    mapDiagnosticLocations = true
+    arguments {
+        arg("room.schemaLocation", roomSchemaDir)
     }
 }
 
 dependencies {
-    implementation 'androidx.legacy:legacy-support-v4:+'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Support Libraries
+    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+    implementation "androidx.core:core:1.0.1"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
+    implementation "androidx.recyclerview:recyclerview:$support_lib_version"
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable:1.0.1'
+
+    // Networking (Retrofit)
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttp_version"
+
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+
+
+    // Lifecycle (ViewModel + LiveData)
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
+    // Room
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    // Timber
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
 }

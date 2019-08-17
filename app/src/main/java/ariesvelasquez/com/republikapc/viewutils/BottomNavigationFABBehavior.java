@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc;
+package ariesvelasquez.com.republikapc.viewutils;
 
 import android.content.Context;
 import android.util.AttributeSet;

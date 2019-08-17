@@ -30,7 +30,7 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <ariesvelasquez.com.republikapc.CustomViewPager
+        <ariesvelasquez.com.republikapc.viewutils.CustomViewPager
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -44,7 +44,7 @@
             app:itemIconTint="@drawable/bottom_navigation_selector"
             app:itemTextColor="@drawable/bottom_navigation_selector"
             android:background="?android:attr/windowBackground"
-            app:layout_behavior="ariesvelasquez.com.republikapc.BottomNavigationBehavior"
+            app:layout_behavior="ariesvelasquez.com.republikapc.viewutils.BottomNavigationBehavior"
             app:menu="@menu/navigation"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -56,7 +56,7 @@
             app:fabSize="normal"
             app:layout_anchor="@id/navigation"
             app:layout_anchorGravity="top|end"
-            app:layout_behavior="ariesvelasquez.com.republikapc.BottomNavigationFABBehavior"
+            app:layout_behavior="ariesvelasquez.com.republikapc.viewutils.BottomNavigationFABBehavior"
             app:srcCompat="@android:drawable/ic_menu_add"
             app:useCompatPadding="true"/>
 
