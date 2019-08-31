@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.screens
+package ariesvelasquez.com.republikapc.ui
 
 import android.content.Context
 import android.net.Uri

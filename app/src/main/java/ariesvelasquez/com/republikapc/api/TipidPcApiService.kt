@@ -1,23 +1,32 @@
 package ariesvelasquez.com.republikapc.api
 
-import androidx.lifecycle.LiveData
 import ariesvelasquez.com.republikapc.Const
-import ariesvelasquez.com.republikapc.model.SellingItemResource
-import ariesvelasquez.com.republikapc.network.Resource
-import ariesvelasquez.com.republikapc.utils.LiveDataCallAdapterFactory
-import okhttp3.*
+import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
+import okhttp3.HttpUrl
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
-import timber.log.Timber
-import java.util.*
 
-interface TipidPcApiService {
+interface TipidPCApi {
+
+//    @GET("tipidpc/sell/{page}")
+//    fun getSellingItems(@Path("page") page: Int) : LiveData<Resource<List<FeedItemsResource>>>
 
     @GET("tipidpc/sell/{page}")
-    fun getSellingItems(@Path("page") page: Int) : LiveData<Resource<List<SellingItemResource>>>
+    fun getSellingItems(@Path("page") page: Int) : Call<FeedItemsResource>
+
+//    class ListingResponse(val data: ListingData)
+//
+//    class ListingData(
+//        val children: List<TipidPCChildrenResponse>
+//    )
+//
+//    data class TipidPCChildrenResponse(val data: FeedItem)
 
     companion object {
 
@@ -39,14 +48,14 @@ interface TipidPcApiService {
             .addInterceptor(loggingInterceptor)
             .build()
 
-        fun getTPCApiService() : TipidPcApiService {
+        fun create() : TipidPCApi {
             return Retrofit.Builder()
-                .baseUrl(API_BASE_URL)
+                .baseUrl(HttpUrl.parse(API_BASE_URL)!!)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(LiveDataCallAdapterFactory())
+//                .addCallAdapterFactory(LiveDataCallAdapterFactory())
                 .build()
-                .create(TipidPcApiService::class.java)
+                .create(TipidPCApi::class.java)
         }
     }
 }

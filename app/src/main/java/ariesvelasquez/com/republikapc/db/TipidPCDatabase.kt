@@ -4,25 +4,38 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ariesvelasquez.com.republikapc.model.SellingItem
+import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 
-@Database (entities = [SellingItem::class], version = 1)
-abstract class TipidPCDatabase: RoomDatabase() {
-
-    abstract fun tipidPCDao(): TipidPCDao
+@Database(
+    entities = [FeedItem::class],
+    version = 8,
+    exportSchema = false
+)
+abstract class TipidPCDatabase : RoomDatabase() {
 
     companion object {
-
-        @Volatile
-        private var INSTANCE: TipidPCDatabase? = null
-
-        fun getDatabase(context: Context) : TipidPCDatabase {
-            return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(context, TipidPCDatabase::class.java, "tipid-pc-db")
-                    .fallbackToDestructiveMigration()
-                    .build()
-                    .also { INSTANCE = it }
-            }
+        fun create(context: Context): TipidPCDatabase {
+            val databaseBuilder = Room.databaseBuilder(context, TipidPCDatabase::class.java, "tipidpc.db")
+            return databaseBuilder
+                .fallbackToDestructiveMigration()
+                .build()
         }
     }
+
+    abstract fun items(): TipidPCDao
+
+//    companion object {
+//
+//        @Volatile
+//        private var INSTANCE: TipidPCDatabase? = null
+//
+//        fun getDatabase(context: Context): TipidPCDatabase {
+//            return INSTANCE ?: synchronized(this) {
+//                Room.databaseBuilder(context, TipidPCDatabase::class.java, "tipid-pc-db")
+//                    .fallbackToDestructiveMigration()
+//                    .build()
+//                    .also { INSTANCE = it }
+//            }
+//        }
+//    }
 }

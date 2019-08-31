@@ -43,8 +43,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
@@ -68,6 +72,9 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$support_lib_version"
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.0.1'
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    implementation 'androidx.fragment:fragment-ktx:1.2.0-alpha02'
+
 
     // Networking (Retrofit)
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"

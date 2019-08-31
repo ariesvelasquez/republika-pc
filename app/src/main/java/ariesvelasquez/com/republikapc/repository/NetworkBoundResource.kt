@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.repo
+package ariesvelasquez.com.republikapc.repository
 
 import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import ariesvelasquez.com.republikapc.AppExecutors
 import ariesvelasquez.com.republikapc.network.Resource
-import timber.log.Timber
 
 /**
  * A generic class that can provide a resource backed by both the sqlite database and the network.

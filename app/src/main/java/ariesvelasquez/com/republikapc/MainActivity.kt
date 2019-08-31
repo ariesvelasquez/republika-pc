@@ -7,9 +7,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
-import ariesvelasquez.com.republikapc.screens.RigsFragment
-import ariesvelasquez.com.republikapc.screens.SettingsFragment
-import ariesvelasquez.com.republikapc.screens.tipidpc.TipidPCFragment
+import ariesvelasquez.com.republikapc.ui.RigsFragment
+import ariesvelasquez.com.republikapc.ui.SettingsFragment
+import ariesvelasquez.com.republikapc.ui.tipidpc.TipidPCFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {

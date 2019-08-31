@@ -1,14 +1,14 @@
 package ariesvelasquez.com.republikapc.utils
 
-import ariesvelasquez.com.republikapc.model.SellingItem
-import ariesvelasquez.com.republikapc.model.SellingItemResource
+import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
 
 class TransformUtil {
 
-    fun resourceToModel(reponseList: List<SellingItemResource>) : List<SellingItem>{
-        return mutableListOf<SellingItem>().apply {
+    fun resourceToModel(reponseList: List<FeedItemsResource>) : List<FeedItem>{
+        return mutableListOf<FeedItem>().apply {
             reponseList.forEachIndexed { _, response ->
-                add(SellingItem(title = response.title))
+//                add(FeedItem(title = response.title))
             }
         }
     }
