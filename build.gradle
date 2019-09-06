@@ -3,7 +3,7 @@
 buildscript {
 
     // Android SDK version
-    ext.android_min_sdk_version = 16
+    ext.android_min_sdk_version = 21
     ext.android_target_sdk_version = 28
     ext.android_compile_sdk_version = 28
 

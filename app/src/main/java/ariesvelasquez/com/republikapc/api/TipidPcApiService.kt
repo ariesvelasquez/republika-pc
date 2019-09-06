@@ -17,7 +17,7 @@ interface TipidPCApi {
 //    @GET("tipidpc/sell/{page}")
 //    fun getSellingItems(@Path("page") page: Int) : LiveData<Resource<List<FeedItemsResource>>>
 
-    @GET("tipidpc/sell/{page}")
+    @GET("tipidpc/feeds/{page}")
     fun getSellingItems(@Path("page") page: Int) : Call<FeedItemsResource>
 
 //    class ListingResponse(val data: ListingData)

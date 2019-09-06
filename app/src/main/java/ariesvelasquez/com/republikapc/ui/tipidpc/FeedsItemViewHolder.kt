@@ -3,18 +3,17 @@ package ariesvelasquez.com.republikapc.ui.tipidpc
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 
-class SellingItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class FeedsItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private val title: TextView = view.findViewById(R.id.title)
-    private val subtitle: TextView = view.findViewById(R.id.subtitle)
-    private val score: TextView = view.findViewById(R.id.score)
-    private val thumbnail : ImageView = view.findViewById(R.id.thumbnail)
+    private val sellerName: TextView = view.findViewById(R.id.textViewSellerName)
+    private val page: TextView = view.findViewById(R.id.textViewItemDescription)
+    private val price: TextView = view.findViewById(R.id.textViewPrice)
     private var item : FeedItem? = null
 
     init {
@@ -29,6 +28,9 @@ class SellingItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     fun bind(item: FeedItem?) {
         this.item = item
         title.text = item?.title ?: "loading"
+        sellerName.text = item?.seller
+        price.text = item?.price
+        page.text = item?.page?.toString()
 //        subtitle.text = itemView.context.resources.getString(R.string.post_subtitle,
 //            post?.author ?: "unknown")
 //        score.text = "${post?.score ?: 0}"
@@ -45,10 +47,10 @@ class SellingItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     companion object {
-        fun create(parent: ViewGroup): SellingItemViewHolder {
+        fun create(parent: ViewGroup): FeedsItemViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.reddit_post_item, parent, false)
-            return SellingItemViewHolder(view)
+                .inflate(R.layout.feeds_recyclerview_item, parent, false)
+            return FeedsItemViewHolder(view)
         }
     }
 

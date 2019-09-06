@@ -8,4 +8,26 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--android:fontFamily="sans-serif"           // roboto regular-->
+    <!--android:fontFamily="sans-serif-light"     // roboto light-->
+    <!--android:fontFamily="sans-serif-condensed" // roboto condensed-->
+    <!--android:fontFamily="sans-serif-black"     // roboto black-->
+    <!--android:fontFamily="sans-serif-thin"      // roboto thin (android 4.2)-->
+    <!--android:fontFamily="sans-serif-medium"    // roboto medium (android 5.0)-->
+
+    <!--Default Style for RecyclerView Items-->
+
+    <style name="TextAppearance.TilePrimary" parent="@style/TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="fontFamily">@font/roboto_mono_regular</item>
+    </style>
+    
+    <style name="TextAppearance.TileSecondary" parent="@style/TextAppearance.MaterialComponents.Subtitle2">
+        <item name="fontFamily">@font/roboto_mono_medium</item>
+    </style>
+
+    <style name="TextAppearance.TileTertiary" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="fontFamily">@font/roboto_mono_regular</item>
+    </style>
+
 </resources>

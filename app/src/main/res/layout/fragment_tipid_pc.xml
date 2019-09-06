@@ -8,6 +8,8 @@
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"/>
+            android:background="#ffffff"
+            android:scrollbars="vertical"
+            android:paddingStart="@dimen/view_padding"/>
 
 </LinearLayout>

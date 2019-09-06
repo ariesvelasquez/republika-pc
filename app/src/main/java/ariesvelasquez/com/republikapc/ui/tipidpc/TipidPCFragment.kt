@@ -12,7 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
@@ -61,7 +63,7 @@ class TipidPCFragment : Fragment() {
         val adapter = FeedItemsAdapter {
             feedsViewModel.retry()
         }
-        rootView.list.layoutManager = LinearLayoutManager(context)
+        rootView.list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rootView.list.adapter = adapter
         feedsViewModel.items.observe(this, Observer<PagedList<FeedItem>> {
             Timber.e("Feeds ViewModel Observer: new items added size: %s", it.size)

@@ -17,9 +17,11 @@ data class FeedItem(
     @SerializedName("title")
     var title: String,
     @SerializedName("seller")
-    val seller: String,
+    var seller: String,
+    @SerializedName("price")
+    var price: String,
     @SerializedName("page")
-    val page: Int
+    var page: Int
 ) {
     var indexInResponse: Int = -1
 }

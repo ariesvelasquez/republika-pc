@@ -3,5 +3,21 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="view_half_padding">4dp</dimen>
+    <dimen name="view_padding">8dp</dimen>
+    <dimen name="view_padding_2">16dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
+
+    <!--Default font size, per the Android Design Guidelines for Roboto font-->
+    <dimen name="font_size_page_title">20sp</dimen>
+    <dimen name="font_size_paragraph_text">14sp</dimen>
+    <dimen name="font_size_list_title">14sp</dimen> <!-- With Medium weight -->
+    <dimen name="font_size_list_item_title">14sp</dimen>
+    <dimen name="font_size_important_text_snippets">16sp</dimen>
+    <dimen name="font_size_secondary_text">14sp</dimen>
+    <dimen name="font_size_caption">14sp</dimen> <!-- User lighter color to show lowered importance -->
+    <dimen name="font_size_caption_small">12sp</dimen> <!-- User lighter color to show lowered importance -->
+    <dimen name="font_size_button">14sp</dimen>
+    <dimen name="font_size_tab">14sp</dimen>  <!-- With Medium weight -->
+    <dimen name="font_size_inputs">16sp</dimen>
 </resources>

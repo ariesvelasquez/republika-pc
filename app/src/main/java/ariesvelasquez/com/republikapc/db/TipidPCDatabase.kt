@@ -8,7 +8,7 @@ import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 
 @Database(
     entities = [FeedItem::class],
-    version = 8,
+    version = 1,
     exportSchema = false
 )
 abstract class TipidPCDatabase : RoomDatabase() {

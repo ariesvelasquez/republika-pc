@@ -16,7 +16,7 @@ class FeedItemsAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
-            R.layout.reddit_post_item -> (holder as SellingItemViewHolder).bind(getItem(position))
+            R.layout.feeds_recyclerview_item -> (holder as FeedsItemViewHolder).bind(getItem(position))
             R.layout.network_state_item -> (holder as NetworkStateItemViewHolder).bindTo(
                 networkState)
         }
@@ -28,7 +28,7 @@ class FeedItemsAdapter(
         payloads: MutableList<Any>) {
         if (payloads.isNotEmpty()) {
             val item = getItem(position)
-            (holder as SellingItemViewHolder).updateScore(item)
+            (holder as FeedsItemViewHolder).updateScore(item)
         } else {
             onBindViewHolder(holder, position)
         }
@@ -36,7 +36,7 @@ class FeedItemsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.reddit_post_item -> SellingItemViewHolder.create(parent)
+            R.layout.feeds_recyclerview_item -> FeedsItemViewHolder.create(parent)
             R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
@@ -48,7 +48,7 @@ class FeedItemsAdapter(
         return if (hasExtraRow() && position == itemCount - 1) {
             R.layout.network_state_item
         } else {
-            R.layout.reddit_post_item
+            R.layout.feeds_recyclerview_item
         }
     }
 
