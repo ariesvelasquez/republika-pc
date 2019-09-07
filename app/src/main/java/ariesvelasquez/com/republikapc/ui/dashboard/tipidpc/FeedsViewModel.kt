@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.ui.tipidpc
+package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations

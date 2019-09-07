@@ -14,19 +14,19 @@ import retrofit2.http.Path
 
 interface TipidPCApi {
 
-//    @GET("tipidpc/sell/{page}")
-//    fun getSellingItems(@Path("page") page: Int) : LiveData<Resource<List<FeedItemsResource>>>
-
     @GET("tipidpc/feeds/{page}")
     fun getSellingItems(@Path("page") page: Int) : Call<FeedItemsResource>
 
-//    class ListingResponse(val data: ListingData)
-//
-//    class ListingData(
-//        val children: List<TipidPCChildrenResponse>
-//    )
-//
-//    data class TipidPCChildrenResponse(val data: FeedItem)
+    @GET("tipidpc/search/{item}/[page]")
+    fun searchItem(
+        @Path("item") item: String,
+        @Path("page") page: Int) : Call<FeedItemsResource>
+
+    @GET("tipidpc/seller/{name}/{page}")
+    fun searchSellet(
+        @Path("name") name: String,
+        @Path("page") page: Int
+    ) : Call<FeedItemsResource>
 
     companion object {
 
@@ -35,14 +35,6 @@ interface TipidPCApi {
         // LoggingInterceptor
         private val loggingInterceptor = HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY)
-
-        var authorization = Interceptor{ chain ->
-            val newRequest = chain.request().newBuilder()
-//                .addHeader("Authorization", _base64)
-                .addHeader("Accept", "application/json")
-                .build()
-            chain.proceed(newRequest)
-        }
 
         private val client = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
@@ -53,7 +45,6 @@ interface TipidPCApi {
                 .baseUrl(HttpUrl.parse(API_BASE_URL)!!)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
-//                .addCallAdapterFactory(LiveDataCallAdapterFactory())
                 .build()
                 .create(TipidPCApi::class.java)
         }

@@ -20,14 +20,18 @@
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:elevation="-1dp">
-
-            <androidx.appcompat.widget.Toolbar
+            
+            <include
                 android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="#ffffff"
-                app:layout_scrollFlags="scroll|enterAlways|snap"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+                layout="@layout/main_toolbar"/>
+
+            <!--<androidx.appcompat.widget.Toolbar-->
+                <!--android:id="@+id/toolbar"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="?attr/actionBarSize"-->
+                <!--android:background="#ffffff"-->
+                <!--app:layout_scrollFlags="scroll|enterAlways|snap"-->
+                <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
         </com.google.android.material.appbar.AppBarLayout>
 
         <ariesvelasquez.com.republikapc.viewutils.CustomViewPager
@@ -41,10 +45,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            app:labelVisibilityMode="unlabeled"
             app:itemIconTint="@drawable/bottom_navigation_selector"
             app:itemTextColor="@drawable/bottom_navigation_selector"
             android:background="?android:attr/windowBackground"
-            app:layout_behavior="ariesvelasquez.com.republikapc.viewutils.BottomNavigationBehavior"
             app:menu="@menu/navigation"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -53,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:visibility="gone"
-            app:fabSize="normal"
+            app:fabSize="mini"
             app:layout_anchor="@id/navigation"
             app:layout_anchorGravity="top|end"
             app:layout_behavior="ariesvelasquez.com.republikapc.viewutils.BottomNavigationFABBehavior"

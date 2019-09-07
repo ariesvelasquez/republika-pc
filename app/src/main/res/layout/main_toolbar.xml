@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    app:contentInsetEnd="@dimen/view_padding_2"
+    android:background="#ffffff"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    app:layout_scrollFlags="scroll|enterAlways|snap"
+    app:layout_collapseMode="pin">
+    
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_rectangle_rounded_bordered"
+        android:layout_marginTop="@dimen/view_half_padding"
+        android:layout_marginBottom="@dimen/view_half_padding"
+        android:elevation="4dp">
+        
+        <!-- This is a centered logo -->
+        <!--<ImageView-->
+            <!--android:id="@+id/toolbar_logo"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:src="@android:drawable/ic_menu_search"-->
+            <!--android:layout_marginRight="?attr/actionBarSize"-->
+            <!--android:layout_marginTop="4dp"-->
+            <!--android:visibility="visible"-->
+            <!--android:layout_marginBottom="4dp"-->
+            <!--android:layout_gravity="center" />-->
+        
+        <!-- This is a centered title -->
+        <TextView
+            android:id="@+id/textViewToolbarTitle"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginEnd="?attr/actionBarSize"
+            android:layout_marginStart="?attr/actionBarSize"
+            android:layout_gravity="center"
+            android:gravity="fill_vertical"
+            android:visibility="visible"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:textSize="@dimen/font_size_inputs"
+            android:text="@string/label_repuplika_pc"
+            android:textColor="@color/text_helper_dark"
+            style="@style/TextAppearance.TileSecondary"/>
+        
+        <!-- This is a custom left side button -->
+        <ImageButton
+            android:layout_width="?attr/actionBarSize"
+            android:id="@+id/btn_settings"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginEnd="?attr/actionBarSize"
+            android:layout_gravity="start|center_vertical"
+            android:visibility="visible"
+            android:src="@drawable/ic_vector_hamburger"
+            style="@style/Widget.AppCompat.ActionButton" />
+        
+        <!-- This is a custom right side button -->
+        <ImageButton
+            android:id="@+id/searchButton"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/ic_vector_search"
+            style="@style/Widget.AppCompat.ActionButton"/>
+    
+    </FrameLayout>
+</androidx.appcompat.widget.Toolbar>

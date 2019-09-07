@@ -7,28 +7,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
-import ariesvelasquez.com.republikapc.ui.RigsFragment
-import ariesvelasquez.com.republikapc.ui.SettingsFragment
-import ariesvelasquez.com.republikapc.ui.tipidpc.TipidPCFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.RigsFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.SettingsFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
+import ariesvelasquez.com.republikapc.ui.search.SearchActivity
+import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.main_toolbar.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager
     private lateinit var toolbar: Toolbar
-
-    // Bottom Navigation Setup
-    private lateinit var bottomNavigationView: BottomNavigationView
-    private val mOnNavigationItemClickedListener = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
-        toolbar.title = menuItem.title
-
-        when (menuItem.itemId) {
-            R.id.navigation_tipid_pc -> viewPager.currentItem = 0
-            R.id.navigation_rigs -> viewPager.currentItem = 1
-            R.id.navigation_settings -> viewPager.currentItem = 2
-        }
-        true
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +26,23 @@ class MainActivity : AppCompatActivity() {
 
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        textViewToolbarTitle.setOnClickListener { launchActivity<SearchActivity>() }
+        searchButton.setOnClickListener { launchActivity<SearchActivity> {} }
+
+
+//        // Always cast your custom Toolbar here, and set it as the ActionBar.
+//        Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(tb);
+//
+//        // Get the ActionBar here to configure the way it behaves.
+//        final ActionBar ab = getSupportActionBar();
+//        //ab.setHomeAsUpIndicator(R.drawable.ic_menu); // set a custom icon for the default home button
+//        ab.setDisplayShowHomeEnabled(true); // show or hide the default home button
+//        ab.setDisplayHomeAsUpEnabled(true);
+//        ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
+//        ab.setDisplayShowTitleEnabled(false); // disable the default title element here (for centered title)
+
         viewPager = findViewById(R.id.view_pager)
         val viewPagerFragmentAdapter = DashboardFragmentPagerAdapter(supportFragmentManager)
         viewPager.adapter = viewPagerFragmentAdapter
@@ -50,6 +57,19 @@ class MainActivity : AppCompatActivity() {
         toolbar.post { toolbar.title = bottomNavigationView.menu.getItem(0).title }
     }
 
+    // Bottom Navigation Setup
+    private lateinit var bottomNavigationView: BottomNavigationView
+    private val mOnNavigationItemClickedListener = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
+
+        //toolbar.title = menuItem.title
+
+        when (menuItem.itemId) {
+            R.id.navigation_tipid_pc -> viewPager.currentItem = 0
+            R.id.navigation_rigs -> viewPager.currentItem = 1
+            R.id.navigation_settings -> viewPager.currentItem = 2
+        }
+        true
+    }
 
     private class DashboardFragmentPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 

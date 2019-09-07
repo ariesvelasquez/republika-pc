@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.ui.tipidpc
+package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
 import android.content.Context
 import android.net.Uri
@@ -12,8 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem

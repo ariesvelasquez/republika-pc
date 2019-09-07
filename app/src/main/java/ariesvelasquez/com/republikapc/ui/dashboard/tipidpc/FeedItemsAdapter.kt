@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.ui.tipidpc
+package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
