@@ -23,6 +23,8 @@ import ariesvelasquez.com.republikapc.api.TipidPCApi
 import ariesvelasquez.com.republikapc.db.TipidPCDatabase
 import ariesvelasquez.com.republikapc.repository.tipidpc.feeds.FeedsRepository
 import ariesvelasquez.com.republikapc.repository.tipidpc.feeds.IFeedsRepository
+import ariesvelasquez.com.republikapc.repository.tipidpc.search.ISearchRepository
+import ariesvelasquez.com.republikapc.repository.tipidpc.search.SearchRepository
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -30,6 +32,7 @@ import java.util.concurrent.Executors
  * Super simplified service locator implementation to allow us to replace default implementations
  * for testing.
  */
+
 interface ServiceLocator {
     companion object {
         private val LOCK = Any()
@@ -54,7 +57,9 @@ interface ServiceLocator {
         }
     }
 
-    fun getRepository(): IFeedsRepository
+    fun getFeedsRepository(): IFeedsRepository
+
+    fun getSearchRepository() : ISearchRepository
 
     fun getNetworkExecutor(): Executor
 
@@ -83,11 +88,18 @@ open class DefaultServiceLocator(val app: Application) : ServiceLocator {
         TipidPCApi.create()
     }
 
-    override fun getRepository(): IFeedsRepository {
+    override fun getFeedsRepository(): IFeedsRepository {
         return FeedsRepository(
             db = db,
             tipidPCApi = getTipidPCApi(),
             ioExecutor = getDiskIOExecutor()
+        )
+    }
+
+    override fun getSearchRepository(): ISearchRepository {
+        return SearchRepository(
+            tipidPCApi = getTipidPCApi(),
+            networkExecutor = getNetworkExecutor()
         )
     }
 

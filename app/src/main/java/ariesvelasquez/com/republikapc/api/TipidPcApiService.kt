@@ -17,8 +17,8 @@ interface TipidPCApi {
     @GET("tipidpc/feeds/{page}")
     fun getSellingItems(@Path("page") page: Int) : Call<FeedItemsResource>
 
-    @GET("tipidpc/search/{item}/[page]")
-    fun searchItem(
+    @GET("tipidpc/search/{item}/{page}")
+    fun getSearhItem(
         @Path("item") item: String,
         @Path("page") page: Int) : Call<FeedItemsResource>
 

@@ -1,7 +1,7 @@
 package ariesvelasquez.com.republikapc.repository.tipidpc
 
-//@Deprecated("For Now")
-//class TipidPCRepositoryNBR(
+@Deprecated("For Now")
+class TipidPCRepositoryNBR() {
 //    private val tipidPcDao: TipidPCDao,
 //    private val tipidPcService: TipidPCApi,
 //    private val executors: AppExecutors = AppExecutors()) {
@@ -22,4 +22,4 @@ package ariesvelasquez.com.republikapc.repository.tipidpc
 //
 //        }.asLiveData()
 //    }
-//}
+}

@@ -25,7 +25,7 @@ class TipidPCFragment : Fragment() {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 val repo = ServiceLocator.instance(context!!)
-                    .getRepository()
+                    .getFeedsRepository()
                 @Suppress("UNCHECKED_CAST")
                 return FeedsViewModel(repo) as T
             }

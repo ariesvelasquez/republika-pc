@@ -34,14 +34,21 @@
             <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
         </com.google.android.material.appbar.AppBarLayout>
         
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/searchList"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refreshSwipe"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#ffffff"
-            android:scrollbars="vertical"
-            android:layout_marginTop="?attr/actionBarSize"
-            android:paddingStart="@dimen/view_padding"/>
+            android:layout_marginTop="?attr/actionBarSize">
+    
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/searchList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffffff"
+                android:scrollbars="vertical"
+                android:paddingStart="@dimen/view_padding"/>
+        
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
     
