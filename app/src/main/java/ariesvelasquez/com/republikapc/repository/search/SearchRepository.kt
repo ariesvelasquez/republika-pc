@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.repository.tipidpc.search
+package ariesvelasquez.com.republikapc.repository.search
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.Transformations

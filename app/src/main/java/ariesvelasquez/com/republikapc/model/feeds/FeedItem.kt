@@ -1,13 +1,11 @@
 package ariesvelasquez.com.republikapc.model.feeds
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 /**
- * This inner model is used for converting pojo to database objects
+ * This inner ariesvelasquez.com.republikapc.model is used for converting pojo to database objects
  */
 @Entity(tableName = "feed_items")
 data class FeedItem(

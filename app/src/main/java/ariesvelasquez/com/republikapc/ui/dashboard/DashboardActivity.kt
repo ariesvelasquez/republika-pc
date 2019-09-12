@@ -1,34 +1,52 @@
-package ariesvelasquez.com.republikapc
+package ariesvelasquez.com.republikapc.ui.dashboard
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
-import ariesvelasquez.com.republikapc.ui.dashboard.RigsFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.SettingsFragment
+import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
 import ariesvelasquez.com.republikapc.ui.search.SearchActivity
 import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.main_toolbar.*
+import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+class DashboardActivity : AppCompatActivity() {
+
+    //Google Login Request Code
+    private val RC_SIGN_IN = 7
+    //Google Sign In Client
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+    //Firebase Auth
+    private lateinit var mAuth: FirebaseAuth
 
     private lateinit var viewPager: ViewPager
     private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_dashboard)
 
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        initFirebaseAuth()
+        initOnClicks()
+
         textViewToolbarTitle.setOnClickListener { launchActivity<SearchActivity>() }
-        searchButton.setOnClickListener { launchActivity<SearchActivity> {} }
 
 
 //        // Always cast your custom Toolbar here, and set it as the ActionBar.
@@ -44,13 +62,77 @@ class MainActivity : AppCompatActivity() {
 //        ab.setDisplayShowTitleEnabled(false); // disable the default title element here (for centered title)
 
         viewPager = findViewById(R.id.view_pager)
-        val viewPagerFragmentAdapter = DashboardFragmentPagerAdapter(supportFragmentManager)
+        val viewPagerFragmentAdapter =
+            DashboardFragmentPagerAdapter(
+                supportFragmentManager
+            )
         viewPager.adapter = viewPagerFragmentAdapter
         viewPager.offscreenPageLimit = viewPagerFragmentAdapter.count - 1
 
         bottomNavigationView = findViewById(R.id.navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemClickedListener)
         initTitle()
+    }
+
+    private fun initOnClicks() {
+        searchButton.setOnClickListener { launchActivity<SearchActivity> {} }
+        hamburgerButton.setOnClickListener { signIn() }
+    }
+
+    private fun initFirebaseAuth() {
+        mAuth = FirebaseAuth.getInstance()
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+    }
+
+    private fun signIn() {
+        val signInIntent = mGoogleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                val account = task.getResult(ApiException::class.java)
+                account?.let { firebaseAuthWithGoogle(it) }
+            } catch (e: ApiException) {
+                // Google Sign In failed, update UI appropriately
+                Timber.e("Login", "Google sign in failed", e)
+                // ...
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+
+    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
+        Timber.d("Login", "firebaseAuthWithGoogle:" + acct.id!!)
+
+        val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
+        mAuth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Timber.d("Login", "signInWithCredential:success")
+                    val user = mAuth.currentUser
+//                    updateUI(user)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Timber.w("Login", "signInWithCredential:failure", task.exception)
+                    Toast.makeText(this, "Auth Failed", Toast.LENGTH_LONG).show()
+//                    updateUI(null)
+                }
+            }
     }
 
     private fun initTitle() {

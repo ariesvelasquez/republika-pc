@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.repository.tipidpc.search
+package ariesvelasquez.com.republikapc.repository.search
 
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.Listing

@@ -21,10 +21,10 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import ariesvelasquez.com.republikapc.api.TipidPCApi
 import ariesvelasquez.com.republikapc.db.TipidPCDatabase
-import ariesvelasquez.com.republikapc.repository.tipidpc.feeds.FeedsRepository
-import ariesvelasquez.com.republikapc.repository.tipidpc.feeds.IFeedsRepository
-import ariesvelasquez.com.republikapc.repository.tipidpc.search.ISearchRepository
-import ariesvelasquez.com.republikapc.repository.tipidpc.search.SearchRepository
+import ariesvelasquez.com.republikapc.repository.dashboard.DashboardRepository
+import ariesvelasquez.com.republikapc.repository.dashboard.IDashboardRepository
+import ariesvelasquez.com.republikapc.repository.search.ISearchRepository
+import ariesvelasquez.com.republikapc.repository.search.SearchRepository
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -57,7 +57,7 @@ interface ServiceLocator {
         }
     }
 
-    fun getFeedsRepository(): IFeedsRepository
+    fun getDashboardRepository(): IDashboardRepository
 
     fun getSearchRepository() : ISearchRepository
 
@@ -88,8 +88,8 @@ open class DefaultServiceLocator(val app: Application) : ServiceLocator {
         TipidPCApi.create()
     }
 
-    override fun getFeedsRepository(): IFeedsRepository {
-        return FeedsRepository(
+    override fun getDashboardRepository(): IDashboardRepository {
+        return DashboardRepository(
             db = db,
             tipidPCApi = getTipidPCApi(),
             ioExecutor = getDiskIOExecutor()

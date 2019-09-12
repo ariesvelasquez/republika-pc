@@ -15,19 +15,22 @@ import androidx.paging.PagedList
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
+import kotlinx.android.synthetic.main.fragment_tipid_pc.*
 import kotlinx.android.synthetic.main.fragment_tipid_pc.view.*
+import kotlinx.android.synthetic.main.fragment_tipid_pc.view.refreshSwipe
 import timber.log.Timber
 
 class TipidPCFragment : Fragment() {
 
-    private val feedsViewModel: FeedsViewModel by viewModels {
+    private val model: DashboardViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 val repo = ServiceLocator.instance(context!!)
-                    .getFeedsRepository()
+                    .getDashboardRepository()
                 @Suppress("UNCHECKED_CAST")
-                return FeedsViewModel(repo) as T
+                return DashboardViewModel(repo) as T
             }
         }
     }
@@ -51,39 +54,40 @@ class TipidPCFragment : Fragment() {
         rootView = inflater.inflate(R.layout.fragment_tipid_pc, container, false)
 
         initAdapter()
+        initSwipeToRefresh()
 
-        feedsViewModel.showFeedItems()
+        model.showFeedItems()
 
         return rootView
     }
 
     private fun initAdapter() {
         val adapter = FeedItemsAdapter {
-            feedsViewModel.retry()
+            model.retry()
         }
         rootView.list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rootView.list.adapter = adapter
-        feedsViewModel.items.observe(this, Observer<PagedList<FeedItem>> {
+        model.items.observe(this, Observer<PagedList<FeedItem>> {
             Timber.e("Feeds ViewModel Observer: new items added size: %s", it.size)
             adapter.submitList(it)
         })
-        feedsViewModel.networkState.observe(this, Observer {
+        model.networkState.observe(this, Observer {
             adapter.setNetworkState(it)
         })
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-//        outState.putString(KEY_SELLER, feedsViewModel.currentSeller())
+//        outState.putString(KEY_SELLER, model.currentSeller())
     }
 
     private fun initSwipeToRefresh() {
-//        feedsViewModel.refreshState.observe(this, Observer {
-//            swipe_refresh.isRefreshing = it == NetworkState.LOADING
-//        })
-//        swipe_refresh.setOnRefreshListener {
-//            model.refresh()
-//        }
+        model.refreshState.observe(this, Observer {
+            rootView.refreshSwipe.isRefreshing = it == NetworkState.LOADING
+        })
+        rootView.refreshSwipe.setOnRefreshListener {
+            model.refresh()
+        }
     }
 
 
@@ -101,19 +105,8 @@ class TipidPCFragment : Fragment() {
         listener = null
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
+
     interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
 

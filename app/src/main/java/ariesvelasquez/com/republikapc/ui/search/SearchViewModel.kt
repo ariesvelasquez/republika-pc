@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.Transformations.map
 import androidx.lifecycle.ViewModel
-import ariesvelasquez.com.republikapc.repository.tipidpc.search.ISearchRepository
+import ariesvelasquez.com.republikapc.repository.search.ISearchRepository
 
 class SearchViewModel(private val repository: ISearchRepository) : ViewModel() {
 

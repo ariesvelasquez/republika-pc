@@ -1,8 +1,8 @@
-package ariesvelasquez.com.republikapc.repository.tipidpc.feeds
+package ariesvelasquez.com.republikapc.repository.dashboard
 
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.Listing
 
-interface IFeedsRepository {
+interface IDashboardRepository {
     fun feeds(): Listing<FeedItem>
 }

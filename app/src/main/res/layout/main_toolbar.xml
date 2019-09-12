@@ -52,7 +52,7 @@
         <!-- This is a custom left side button -->
         <ImageButton
             android:layout_width="?attr/actionBarSize"
-            android:id="@+id/btn_settings"
+            android:id="@+id/hamburgerButton"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginEnd="?attr/actionBarSize"
             android:layout_gravity="start|center_vertical"

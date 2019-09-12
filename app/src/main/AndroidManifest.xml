@@ -18,7 +18,7 @@
         android:usesCleartextTraffic="true">
         <activity android:name=".ui.search.SearchActivity">
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.dashboard.DashboardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
     

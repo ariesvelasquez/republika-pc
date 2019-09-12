@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.repository.tipidpc.feeds
+package ariesvelasquez.com.republikapc.repository.dashboard
 
 import androidx.annotation.MainThread
 import androidx.paging.PagedList
@@ -20,7 +20,7 @@ import java.util.concurrent.Executor
  * The boundary callback might be called multiple times for the same direction so it does its own
  * rate limiting using the PagingRequestHelper class.
  */
-class FeedsBoundaryCallback (
+class DashboardBoundaryCallback (
     private val webservice: TipidPCApi,
     private val handleResponse: (FeedItemsResource) -> Unit,
     private val ioExecutor: Executor
@@ -50,7 +50,7 @@ class FeedsBoundaryCallback (
     override fun onItemAtEndLoaded(itemAtEnd: FeedItem) {
         helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {
             // Or notify user that all the items is loaded
-            webservice.getSellingItems(currentPage++)
+            webservice.getSellingItems(itemAtEnd.page + 1)
                 .enqueue(createWebserviceCallback(it))
         }
     }
@@ -88,5 +88,4 @@ class FeedsBoundaryCallback (
             it.recordSuccess()
         }
     }
-
 }

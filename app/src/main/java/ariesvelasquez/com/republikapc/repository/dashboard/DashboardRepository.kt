@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.repository.tipidpc.feeds
+package ariesvelasquez.com.republikapc.repository.dashboard
 
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
@@ -17,11 +17,11 @@ import retrofit2.Response
 import timber.log.Timber
 import java.util.concurrent.Executor
 
-class FeedsRepository(
+class DashboardRepository(
     val db: TipidPCDatabase,
     private val tipidPCApi: TipidPCApi,
     private val ioExecutor: Executor
-) : IFeedsRepository {
+) : IDashboardRepository {
 
     /**
      * Inserts the response into the database while also assigning position indices to items.
@@ -82,7 +82,7 @@ class FeedsRepository(
 
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
-        val boundaryCallback = FeedsBoundaryCallback(
+        val boundaryCallback = DashboardBoundaryCallback(
             webservice = tipidPCApi,
             handleResponse = this::insertResultIntoDb,
             ioExecutor = ioExecutor

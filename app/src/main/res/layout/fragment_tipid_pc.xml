@@ -3,13 +3,20 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
              tools:context=".ui.dashboard.tipidpc.TipidPCFragment">
-
-    <androidx.recyclerview.widget.RecyclerView
+    
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refreshSwipe"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#ffffff"
             android:scrollbars="vertical"
             android:paddingStart="@dimen/view_padding"/>
-
+    
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    
 </LinearLayout>

@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.repository.tipidpc.search
+package ariesvelasquez.com.republikapc.repository.search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.ItemKeyedDataSource
