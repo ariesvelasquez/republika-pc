@@ -4,13 +4,17 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.paging.Config
 import androidx.paging.toLiveData
 import ariesvelasquez.com.republikapc.api.TipidPCApi
 import ariesvelasquez.com.republikapc.db.TipidPCDatabase
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
+import ariesvelasquez.com.republikapc.model.rigs.RigItem
 import ariesvelasquez.com.republikapc.repository.Listing
 import ariesvelasquez.com.republikapc.repository.NetworkState
+import ariesvelasquez.com.republikapc.repository.rigs.RigDataSourceFactory
+import com.google.firebase.firestore.CollectionReference
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,6 +23,7 @@ import java.util.concurrent.Executor
 
 class DashboardRepository(
     val db: TipidPCDatabase,
+    private val rigCollectionReference: CollectionReference,
     private val tipidPCApi: TipidPCApi,
     private val ioExecutor: Executor
 ) : IDashboardRepository {
@@ -41,7 +46,7 @@ class DashboardRepository(
     }
 
     /**
-     * When refresh is called, we simply run a fresh network request and when it arrives, clear
+     * When refreshFeeds is called, we simply run a fresh network request and when it arrives, clear
      * the database table and insert all new items in a transaction.
      * <p>
      * Since the PagedList already uses a database bound data source, it will automatically be
@@ -75,7 +80,7 @@ class DashboardRepository(
     }
 
     /**
-     * Returns a Listing for the given subreddit.
+     * Returns a Listing of tipid pc items.
      */
     @MainThread
     override fun feeds(): Listing<FeedItem> {
@@ -87,8 +92,8 @@ class DashboardRepository(
             handleResponse = this::insertResultIntoDb,
             ioExecutor = ioExecutor
         )
-        // we are using a mutable live data to trigger refresh requests which eventually calls
-        // refresh method and gets a new live data. Each refresh request by the user becomes a newly
+        // we are using a mutable live data to trigger refreshFeeds requests which eventually calls
+        // refreshFeeds method and gets a new live data. Each refreshFeeds request by the user becomes a newly
         // dispatched data in refreshTrigger
         val refreshTrigger = MutableLiveData<Unit>()
         val refreshState = Transformations.switchMap(refreshTrigger) {
@@ -109,6 +114,35 @@ class DashboardRepository(
             },
             refresh = {
                 refreshTrigger.value = null
+            },
+            refreshState = refreshState
+        )
+    }
+
+    override fun rigs(): Listing<RigItem> {
+        val sourceFactory = RigDataSourceFactory(rigCollectionReference)
+
+        // We use toLiveData Kotlin ext. function here, you could also use LivePagedListBuilder
+        val livePagedList = sourceFactory.toLiveData(
+            // we use Config Kotlin ext. function here, could also use PagedList.Config.Builder
+            config = Config(
+            pageSize = 10,
+            enablePlaceholders = false,
+            initialLoadSizeHint = 10 * 2))
+
+        val refreshState = Transformations.switchMap(sourceFactory.sourceLiveData) {
+            it.initialLoad
+        }
+        return Listing(
+            pagedList = livePagedList,
+            networkState = Transformations.switchMap(sourceFactory.sourceLiveData) {
+                it.networkState
+            },
+            retry = {
+//                sourceFactory.sourceLiveData.value?.retryAllFailed()
+            },
+            refresh = {
+                sourceFactory.sourceLiveData.value?.invalidate()
             },
             refreshState = refreshState
         )

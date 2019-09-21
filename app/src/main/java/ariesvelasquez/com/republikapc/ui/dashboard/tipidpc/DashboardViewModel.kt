@@ -1,32 +1,71 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
+import ariesvelasquez.com.republikapc.Const.RIGS_COLLECTION
+import ariesvelasquez.com.republikapc.model.rigs.RigItem
 import ariesvelasquez.com.republikapc.repository.dashboard.IDashboardRepository
+import ariesvelasquez.com.republikapc.repository.rigs.RigDataSourceFactory
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class DashboardViewModel(private val repository: IDashboardRepository) : ViewModel() {
 
 
-    private val isInitialized = MutableLiveData<Boolean>()
-    private val repoResult = Transformations.map(isInitialized) {
-        repository.feeds()
-    }
-    val items = Transformations.switchMap(repoResult) { it.pagedList }!!
-    val networkState = Transformations.switchMap(repoResult) { it.networkState }!!
-    val refreshState = Transformations.switchMap(repoResult) { it.refreshState }!!
+    private val isFeedsInitialized = MutableLiveData<Boolean>()
+    private val feedsRepoResult = Transformations.map(isFeedsInitialized) { repository.feeds() }
+    val feedItems = Transformations.switchMap(feedsRepoResult) { it.pagedList }!!
+    val feedsNetworkState = Transformations.switchMap(feedsRepoResult) { it.networkState }!!
+    val feedsRefreshState = Transformations.switchMap(feedsRepoResult) { it.refreshState }!!
 
-    fun refresh() {
-        repoResult.value?.refresh?.invoke()
+    private val isRigsInitialized = MutableLiveData<Boolean>()
+    private val rigRepoResult = Transformations.map(isRigsInitialized) { repository.rigs() }
+    val rigItems = Transformations.switchMap(rigRepoResult) { it.pagedList }!!
+    val rigNetworkState = Transformations.switchMap(rigRepoResult) { it.networkState }!!
+    val rigRefreshState = Transformations.switchMap(rigRepoResult) { it.refreshState }!!
+
+    private val _userModel = MutableLiveData<FirebaseUser>()
+    private val _isUserSignedIn = MutableLiveData<Boolean>()
+
+    val userModel = Transformations.map(_userModel) { it }
+    val isUserSignedIn = MutableLiveData<Boolean>()
+
+    // FEEDS
+    fun refreshFeeds() {
+        feedsRepoResult.value?.refresh?.invoke()
     }
 
-    fun showFeedItems() : Boolean {
-        this.isInitialized.value = true
+    fun showFeedItems(): Boolean {
+        this.isFeedsInitialized.value = true
         return true
     }
 
-    fun retry() {
-        val listing = repoResult?.value
+    fun retryFeeds() {
+        val listing = feedsRepoResult?.value
         listing?.retry?.invoke()
+    }
+
+    // RIGS_COLLECTION
+    fun refreshRigs() {
+        rigRepoResult.value?.refresh?.invoke()
+    }
+
+    fun showRigItems(): Boolean {
+
+        this.isRigsInitialized.value = true
+        return true
+    }
+
+    // USER
+    fun setUser(firebaseUser: FirebaseUser) {
+        this._userModel.value = firebaseUser
+    }
+
+    fun setIsUserSignedIn(isUserSignedIn: Boolean) {
+        this.isUserSignedIn.value = isUserSignedIn
     }
 }

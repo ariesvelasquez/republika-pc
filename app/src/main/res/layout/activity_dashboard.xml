@@ -57,13 +57,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:visibility="gone"
+            android:visibility="visible"
             app:fabSize="mini"
             app:layout_anchor="@id/navigation"
             app:layout_anchorGravity="top|end"
             app:layout_behavior="ariesvelasquez.com.republikapc.viewutils.BottomNavigationFABBehavior"
-            app:srcCompat="@android:drawable/ic_menu_add"
-            app:useCompatPadding="true"/>
+            app:srcCompat="@drawable/ic_vector_duplicate"
+            app:useCompatPadding="true" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -10,6 +10,8 @@
     <string name="label_settings">Settings</string>
     
     <string name="hint_budget_build">Budget build</string>
-    
-    
+    <string name="highlighted_parts">Highlighted parts</string>
+    <string name="current_rig">Current rig</string>
+
+
 </resources>

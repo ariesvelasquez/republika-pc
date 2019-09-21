@@ -19,12 +19,18 @@ package ariesvelasquez.com.republikapc.utils
 import android.app.Application
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import ariesvelasquez.com.republikapc.Const.RIGS_COLLECTION
+import ariesvelasquez.com.republikapc.Const.USERS_COLLECTION
 import ariesvelasquez.com.republikapc.api.TipidPCApi
 import ariesvelasquez.com.republikapc.db.TipidPCDatabase
+import ariesvelasquez.com.republikapc.repository.auth.AuthRepository
 import ariesvelasquez.com.republikapc.repository.dashboard.DashboardRepository
 import ariesvelasquez.com.republikapc.repository.dashboard.IDashboardRepository
 import ariesvelasquez.com.republikapc.repository.search.ISearchRepository
 import ariesvelasquez.com.republikapc.repository.search.SearchRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -61,6 +67,8 @@ interface ServiceLocator {
 
     fun getSearchRepository() : ISearchRepository
 
+    fun getAuthRepository(): AuthRepository
+
     fun getNetworkExecutor(): Executor
 
     fun getDiskIOExecutor(): Executor
@@ -72,6 +80,7 @@ interface ServiceLocator {
  * default implementation of ServiceLocator that uses production endpoints.
  */
 open class DefaultServiceLocator(val app: Application) : ServiceLocator {
+
     // thread pool used for disk access
     @Suppress("PrivatePropertyName")
     private val DISK_IO = Executors.newSingleThreadExecutor()
@@ -88,9 +97,27 @@ open class DefaultServiceLocator(val app: Application) : ServiceLocator {
         TipidPCApi.create()
     }
 
+    private val firebaseAuth by lazy {
+        FirebaseAuth.getInstance()
+    }
+
+    private val firestoreSettings by lazy {
+        FirebaseFirestoreSettings.Builder()
+            .setTimestampsInSnapshotsEnabled(true)
+            .build()
+    }
+
+    private val firestoreRef by lazy {
+        val firestoreReference = FirebaseFirestore.getInstance()
+        firestoreReference.firestoreSettings = firestoreSettings
+        firestoreReference
+    }
+
+
     override fun getDashboardRepository(): IDashboardRepository {
         return DashboardRepository(
             db = db,
+            rigCollectionReference = firestoreRef.collection(RIGS_COLLECTION),
             tipidPCApi = getTipidPCApi(),
             ioExecutor = getDiskIOExecutor()
         )
@@ -100,6 +127,13 @@ open class DefaultServiceLocator(val app: Application) : ServiceLocator {
         return SearchRepository(
             tipidPCApi = getTipidPCApi(),
             networkExecutor = getNetworkExecutor()
+        )
+    }
+
+    override fun getAuthRepository(): AuthRepository {
+        return AuthRepository(
+            firebaseAuth,
+            firestoreRef.collection(USERS_COLLECTION)
         )
     }
 

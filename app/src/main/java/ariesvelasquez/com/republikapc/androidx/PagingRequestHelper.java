@@ -113,9 +113,9 @@ public class PagingRequestHelper {
     final CopyOnWriteArrayList<Listener> mListeners = new CopyOnWriteArrayList<>();
     /**
      * Creates a new PagingRequestHelper with the given {@link Executor} which is used to run
-     * retry actions.
+     * retryFeeds actions.
      *
-     * @param retryService The {@link Executor} that can run the retry actions.
+     * @param retryService The {@link Executor} that can run the retryFeeds actions.
      */
     public PagingRequestHelper(@NonNull Executor retryService) {
         mRetryService = retryService;

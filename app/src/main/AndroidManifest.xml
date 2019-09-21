@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="ariesvelasquez.com.republikapc"
-          tools:ignore="GoogleAppIndexingWarning">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="ariesvelasquez.com.republikapc"
+    tools:ignore="GoogleAppIndexingWarning">
     
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
     <application
         android:name=".RepublikaPC"
@@ -16,13 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.search.SearchActivity">
-        </activity>
+        <activity android:name=".ui.auth.AuthActivity"></activity>
+        <activity android:name=".ui.search.SearchActivity"></activity>
         <activity android:name=".ui.dashboard.DashboardActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
     
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>

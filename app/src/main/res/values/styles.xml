@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">#f5f5f5</item>
         <item name="colorPrimaryDark">#f5f5f5</item>
@@ -28,6 +28,16 @@
     </style>
 
     <style name="TextAppearance.TileTertiary" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="fontFamily">@font/roboto_mono_regular</item>
+    </style>
+    
+    <style name="TextAppearance.Caption" parent="@style/TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/roboto_mono_regular</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="TextAppearance.HeadLine6" parent="@style/TextAppearance.MaterialComponents.Headline6">
         <item name="fontFamily">@font/roboto_mono_regular</item>
     </style>
 

@@ -6,34 +6,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
-import ariesvelasquez.com.republikapc.utils.ServiceLocator
-import kotlinx.android.synthetic.main.fragment_tipid_pc.*
+import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
 import kotlinx.android.synthetic.main.fragment_tipid_pc.view.*
 import kotlinx.android.synthetic.main.fragment_tipid_pc.view.refreshSwipe
 import timber.log.Timber
 
-class TipidPCFragment : Fragment() {
-
-    private val model: DashboardViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ServiceLocator.instance(context!!)
-                    .getDashboardRepository()
-                @Suppress("UNCHECKED_CAST")
-                return DashboardViewModel(repo) as T
-            }
-        }
-    }
+class TipidPCFragment : DashboardFragment() {
 
     private var listener: OnFragmentInteractionListener? = null
 
@@ -50,28 +34,29 @@ class TipidPCFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_tipid_pc, container, false)
 
         initAdapter()
         initSwipeToRefresh()
 
-        model.showFeedItems()
+        dashboardViewModel.showFeedItems()
 
         return rootView
     }
 
     private fun initAdapter() {
         val adapter = FeedItemsAdapter {
-            model.retry()
+            dashboardViewModel.retryFeeds()
         }
         rootView.list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rootView.list.adapter = adapter
-        model.items.observe(this, Observer<PagedList<FeedItem>> {
+        dashboardViewModel.feedItems.observe(this, Observer<PagedList<FeedItem>> {
             Timber.e("Feeds ViewModel Observer: new items added size: %s", it.size)
             adapter.submitList(it)
         })
-        model.networkState.observe(this, Observer {
+        dashboardViewModel.feedsNetworkState.observe(this, Observer {
             adapter.setNetworkState(it)
         })
     }
@@ -82,12 +67,20 @@ class TipidPCFragment : Fragment() {
     }
 
     private fun initSwipeToRefresh() {
-        model.refreshState.observe(this, Observer {
+        dashboardViewModel.feedsRefreshState.observe(this, Observer {
             rootView.refreshSwipe.isRefreshing = it == NetworkState.LOADING
         })
         rootView.refreshSwipe.setOnRefreshListener {
-            model.refresh()
+            dashboardViewModel.refreshFeeds()
         }
+    }
+
+    override fun onUserLoggedOut() {
+
+    }
+
+    override fun onUserLoggedIn() {
+
     }
 
 

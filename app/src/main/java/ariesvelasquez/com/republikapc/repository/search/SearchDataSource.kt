@@ -18,7 +18,7 @@ class SearchDataSource(
     val retryExecutor: Executor
 ) : ItemKeyedDataSource<String, FeedItem>() {
 
-    // keep a function reference for the retry event
+    // keep a function reference for the retryFeeds event
     private var retry: (() -> Any)? = null
 
     /**
@@ -46,23 +46,23 @@ class SearchDataSource(
 
     override fun loadInitial(params: LoadInitialParams<String>, callback: LoadInitialCallback<FeedItem>) {
         // set network value to loading.
-        networkState.postValue(NetworkState.LOADING)
+//        networkState.postValue(NetworkState.LOADING)
 
         val request = tipidPCApi.getSearhItem(searchVal, currentPage)
 
         // update network states.
         // we also provide an initial load state to the listeners so that the UI can know when the
         // very first list is loaded.
-        networkState.postValue(NetworkState.LOADING)
+//        networkState.postValue(NetworkState.LOADING)
         initialLoad.postValue(NetworkState.LOADING)
 
-        // triggered by a refresh, we better execute sync
+        // triggered by a refreshFeeds, we better execute sync
         try {
             val response = request.execute()
             val items = response.body()?.items ?: emptyList()
             Timber.e("loadinitial search items " + items.size)
             retry = null
-            networkState.postValue(NetworkState.LOADED)
+//            networkState.postValue(NetworkState.LOADED)
             initialLoad.postValue(NetworkState.LOADED)
             callback.onResult(items)
         } catch (ioException: IOException) {
@@ -85,7 +85,7 @@ class SearchDataSource(
         tipidPCApi.getSearhItem(searchVal, currentPage).enqueue(
             object : retrofit2.Callback<FeedItemsResource> {
                 override fun onFailure(call: Call<FeedItemsResource>, t: Throwable) {
-                    // keep a lambda for future retry
+                    // keep a lambda for future retryFeeds
                     retry = {
                         loadAfter(params, callback)
                     }
@@ -100,7 +100,7 @@ class SearchDataSource(
                     if (response.isSuccessful) {
                         val items = response.body()?.items ?: emptyList()
                         Timber.e("loadAfter " + items.size)
-                        // clear retry since last request succeeded
+                        // clear retryFeeds since last request succeeded
                         retry = null
                         callback.onResult(items)
                         networkState.postValue(NetworkState.LOADED)
