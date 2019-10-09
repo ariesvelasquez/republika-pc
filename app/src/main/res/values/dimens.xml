@@ -7,6 +7,8 @@
     <dimen name="view_padding">8dp</dimen>
     <dimen name="view_padding_2">16dp</dimen>
     <dimen name="view_padding_3">24dp</dimen>
+    <dimen name="view_padding_4">32dp</dimen>
+    <dimen name="view_padding_5">40dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
 
     <!--Default font size, per the Android Design Guidelines for Roboto font-->
@@ -22,6 +24,10 @@
     <dimen name="font_size_tab">14sp</dimen>  <!-- With Medium weight -->
     <dimen name="font_size_inputs">16sp</dimen>
     
+    <!-- Larger font -->
+    <dimen name="font_size_24">24sp</dimen>
+    <dimen name="font_size_32">32sp</dimen>
+    
     <dimen name="design_bottom_navigation_height" tools:override="true">48dp</dimen>
     
     <!--ICON SIZES-->
@@ -29,5 +35,8 @@
     <dimen name="icon_size_24">24dp</dimen>
     <dimen name="icon_size_36">36dp</dimen>
     <dimen name="icon_size_48">48dp</dimen>
+    
+    <!-- Rig Item Layout Dimens-->
+    <dimen name="rig_stat_icon">@dimen/icon_size_24</dimen>
     
 </resources>

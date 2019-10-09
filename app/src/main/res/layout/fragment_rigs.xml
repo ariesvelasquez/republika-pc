@@ -13,10 +13,10 @@
             android:id="@+id/rigList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#ffffff"
+            android:background="@color/colorSmoke"
             android:scrollbars="vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
             android:clipToPadding="false"/>
     
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     app:contentInsetEnd="@dimen/view_padding_2"
-    android:background="#ffffff"
+    android:background="@color/colorSmoke"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
@@ -14,7 +14,6 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/shape_rectangle_rounded_bordered"
         android:layout_marginTop="@dimen/view_half_padding"
         android:layout_marginBottom="@dimen/view_half_padding"
         android:elevation="4dp">

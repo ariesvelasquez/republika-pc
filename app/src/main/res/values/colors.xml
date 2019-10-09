@@ -11,8 +11,38 @@
     <color name="text_helper_dark">#99000000</color>
     <color name="text_tpc_tile_description">#DEd56217</color>
     
-    <color name="text_light_green">#6DD3CE</color>
-    <color name="text_red">#D14952</color>
-    <color name="text_lime">#C8E9A0</color>
-    <color name="text_white">#ffffff</color>
+    <color name="colorCyan">#6DD3CE</color>
+    <color name="colorRed">#D14952</color>
+    <color name="colorLime">#C8E9A0</color>
+    <color name="colorWhite">#ffffff</color>
+    
+    <!-- I like this colors theme -->
+    <color name="colorBlue">#058ED9</color>
+    <color name="colorBeige">#F4EBD9</color>
+    <color name="colorMocha">#A39A92</color>
+    <color name="colorChoco">#77685D</color>
+    <color name="colorMud">#483D3F</color>
+
+    <!-- Another color theme -->
+    <color name="colorNavyBlue">#373F51</color>
+    <color name="colorDarkBlue">#03256C</color>
+    <color name="colorPeach">#DFBBB1</color>
+    <color name="colorPink">#F56476</color>
+    <color name="colorPinkRed">#E43F6F</color>
+    <color name="colorRose">#D63230</color>
+    
+    <!-- Another color theme -->
+    <color name="colorBlueBlack">#080708</color>
+    <color name="colorSkyBlue">#3772FF</color>
+    <color name="colorPula">#DF2935</color>
+    <color name="colorYellow">#FDCA40</color>
+    
+    
+    <color name="colorRigBackground">@color/colorWhite</color>
+    <color name="colorRigTitle">@color/colorDarkGray</color>
+    <color name="colorRigStatsText">@color/colorDarkGray</color>
+    <color name="colorRigStatsIcons">@color/text_main_dark</color>
+    <color name="colorRigStatHead">@color/text_main_dark</color>
+    <color name="colorRigCaptions">@color/text_main_dark</color>
+
 </resources>

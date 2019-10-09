@@ -1,172 +1,256 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="4dp"
-    android:layout_marginTop="@dimen/view_half_padding"
     android:layout_marginEnd="4dp"
-    android:layout_marginBottom="@dimen/view_half_padding"
-    android:background="@drawable/shape_rectangle_rounded_bordered"
-    android:backgroundTint="@color/text_light_green"
-    android:orientation="vertical"
-    android:padding="@dimen/view_padding_2">
+    app:cardCornerRadius="4dp">
     
-    <TextView
-        android:id="@+id/textViewItemDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textSize="8sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="55" />
-    
-    <TextView
-        android:id="@+id/textViewStatus"
-        style="@style/TextAppearance.Caption"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/current_rig"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="@dimen/view_padding_2"
+        android:layout_marginBottom="@dimen/view_padding_2"
+        android:padding="@dimen/view_padding_2">
+        
+        <TextView
+            android:id="@+id/textViewItemDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textSize="8sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="55" />
+        
+        <TextView
+            android:id="@+id/textViewStatus"
+            style="@style/TextAppearance.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/current_rig"
+            android:textColor="@color/colorRigCaptions"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        
+        <TextView
+            android:id="@+id/title"
+            style="@style/TextAppearance.RigTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Potato Madness 2.0"
+            android:textColor="@color/colorRigTitle"
+            android:textStyle="bold"
+            android:paddingBottom="@dimen/view_padding_5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewStatus" />
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutParts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintEnd_toStartOf="@id/linearLayoutCopies">
     
-    <TextView
-        android:id="@+id/title"
-        style="@style/TextAppearance.HeadLine6"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Potato Madness 2.0"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewStatus" />
+            <TextView
+                style="@style/TextAppearance.RigStatHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="22" />
     
-    <ImageView
-        android:id="@+id/imageViewParts"
-        android:layout_width="@dimen/icon_size_24"
-        android:layout_height="@dimen/icon_size_24"
-        android:layout_marginTop="@dimen/view_padding_3"
-        android:src="@drawable/ic_vector_duplicate"
-        app:layout_constraintEnd_toEndOf="@id/textViewPartsCount"
-        app:layout_constraintStart_toStartOf="@id/textViewPartsCount"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+            <TextView
+                android:id="@+id/textViewPartsCount"
+                style="@style/TextAppearance.TileSecondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Parts"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"
+                tools:text="parts" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutCopies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/linearLayoutParts"
+            app:layout_constraintEnd_toStartOf="@id/linearLayoutViews"
+            app:layout_constraintTop_toTopOf="@id/linearLayoutParts">
     
-    <TextView
-        android:id="@+id/textViewPartsCount"
-        style="@style/TextAppearance.TileTertiary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding"
-        android:text="22 Parts"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toStartOf="@+id/textViewCopiesCount"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageViewParts"
-        tools:text="22 Partsasdadfsf" />
+            <TextView
+                style="@style/TextAppearance.RigStatHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3"/>
+            
+            <TextView
+                android:id="@+id/textViewCopiesCount"
+                style="@style/TextAppearance.TileSecondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="copies"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"
+                tools:text="copies" />
+        </LinearLayout>
+        
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutViews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/linearLayoutCopies"
+            app:layout_constraintTop_toTopOf="@id/linearLayoutParts"
+            app:layout_constraintEnd_toStartOf="@id/linearLayoutQRCode">
     
-    <ImageView
-        android:id="@+id/imageViewCopies"
-        android:layout_width="@dimen/icon_size_24"
-        android:layout_height="@dimen/icon_size_24"
-        android:layout_marginTop="@dimen/view_padding_3"
-        android:src="@drawable/ic_vector_duplicate_2"
-        app:layout_constraintEnd_toEndOf="@id/textViewCopiesCount"
-        app:layout_constraintStart_toStartOf="@id/textViewCopiesCount"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+            <TextView
+                style="@style/TextAppearance.RigStatHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                
+                android:text="5"/>
+            
+            <TextView
+                android:id="@+id/textViewViewsCount"
+                style="@style/TextAppearance.TileSecondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="views"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"
+                tools:text="views" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutQRCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/linearLayoutViews"
+            app:layout_constraintTop_toTopOf="@id/linearLayoutParts"
+            app:layout_constraintEnd_toEndOf="parent">
     
-    <TextView
-        android:id="@+id/textViewCopiesCount"
-        style="@style/TextAppearance.TileTertiary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding"
-        android:text="5 Copies"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toStartOf="@+id/textViewViewsCount"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@+id/textViewPartsCount"
-        app:layout_constraintTop_toBottomOf="@id/imageViewCopies"
-        tools:text="5 Copies" />
+            <TextView
+                style="@style/TextAppearance.RigStatHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="QR"/>
+            
+            <TextView
+                android:id="@+id/textViewQRCode"
+                style="@style/TextAppearance.TileSecondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="code"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"
+                tools:text="code" />
+        </LinearLayout>
+        
+        <TextView
+            android:id="@+id/textViewHighlights"
+            style="@style/TextAppearance.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_padding_5"
+            android:layout_marginBottom="@dimen/view_padding"
+            android:text="@string/featured_parts"
+            android:textColor="@color/colorRigCaptions"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayoutParts" />
+        
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupHighlights"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_padding"
+            app:layout_constraintBottom_toTopOf="@id/textViewPhotos"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewHighlights" />
     
-    <ImageView
-        android:id="@+id/imageViewViews"
-        android:layout_width="@dimen/icon_size_24"
-        android:layout_height="@dimen/icon_size_24"
-        android:layout_marginTop="@dimen/view_padding_3"
-        android:src="@drawable/ic_vector_eye"
-        app:layout_constraintEnd_toEndOf="@id/textViewViewsCount"
-        app:layout_constraintStart_toStartOf="@id/textViewViewsCount"
-        app:layout_constraintTop_toBottomOf="@id/title" />
-    
-    <TextView
-        android:id="@+id/textViewViewsCount"
-        style="@style/TextAppearance.TileTertiary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding"
-        android:text="5 Views"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toStartOf="@+id/textViewQRCode"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@+id/textViewCopiesCount"
-        app:layout_constraintTop_toBottomOf="@id/imageViewViews"
-        tools:text="5 Views" />
-    
-    <ImageView
-        android:id="@+id/imageViewQRCode"
-        android:layout_width="@dimen/icon_size_24"
-        android:layout_height="@dimen/icon_size_24"
-        android:layout_marginTop="@dimen/view_padding_3"
-        android:src="@drawable/ic_vector_qr_code"
-        app:layout_constraintEnd_toEndOf="@id/textViewQRCode"
-        app:layout_constraintStart_toStartOf="@id/textViewQRCode"
-        app:layout_constraintTop_toBottomOf="@id/title" />
-    
-    <TextView
-        android:id="@+id/textViewQRCode"
-        style="@style/TextAppearance.TileTertiary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding"
-        android:text="QR Code"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@+id/textViewViewsCount"
-        app:layout_constraintTop_toBottomOf="@id/imageViewQRCode"
-        tools:text="QR Code" />
-    
-    <TextView
-        android:id="@+id/textViewHighlights"
-        style="@style/TextAppearance.Caption"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding_3"
-        android:layout_marginBottom="@dimen/view_padding"
-        android:text="@string/highlighted_parts"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewPartsCount" />
-    
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroupHighlights"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewHighlights" />
+        <TextView
+            android:id="@+id/textViewPhotos"
+            style="@style/TextAppearance.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_padding_4"
+            android:layout_marginBottom="@dimen/view_padding"
+            android:text="@string/photos"
+            android:textColor="@color/colorRigCaptions"
+            app:layout_constraintBottom_toTopOf="@id/imageViewRigPhoto1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/chipGroupHighlights"/>
+        
+        <ImageView
+            android:id="@+id/imageViewRigPhoto1"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/icon_size_48"
+            android:paddingStart="@dimen/view_half_padding"
+            android:paddingEnd="@dimen/view_half_padding"
+            android:layout_marginStart="@dimen/view_half_padding"
+            android:layout_marginEnd="@dimen/view_half_padding"
+            android:src="@drawable/image_placeholder"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/imageViewRigPhoto2"
+            app:layout_constraintTop_toBottomOf="@id/textViewPhotos"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/imageViewRigPhoto2"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/icon_size_48"
+            android:paddingStart="@dimen/view_half_padding"
+            android:paddingEnd="@dimen/view_half_padding"
+            android:layout_marginStart="@dimen/view_half_padding"
+            android:layout_marginEnd="@dimen/view_half_padding"
+            android:src="@drawable/image_placeholder"
+            app:layout_constraintTop_toTopOf="@id/imageViewRigPhoto1"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewRigPhoto1"
+            app:layout_constraintEnd_toStartOf="@id/imageViewRigPhoto3"
+            app:layout_constraintStart_toEndOf="@id/imageViewRigPhoto1"/>
+
+        <ImageView
+            android:id="@+id/imageViewRigPhoto3"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/icon_size_48"
+            android:paddingStart="@dimen/view_half_padding"
+            android:paddingEnd="@dimen/view_half_padding"
+            android:layout_marginStart="@dimen/view_half_padding"
+            android:layout_marginEnd="@dimen/view_half_padding"
+            android:src="@drawable/image_placeholder"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/imageViewRigPhoto1"
+            app:layout_constraintStart_toEndOf="@id/imageViewRigPhoto2"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewRigPhoto1"/>
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    
+</androidx.cardview.widget.CardView>
+

@@ -1,15 +1,12 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.rigs
 
-import android.content.Context
-import android.content.res.ColorStateList
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
-import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.RigItem
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -20,6 +17,10 @@ class RigItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     private var item : RigItem? = null
 
     private var context = view.context
+    private val chipWidth: Float by lazy {
+        TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 1f,
+            context.resources.displayMetrics)
+    }
 
     init {
         view.setOnClickListener {
@@ -33,19 +34,27 @@ class RigItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     fun bind(item: RigItem?) {
         this.item = item
 
+
+
         // Add Dummy Chips
         val chip1 = Chip(view.context)
         chip1.text = "Ryzen 5 1600x"
-        chip1.chipIcon = ContextCompat.getDrawable(view.context, R.drawable.ic_vector_back)
-        chip1.setChipBackgroundColorResource(R.color.text_white)
-        chip1.setTextColor(ContextCompat.getColor(context, R.color.text_helper_dark))
+//        chip1.chipIcon = ContextCompat.getDrawable(view.context, R.drawable.ic_vector_star)
+        chip1.chipStrokeWidth = chipWidth
+        chip1.setChipStrokeColorResource(R.color.colorDarkGray)
+        chip1.setChipBackgroundColorResource(R.color.colorWhite)
+        chip1.setTextAppearance(R.style.RigChipTextStyle)
+//        chip1.setTextColor(ContextCompat.getColor(context, R.color.text_helper_dark))
 
         val chip2 = Chip(view.context)
         chip2.text = "GTX 2080ti"
-        chip2.chipIcon = ContextCompat.getDrawable(view.context, R.drawable.ic_vector_back)
-        chip2.setChipBackgroundColorResource(R.color.text_white)
-        chip2.setTextColor(ContextCompat.getColor(context, R.color.text_helper_dark))
+//        chip2.chipIcon = ContextCompat.getDrawable(view.context, R.drawable.ic_vector_star)
+        chip2.chipStrokeWidth = chipWidth
+        chip2.setChipStrokeColorResource(R.color.colorDarkGray)
+        chip2.setChipBackgroundColorResource(R.color.colorWhite)
+        chip2.setTextAppearance(R.style.RigChipTextStyle)
 
+        chipGroup.removeAllViews()
         chipGroup.addView(chip1)
         chipGroup.addView(chip2)
 
