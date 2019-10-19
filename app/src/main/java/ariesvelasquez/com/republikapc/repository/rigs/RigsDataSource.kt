@@ -78,6 +78,7 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
                 } else {
                     val error = NetworkState.error(task.exception?.message!!)
                     networkState.postValue(error)
+                    initialLoad.postValue(NetworkState.LOADED)
                     Timber.e(task.exception?.message!!)
                 }
             }
@@ -118,6 +119,7 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
             } else {
                 val error = NetworkState.error(task.exception?.message!!)
                 networkState.postValue(error)
+                initialLoad.postValue(NetworkState.LOADED)
                 Timber.e(task.exception?.message!!)
             }
         }

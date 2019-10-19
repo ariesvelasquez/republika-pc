@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@drawable/shape_bottom_sheet_dialog_rounded_top"
+    android:padding="@dimen/view_padding_2">
+    
+<!--    Signed In Layout -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayoutSignedIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        tools:visibility="visible">
+    
+        <ImageView
+            android:id="@+id/imageViewThumbnail"
+            android:layout_width="@dimen/icon_size_36"
+            android:layout_height="@dimen/icon_size_36"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_vector_parts" />
+    
+        <TextView
+            android:id="@+id/textViewDisplayName"
+            style="@style/TextAppearance.TileSecondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorDarkGray"
+            android:layout_marginStart="@dimen/view_padding"
+            app:layout_constraintStart_toEndOf="@+id/imageViewThumbnail"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Aries Velasquez" />
+    
+        <!-- Email-->
+        <TextView
+            android:id="@+id/textViewEmail"
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/view_padding"
+            android:textColor="@color/colorDarkGray"
+            app:layout_constraintTop_toBottomOf="@id/textViewDisplayName"
+            app:layout_constraintStart_toEndOf="@id/imageViewThumbnail"
+            tools:text="velasquezaries11@gmail.com"/>
+    
+        <!--    Sign Out Button-->
+        <ImageView
+            android:id="@+id/imageViewLogOut"
+            android:layout_width="@dimen/icon_size_24"
+            android:layout_height="@dimen/icon_size_24"
+            android:src="@drawable/ic_vector_logout"
+            app:layout_constraintBottom_toBottomOf="@+id/textViewEmail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textViewDisplayName" />
+        
+        <TextView
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_helper_dark"
+            android:text="logout"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/imageViewLogOut"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    
+        <Button
+            android:id="@+id/buttonCreateRig"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:layout_marginTop="@dimen/view_padding_4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewEmail"
+            android:text="@string/create_a_rig"/>
+    
+        <Button
+            android:id="@+id/buttonCreateItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="@string/create_a_part"
+            android:layout_marginBottom="@dimen/view_padding"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/buttonCreateRig"/>
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    
+<!--    Logged Out Layout-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayoutLoggedOutLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <TextView
+            style="@style/TextAppearance.TileTertiary"
+            android:id="@+id/textViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorDarkGray"
+            android:text="@string/term_and_condition_sign_in_agreement"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_in_with_google"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_vector_google_g"
+            android:layout_marginTop="@dimen/view_padding_2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    
+<!--    Terms and Policy-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/view_padding_2"
+        android:orientation="horizontal">
+    
+        <TextView
+            style="@style/TextAppearance.TileTertiary"
+            android:id="@+id/textViewPrivacyPolicy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/privacy_policy"
+            android:textStyle="bold"
+            android:textColor="@color/colorLightGray"/>
+    
+        <TextView
+            android:id="@+id/textViewSeperator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="•"
+            android:textColor="@color/colorLightGray"
+            android:layout_marginStart="@dimen/view_padding"
+            android:layout_marginEnd="@dimen/view_padding"/>
+    
+        <TextView
+            style="@style/TextAppearance.TileTertiary"
+            android:id="@+id/textViewTermsOfServices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/terms_of_service"
+            android:textStyle="bold"
+            android:textColor="@color/colorLightGray" />
+    </LinearLayout>
+    
+</LinearLayout>

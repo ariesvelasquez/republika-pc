@@ -15,6 +15,8 @@ import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.rigs.RigItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_rigs.view.*
 import timber.log.Timber
 
@@ -22,6 +24,8 @@ class RigsFragment : DashboardFragment() {
 
 
     private lateinit var rootView: View
+    private lateinit var adapter: RigItemsAdapter
+
 
     private var listener: OnFragmentInteractionListener? = null
 
@@ -43,6 +47,8 @@ class RigsFragment : DashboardFragment() {
         initSwipeToRefresh()
         initAdapter()
 
+        initRigList()
+
         return rootView
     }
 
@@ -57,7 +63,8 @@ class RigsFragment : DashboardFragment() {
     }
 
     override fun onUserLoggedOut() {
-
+//        dashboardViewModel
+        dashboardViewModel.cancelRigs()
     }
 
     override fun onUserLoggedIn() {
@@ -75,7 +82,7 @@ class RigsFragment : DashboardFragment() {
     }
 
     private fun initAdapter() {
-        val adapter = RigItemsAdapter {
+        adapter = RigItemsAdapter {
             dashboardViewModel.retryFeeds()
         }
 
@@ -88,11 +95,14 @@ class RigsFragment : DashboardFragment() {
 
         rootView.rigList.layoutManager = linearLayoutManager
         rootView.rigList.adapter = adapter
+    }
+
+    private fun initRigList() {
         dashboardViewModel.rigItems.observe(this, Observer<PagedList<RigItem>> {
-            Timber.e("Rigs ViewModel Observer: new items added size: %s", it.size)
             adapter.submitList(it)
         })
         dashboardViewModel.rigNetworkState.observe(this, Observer {
+            Timber.e("err: ${it.msg}")
             adapter.setNetworkState(it)
         })
     }

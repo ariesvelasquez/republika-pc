@@ -5,8 +5,14 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">#f5f5f5</item>
         <item name="colorPrimaryDark">#f5f5f5</item>
+        <item name="colorSecondary">#2962FF</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
+        
+        <item name="buttonStyle">@style/ButtonStyle</item>
+        
+        <item name="fontFamily">@font/roboto_mono_regular</item>
+        <item name="android:fontFamily">@font/roboto_mono_regular</item>
     </style>
 
     <!--android:fontFamily="sans-serif"           // roboto regular-->
@@ -59,6 +65,26 @@
         <item name="android:textSize">@dimen/font_size_paragraph_text</item>
         <item name="android:textColor">@color/colorDarkGray</item>
         <item name="fontFamily">@font/roboto_mono_bold</item>
+    </style>
+    
+    <style name="ButtonStyle" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+    
+    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/shape_bottom_sheet_dialog_rounded_top</item>
+    </style>
+    
+    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorDarkGray</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/colorWhite</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="bottomSheetStyle">@style/BottomSheet</item>
+        <item name="buttonStyle">@style/ButtonStyle</item>
     </style>
 
 </resources>

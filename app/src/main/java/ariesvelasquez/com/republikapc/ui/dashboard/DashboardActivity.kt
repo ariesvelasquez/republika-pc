@@ -1,6 +1,7 @@
 package ariesvelasquez.com.republikapc.ui.dashboard
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import androidx.viewpager.widget.ViewPager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.ui.BaseActivity
 import ariesvelasquez.com.republikapc.ui.auth.AuthActivity
+import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.DashboardBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rigs.RigsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
@@ -22,7 +24,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.main_toolbar.*
 
-class DashboardActivity : BaseActivity() {
+class DashboardActivity : BaseActivity(),
+    DashboardBottomSheetFragment.OnDashboardBottomSheetInteractionListener {
 
     private lateinit var viewPager: ViewPager
     private lateinit var toolbar: Toolbar
@@ -78,8 +81,7 @@ class DashboardActivity : BaseActivity() {
     private fun initOnClicks() {
         searchButton.setOnClickListener { launchActivity<SearchActivity> {} }
         hamburgerButton.setOnClickListener {
-            launchActivity<AuthActivity> {}
-            finish()
+
         }
     }
 
@@ -109,8 +111,8 @@ class DashboardActivity : BaseActivity() {
             R.id.navigation_rigs -> viewPager.currentItem = 1
 //            R.id.navigation_settings -> viewPager.currentItem = 2
             R.id.navigation_settings -> {
-                mFirebaseAuth.signOut()
-                mGoogleClient.signOut()
+                val bottomSheetFragment = DashboardBottomSheetFragment.newInstance()
+                bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.TAG)
             }
         }
         true
@@ -129,6 +131,25 @@ class DashboardActivity : BaseActivity() {
         override fun getCount(): Int {
             return 3
         }
+    }
+
+    override fun onCreateRigInvoked() {
+        // Launch Create Rig Activity
+    }
+
+    override fun onCreatePartInvoked() {
+
+    }
+
+    override fun onLoginInvoked() {
+        launchActivity<AuthActivity> {}
+        finish()
+    }
+
+    override fun onLogoutInvoked() {
+        mFirebaseAuth.signOut()
+        mGoogleClient.signOut()
+        Toast.makeText(this, "User has been signed out", Toast.LENGTH_SHORT).show()
     }
 
     /**

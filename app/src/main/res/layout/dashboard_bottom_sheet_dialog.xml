@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="@dimen/view_padding_2">
+    
+    <ImageView
+        android:id="@+id/imageViewThumbnail"
+        android:layout_width="@dimen/icon_size_36"
+        android:layout_height="@dimen/icon_size_36"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_vector_parts" />
+    
+    <TextView
+        android:id="@+id/textViewName"
+        style="@style/TextAppearance.TileSecondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/view_padding"
+        app:layout_constraintStart_toEndOf="@+id/imageViewThumbnail"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Aries Velasquez" />
+    
+<!--    Email-->
+    <TextView
+        android:id="@+id/textViewEmail"
+        style="@style/TextAppearance.TileTertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/view_padding"
+        app:layout_constraintTop_toBottomOf="@id/textViewName"
+        app:layout_constraintStart_toEndOf="@id/imageViewThumbnail"
+        tools:text="velasquezaries11@gmail.com"/>
+    
+<!--    Sign Out Button-->
+    <ImageView
+        android:id="@+id/imageViewLogOut"
+        android:layout_width="@dimen/icon_size_36"
+        android:layout_height="@dimen/icon_size_36"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:src="@drawable/ic_vector_duplicate" />
+    
+    <Button
+        android:id="@+id/buttonCreateRig"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:layout_marginTop="@dimen/view_padding_3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewEmail"
+        android:text="@string/create_a_rig"/>
+    
+    <Button
+        android:id="@+id/buttonCreateItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="@string/create_a_part"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonCreateRig"/>
+     
+</androidx.constraintlayout.widget.ConstraintLayout>

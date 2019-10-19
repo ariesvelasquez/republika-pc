@@ -12,6 +12,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+import timber.log.Timber
 
 class DashboardViewModel(private val repository: IDashboardRepository) : ViewModel() {
 
@@ -28,10 +29,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     val rigNetworkState = Transformations.switchMap(rigRepoResult) { it.networkState }!!
     val rigRefreshState = Transformations.switchMap(rigRepoResult) { it.refreshState }!!
 
-    private val _userModel = MutableLiveData<FirebaseUser>()
-    private val _isUserSignedIn = MutableLiveData<Boolean>()
-
-    val userModel = Transformations.map(_userModel) { it }
+    val userModel = MutableLiveData<FirebaseUser>()
     val isUserSignedIn = MutableLiveData<Boolean>()
 
     // FEEDS
@@ -55,14 +53,17 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     }
 
     fun showRigItems(): Boolean {
-
         this.isRigsInitialized.value = true
         return true
     }
 
+    fun cancelRigs() {
+        this.isRigsInitialized.value = false
+    }
+
     // USER
     fun setUser(firebaseUser: FirebaseUser) {
-        this._userModel.value = firebaseUser
+        this.userModel.value = firebaseUser
     }
 
     fun setIsUserSignedIn(isUserSignedIn: Boolean) {
