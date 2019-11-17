@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/rootBottomSheetCreator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/shape_bottom_sheet_dialog_rounded_top"
+    android:padding="@dimen/view_padding_2"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <EditText
+        android:id="@+id/editTextRigName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Potato Rig"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:textColorHint="@color/colorLightGray"
+        android:textColor="@color/colorDarkGray"
+        style="@style/TextAppearance.RigTitle"
+        android:inputType="textCapWords"
+        android:backgroundTint="@color/colorLightGray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    
+    <TextView
+        android:id="@+id/textViewLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_helper_dark"
+        style="@style/TextAppearance.RigTitle"
+        android:textSize="@dimen/font_size_page_title"
+        android:layout_marginTop="@dimen/view_padding"
+        android:text="Choose an awesome name for your new rig."
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editTextRigName"/>
+    
+    <Button
+        android:id="@+id/buttonNewRigCreated"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:text="Done"
+        android:textAllCaps="false"
+        android:layout_marginTop="@dimen/view_padding_4"
+        app:layout_constraintVertical_bias="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLabel" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

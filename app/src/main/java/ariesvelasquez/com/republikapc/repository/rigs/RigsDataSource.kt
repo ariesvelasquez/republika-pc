@@ -2,20 +2,18 @@ package ariesvelasquez.com.republikapc.repository.rigs
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.ItemKeyedDataSource
-import androidx.paging.PageKeyedDataSource
+import ariesvelasquez.com.republikapc.Const.OWNER_ID
 import ariesvelasquez.com.republikapc.Const.RIGS_ITEM_PER_PAGE
-import ariesvelasquez.com.republikapc.Const.UID_FIELD
-import ariesvelasquez.com.republikapc.model.rigs.RigItem
+import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import timber.log.Timber
 import java.io.IOException
 
-class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<String, RigItem>() {
+class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<String, Rig>() {
 
     private var initialQuery: Query
     private var lastVisible: DocumentSnapshot? = null
@@ -24,8 +22,10 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
 
     init {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
-//        initialQuery = rigsReference.whereEqualTo(UID, firebaseUser?.uid).limit(RIGS_ITEM_PER_PAGE)
-        initialQuery = rigsReference.orderBy("name", Query.Direction.ASCENDING).limit(RIGS_ITEM_PER_PAGE)
+        initialQuery = rigsReference.
+            whereEqualTo(OWNER_ID, firebaseUser?.uid).
+            limit(RIGS_ITEM_PER_PAGE)
+//        initialQuery = rigsReference.orderBy("name", Query.Direction.ASCENDING).limit(RIGS_ITEM_PER_PAGE)
     }
 
     /**
@@ -41,7 +41,7 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
 
     override fun loadInitial(
         params: LoadInitialParams<String>,
-        callback: LoadInitialCallback<RigItem>
+        callback: LoadInitialCallback<Rig>
     ) {
         // set network value to loading.
         networkState.postValue(NetworkState.LOADING)
@@ -50,7 +50,7 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
         Timber.e("loadInitial")
         try {
             initialQuery.get().addOnCompleteListener { task ->
-                val rigList = mutableListOf<RigItem>()
+                val rigList = mutableListOf<Rig>()
                 if (task.isSuccessful) {
                     Timber.e("task.isSuccessful")
 
@@ -58,7 +58,7 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
                     Timber.e("querySnapshot size " + querySnapshot?.size())
 
                     for (document in querySnapshot!!) {
-                        val rigItem = document.toObject(RigItem::class.java)
+                        val rigItem = document.toObject(Rig::class.java)
                         rigList.add(rigItem)
                     }
 
@@ -90,18 +90,18 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
 
     }
 
-    override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<RigItem>) {
+    override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<Rig>) {
         // set network value to loading.
         networkState.postValue(NetworkState.LOADING)
 
         val nextQuery: Query = initialQuery.startAfter(lastVisible!!)
         nextQuery.get().addOnCompleteListener { task ->
-            val nextRigList = mutableListOf<RigItem>()
+            val nextRigList = mutableListOf<Rig>()
             if (task.isSuccessful) {
                 val querySnapshot = task.result
                 if (!lastPageReached) {
                     for (document in querySnapshot!!) {
-                        val rigItem = document.toObject(RigItem::class.java)
+                        val rigItem = document.toObject(Rig::class.java)
                         nextRigList.add(rigItem)
                     }
                     callback.onResult(nextRigList)
@@ -125,9 +125,9 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
         }
     }
 
-    override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<RigItem>) {
+    override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<Rig>) {
 
     }
 
-    override fun getKey(item: RigItem): String = "something"
+    override fun getKey(item: Rig): String = "something"
 }

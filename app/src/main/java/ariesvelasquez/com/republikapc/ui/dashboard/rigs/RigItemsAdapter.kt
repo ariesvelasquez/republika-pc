@@ -1,18 +1,17 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.rigs
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
-import ariesvelasquez.com.republikapc.model.feeds.FeedItem
-import ariesvelasquez.com.republikapc.model.rigs.RigItem
+import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.NetworkStateItemViewHolder
 
-class RigItemsAdapter(
-    private val retryCallback: () -> Unit)
-    : PagedListAdapter<RigItem, RecyclerView.ViewHolder>(POST_COMPARATOR) {
+class RigItemsAdapter(private val retryCallback: () -> Unit, val onClickCallback: (v: View, item: Rig) -> Unit)
+    : PagedListAdapter<Rig, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
 
@@ -38,7 +37,7 @@ class RigItemsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.feeds_recyclerview_item -> RigItemViewHolder.create(parent)
+            R.layout.feeds_recyclerview_item -> RigItemViewHolder.create(parent, onClickCallback)
             R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
@@ -76,15 +75,15 @@ class RigItemsAdapter(
 
     companion object {
         private val PAYLOAD_SCORE = Any()
-        val POST_COMPARATOR = object : DiffUtil.ItemCallback<RigItem>() {
-            override fun areContentsTheSame(oldItem: RigItem, newItem: RigItem): Boolean =
-                oldItem == newItem
+        val POST_COMPARATOR = object : DiffUtil.ItemCallback<Rig>() {
+            override fun areContentsTheSame(old: Rig, aNew: Rig): Boolean =
+                old == aNew
 
-            override fun areItemsTheSame(oldItem: RigItem, newItem: RigItem): Boolean =
-                oldItem.name == newItem.name
+            override fun areItemsTheSame(old: Rig, aNew: Rig): Boolean =
+                old.name == aNew.name
 
-            override fun getChangePayload(oldItem: RigItem, newItem: RigItem): Any? {
-                return if (sameExceptScore(oldItem, newItem)) {
+            override fun getChangePayload(old: Rig, aNew: Rig): Any? {
+                return if (sameExceptScore(old, aNew)) {
                     PAYLOAD_SCORE
                 } else {
                     null
@@ -92,11 +91,11 @@ class RigItemsAdapter(
             }
         }
 
-        private fun sameExceptScore(oldItem: RigItem, newItem: RigItem): Boolean {
+        private fun sameExceptScore(old: Rig, aNew: Rig): Boolean {
             // DON'T do this copy in a real app, it is just convenient here for the demo :)
             // because reddit randomizes scores, we want to pass it as a payload to minimize
             // UI updates between refreshes
-//            return oldItem.copy(score = newItem.score) == newItem
+//            return old.copy(score = aNew.score) == aNew
             return false
         }
     }

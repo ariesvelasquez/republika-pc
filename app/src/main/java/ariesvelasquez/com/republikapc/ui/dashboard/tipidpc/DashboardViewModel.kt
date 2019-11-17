@@ -1,17 +1,9 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
 import androidx.lifecycle.*
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
-import ariesvelasquez.com.republikapc.Const.RIGS_COLLECTION
-import ariesvelasquez.com.republikapc.model.rigs.RigItem
+import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.repository.dashboard.IDashboardRepository
-import ariesvelasquez.com.republikapc.repository.rigs.RigDataSourceFactory
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
 import timber.log.Timber
 
 class DashboardViewModel(private val repository: IDashboardRepository) : ViewModel() {
@@ -31,6 +23,8 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
 
     val userModel = MutableLiveData<FirebaseUser>()
     val isUserSignedIn = MutableLiveData<Boolean>()
+
+    val createRigNetworkState = MutableLiveData<NetworkState>()
 
     // FEEDS
     fun refreshFeeds() {
@@ -68,5 +62,18 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
 
     fun setIsUserSignedIn(isUserSignedIn: Boolean) {
         this.isUserSignedIn.value = isUserSignedIn
+    }
+
+    // Create Rig
+    fun createRig(rigName: String) {
+        createRigNetworkState.postValue(NetworkState.LOADING)
+        repository.createRig(this.userModel.value!!, rigName).addOnSuccessListener {
+            Timber.e("LOADED")
+            createRigNetworkState.postValue(NetworkState.LOADED)
+        }.addOnFailureListener {
+            Timber.e("ERROR")
+            val error = NetworkState.error(it.message)
+            createRigNetworkState.postValue(error)
+        }
     }
 }

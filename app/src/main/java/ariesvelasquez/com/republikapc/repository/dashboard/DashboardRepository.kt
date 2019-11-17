@@ -6,15 +6,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.Config
 import androidx.paging.toLiveData
+import ariesvelasquez.com.republikapc.Const.RIGS_COLLECTION
 import ariesvelasquez.com.republikapc.api.TipidPCApi
 import ariesvelasquez.com.republikapc.db.TipidPCDatabase
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
-import ariesvelasquez.com.republikapc.model.rigs.RigItem
+import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.Listing
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.repository.rigs.RigDataSourceFactory
-import com.google.firebase.firestore.CollectionReference
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,7 +26,7 @@ import java.util.concurrent.Executor
 
 class DashboardRepository(
     val db: TipidPCDatabase,
-    private val rigCollectionReference: CollectionReference,
+    private val firestore: FirebaseFirestore,
     private val tipidPCApi: TipidPCApi,
     private val ioExecutor: Executor
 ) : IDashboardRepository {
@@ -64,7 +67,10 @@ class DashboardRepository(
                     networkState.value = NetworkState.error(t.message)
                 }
 
-                override fun onResponse(call: Call<FeedItemsResource>, response: Response<FeedItemsResource>) {
+                override fun onResponse(
+                    call: Call<FeedItemsResource>,
+                    response: Response<FeedItemsResource>
+                ) {
                     ioExecutor.execute {
                         db.runInTransaction {
                             db.items().nukeFeedItems()
@@ -119,16 +125,18 @@ class DashboardRepository(
         )
     }
 
-    override fun rigs(): Listing<RigItem> {
-        val sourceFactory = RigDataSourceFactory(rigCollectionReference)
+    override fun rigs(): Listing<Rig> {
+        val sourceFactory = RigDataSourceFactory(firestore.collection(RIGS_COLLECTION))
 
         // We use toLiveData Kotlin ext. function here, you could also use LivePagedListBuilder
         val livePagedList = sourceFactory.toLiveData(
             // we use Config Kotlin ext. function here, could also use PagedList.Config.Builder
             config = Config(
-            pageSize = 10,
-            enablePlaceholders = false,
-            initialLoadSizeHint = 10 * 2))
+                pageSize = 10,
+                enablePlaceholders = false,
+                initialLoadSizeHint = 10 * 2
+            )
+        )
 
         val refreshState = Transformations.switchMap(sourceFactory.sourceLiveData) {
             it.initialLoad
@@ -139,7 +147,7 @@ class DashboardRepository(
                 it.networkState
             },
             retry = {
-//                sourceFactory.sourceLiveData.value?.retryAllFailed()
+                //                sourceFactory.sourceLiveData.value?.retryAllFailed()
             },
             refresh = {
                 sourceFactory.sourceLiveData.value?.invalidate()
@@ -148,4 +156,50 @@ class DashboardRepository(
         )
     }
 
+    override fun createRig(firebaseUser: FirebaseUser, rigName: String): Task<Void> {
+        // Write a new Rig with the users data.
+        val createRigLiveData = MutableLiveData<NetworkState>()
+        createRigLiveData.postValue(NetworkState.LOADING)
+
+        val rigRef = firestore.collection(RIGS_COLLECTION).document()
+        val newRigId = rigRef.id
+
+        val newRigMap = hashMapOf<String, Any?>()
+        newRigMap["name"] = rigName
+        newRigMap["id"] = newRigId
+        newRigMap["owner_id"] = firebaseUser.uid
+        newRigMap["owner_name"] = firebaseUser.displayName
+        newRigMap["owner_thumb"] = firebaseUser.photoUrl.toString()
+
+        return rigRef.set(newRigMap)
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

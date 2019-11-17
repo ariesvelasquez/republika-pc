@@ -8,24 +8,18 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.PagerSnapHelper
-import androidx.recyclerview.widget.SnapHelper
 import ariesvelasquez.com.republikapc.R
-import ariesvelasquez.com.republikapc.model.rigs.RigItem
+import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
-import com.google.firebase.FirebaseApp
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_rigs.view.*
 import timber.log.Timber
 
 class RigsFragment : DashboardFragment() {
 
-
     private lateinit var rootView: View
     private lateinit var adapter: RigItemsAdapter
-
 
     private var listener: OnFragmentInteractionListener? = null
 
@@ -59,7 +53,7 @@ class RigsFragment : DashboardFragment() {
 
     override fun onResume() {
         super.onResume()
-        Timber.e("OnResume ")
+        Timber.e("OnResume")
     }
 
     override fun onUserLoggedOut() {
@@ -82,9 +76,16 @@ class RigsFragment : DashboardFragment() {
     }
 
     private fun initAdapter() {
-        adapter = RigItemsAdapter {
-            dashboardViewModel.retryFeeds()
-        }
+        adapter = RigItemsAdapter ({ dashboardViewModel.refreshRigs() }, { v, item ->
+            when (v.id) {
+                R.id.title -> Timber.e("Titleeee")
+                R.id.linearLayoutParts ->  {
+                    launchItemsActivity(item)
+                    Timber.e("Parts name " + item.name)
+                }
+                else -> Timber.e("item")
+            }
+        })
 
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
@@ -97,8 +98,12 @@ class RigsFragment : DashboardFragment() {
         rootView.rigList.adapter = adapter
     }
 
+    private fun launchItemsActivity(item: Rig) {
+
+    }
+
     private fun initRigList() {
-        dashboardViewModel.rigItems.observe(this, Observer<PagedList<RigItem>> {
+        dashboardViewModel.rigItems.observe(this, Observer<PagedList<Rig>> {
             adapter.submitList(it)
         })
         dashboardViewModel.rigNetworkState.observe(this, Observer {

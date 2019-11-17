@@ -1,5 +1,6 @@
 package ariesvelasquez.com.republikapc.ui.dashboard
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -7,28 +8,44 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import ariesvelasquez.com.republikapc.R
+import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.BaseActivity
 import ariesvelasquez.com.republikapc.ui.auth.AuthActivity
-import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.DashboardBottomSheetFragment
+import ariesvelasquez.com.republikapc.ui.create.rig.CreateRigActivity
+import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.console.ConsoleBottomSheetFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.createrig.RigCreatorBottomSheetFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.rigs.RigListFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rigs.RigsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
 import ariesvelasquez.com.republikapc.ui.search.SearchActivity
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
+import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.main_toolbar.*
+import timber.log.Timber
 
 class DashboardActivity : BaseActivity(),
-    DashboardBottomSheetFragment.OnDashboardBottomSheetInteractionListener {
+    TipidPCFragment.OnTPCFragmentListener,
+    ConsoleBottomSheetFragment.ConsoleBottomSheetInteractionListener,
+    RigCreatorBottomSheetFragment.RigCreatorBottomSheetInteractionListener,
+    RigListFragment.OnRigListFragmentListener {
 
     private lateinit var viewPager: ViewPager
     private lateinit var toolbar: Toolbar
+
+    // Create Rig Bottom Sheet
+    private lateinit var createRigBottomSheet : RigCreatorBottomSheetFragment
 
     private val viewModel: DashboardViewModel by viewModels {
         object : ViewModelProvider.Factory {
@@ -50,20 +67,10 @@ class DashboardActivity : BaseActivity(),
 
         initOnClicks()
 
+        // Observe Rig Creation State
+        handleRigCreationState()
+
         textViewToolbarTitle.setOnClickListener { launchActivity<SearchActivity>() }
-
-
-//        // Always cast your custom Toolbar here, and set it as the ActionBar.
-//        Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(tb);
-//
-//        // Get the ActionBar here to configure the way it behaves.
-//        final ActionBar ab = getSupportActionBar();
-//        //ab.setHomeAsUpIndicator(R.drawable.ic_menu); // set a custom icon for the default home button
-//        ab.setDisplayShowHomeEnabled(true); // show or hide the default home button
-//        ab.setDisplayHomeAsUpEnabled(true);
-//        ab.setDisplayShowCustomEnabled(true); // enable overriding the default toolbar layout
-//        ab.setDisplayShowTitleEnabled(false); // disable the default title element here (for centered title)
 
         viewPager = findViewById(R.id.view_pager)
         val viewPagerFragmentAdapter =
@@ -76,6 +83,30 @@ class DashboardActivity : BaseActivity(),
         bottomNavigationView = findViewById(R.id.navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemClickedListener)
         initTitle()
+    }
+
+    private fun handleRigCreationState() {
+        viewModel.createRigNetworkState.observe(this, Observer {
+            when (it) {
+                NetworkState.LOADED -> {
+                    createRigBottomSheet.dismiss()
+                    // Todo Show Success dialog
+                    showCreationSuccessDialog()
+                }
+                NetworkState.LOADING -> {}
+                else -> Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun showCreationSuccessDialog() {
+        val successDialog = AlertDialog.Builder(this)
+            .setMessage("New Rig has been created")
+            .setOnCancelListener {  }
+
+        navigation.snack(R.string.rig_created_success) {
+
+        }
     }
 
     private fun initOnClicks() {
@@ -96,8 +127,26 @@ class DashboardActivity : BaseActivity(),
     override fun onUserLoggedIn(user: FirebaseUser) {
         viewModel.setIsUserSignedIn(true)
         viewModel.setUser(user)
-
         // Handle UI Changes when logged in
+    }
+
+    override fun onTPCItemClicked(feedItem: FeedItem) {
+
+    }
+
+    override fun onAddedToRig(rigId: String) {
+
+    }
+
+    private fun displayRigListFragment() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        val prev = supportFragmentManager.findFragmentByTag(RigListFragment.TAG)
+        if (prev != null) {
+            fragmentTransaction.remove(prev)
+        }
+        fragmentTransaction.addToBackStack(null)
+        val dialogFragment = RigListFragment.newInstance() //here MyDialog is my custom dialog
+        dialogFragment.show(fragmentTransaction, RigListFragment.TAG)
     }
 
     // Bottom Navigation Setup
@@ -111,7 +160,7 @@ class DashboardActivity : BaseActivity(),
             R.id.navigation_rigs -> viewPager.currentItem = 1
 //            R.id.navigation_settings -> viewPager.currentItem = 2
             R.id.navigation_settings -> {
-                val bottomSheetFragment = DashboardBottomSheetFragment.newInstance()
+                val bottomSheetFragment = ConsoleBottomSheetFragment.newInstance()
                 bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.TAG)
             }
         }
@@ -134,7 +183,13 @@ class DashboardActivity : BaseActivity(),
     }
 
     override fun onCreateRigInvoked() {
-        // Launch Create Rig Activity
+        // Launch Create Rig Dialog
+        createRigBottomSheet = RigCreatorBottomSheetFragment.newInstance()
+        createRigBottomSheet.show(supportFragmentManager, createRigBottomSheet.TAG)
+    }
+
+    override fun onNewRigCreated(rigName: String) {
+        viewModel.createRig(rigName)
     }
 
     override fun onCreatePartInvoked() {

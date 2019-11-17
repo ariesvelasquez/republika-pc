@@ -117,7 +117,7 @@ open class DefaultServiceLocator(val app: Application) : ServiceLocator {
     override fun getDashboardRepository(): IDashboardRepository {
         return DashboardRepository(
             db = db,
-            rigCollectionReference = firestoreRef.collection(RIGS_COLLECTION),
+            firestore = firestoreRef,
             tipidPCApi = getTipidPCApi(),
             ioExecutor = getDiskIOExecutor()
         )

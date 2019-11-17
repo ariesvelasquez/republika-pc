@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
+    app:contentInsetStart="0dp"
+    android:background="@color/colorSmoke"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+    
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="4dp">
+        
+        <!-- This is a centered title -->
+        <TextView
+            android:id="@+id/textViewToolbarTitle"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginEnd="?attr/actionBarSize"
+            android:layout_marginStart="?attr/actionBarSize"
+            android:layout_gravity="start|center"
+            android:gravity="start|center"
+            android:visibility="visible"
+            android:singleLine="true"
+            android:textAlignment="viewStart"
+            android:textColor="@color/text_helper_dark"
+            android:textColorHint="@color/colorLightGray"
+            style="@style/TextAppearance.TilePrimary"
+            tools:text="toolbart"/>
+        
+        <!-- This is a custom left side button -->
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginEnd="?attr/actionBarSize"
+            android:layout_gravity="start|center_vertical"
+            android:visibility="visible"
+            android:src="@drawable/ic_vector_back"
+            style="@style/Widget.AppCompat.ActionButton" />
+        
+        <!-- This is a custom right side button -->
+        <ImageButton
+            android:id="@+id/filterButton"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/ic_vector_filter"
+            android:visibility="gone"
+            style="@style/Widget.AppCompat.ActionButton"/>
+    
+    </FrameLayout>
+</androidx.appcompat.widget.Toolbar>

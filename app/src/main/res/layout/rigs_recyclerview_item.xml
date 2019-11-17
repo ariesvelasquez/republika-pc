@@ -55,10 +55,7 @@
         
         <LinearLayout
             android:id="@+id/linearLayoutParts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
+            style="@style/RigStat"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,10 +81,7 @@
         
         <LinearLayout
             android:id="@+id/linearLayoutCopies"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
+            style="@style/RigStat"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@id/linearLayoutParts"
@@ -114,10 +108,7 @@
         
         <LinearLayout
             android:id="@+id/linearLayoutViews"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
+            style="@style/RigStat"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@id/linearLayoutCopies"
@@ -144,10 +135,7 @@
         
         <LinearLayout
             android:id="@+id/linearLayoutQRCode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
+            style="@style/RigStat"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@id/linearLayoutViews"

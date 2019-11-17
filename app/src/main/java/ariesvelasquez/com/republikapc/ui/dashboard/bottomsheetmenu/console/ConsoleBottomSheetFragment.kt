@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu
+package ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.console
 
 import android.content.Context
 import android.os.Bundle
@@ -13,14 +13,13 @@ import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.fragment_dashboard_bottom_sheet.view.*
 import timber.log.Timber
 
 
-class DashboardBottomSheetFragment : BottomSheetDialogFragment() {
+class ConsoleBottomSheetFragment : BottomSheetDialogFragment() {
 
-    val TAG = "DashboardBottomSheetFragment"
+    val TAG = "ConsoleBottomSheetFragment"
 
     val dashboardViewModel: DashboardViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
@@ -35,7 +34,7 @@ class DashboardBottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var rootView: View
 
-    private var listener: OnDashboardBottomSheetInteractionListener? = null
+    private var listener: ConsoleBottomSheetInteractionListener? = null
 
     override fun getTheme(): Int = R.style.BottomSheetDialogTheme
 
@@ -57,7 +56,6 @@ class DashboardBottomSheetFragment : BottomSheetDialogFragment() {
 
         // Check for User Status
         dashboardViewModel.isUserSignedIn.observe(this, Observer { isUserLoggedIn ->
-            Timber.e("DashboardBottomSheet isUserLoggedIn " + isUserLoggedIn)
             if (isUserLoggedIn) {
                 setupLoggedInLayout()
                 // Todo: For improvement, implement databinding
@@ -99,10 +97,10 @@ class DashboardBottomSheetFragment : BottomSheetDialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnDashboardBottomSheetInteractionListener) {
+        if (context is ConsoleBottomSheetInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException("$context must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement ConsoleBottomSheetInteractionListener")
         }
     }
 
@@ -122,7 +120,7 @@ class DashboardBottomSheetFragment : BottomSheetDialogFragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface OnDashboardBottomSheetInteractionListener {
+    interface ConsoleBottomSheetInteractionListener {
         fun onCreateRigInvoked()
         fun onCreatePartInvoked()
         fun onLogoutInvoked()
@@ -133,7 +131,7 @@ class DashboardBottomSheetFragment : BottomSheetDialogFragment() {
 
         @JvmStatic
         fun newInstance() =
-            DashboardBottomSheetFragment().apply {
+            ConsoleBottomSheetFragment().apply {
                 arguments = Bundle().apply {
 
                 }

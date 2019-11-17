@@ -19,7 +19,7 @@ import timber.log.Timber
 
 class TipidPCFragment : DashboardFragment() {
 
-    private var listener: OnFragmentInteractionListener? = null
+    private var listener: OnTPCFragmentListener? = null
 
     private lateinit var rootView: View
 
@@ -52,6 +52,8 @@ class TipidPCFragment : DashboardFragment() {
         }
         rootView.list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rootView.list.adapter = adapter
+
+        // Init Items
         dashboardViewModel.feedItems.observe(this, Observer<PagedList<FeedItem>> {
             Timber.e("Feeds ViewModel Observer: new items added size: %s", it.size)
             adapter.submitList(it)
@@ -86,10 +88,10 @@ class TipidPCFragment : DashboardFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
+        if (context is OnTPCFragmentListener) {
             listener = context
         } else {
-//            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnTPCFragmentListener")
         }
     }
 
@@ -99,8 +101,8 @@ class TipidPCFragment : DashboardFragment() {
     }
 
 
-    interface OnFragmentInteractionListener {
-        fun onFragmentInteraction(uri: Uri)
+    interface OnTPCFragmentListener {
+        fun onTPCItemClicked(feedItem: FeedItem)
     }
 
     companion object {

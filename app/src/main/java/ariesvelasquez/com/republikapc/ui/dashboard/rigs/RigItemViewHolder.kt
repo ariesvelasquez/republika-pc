@@ -4,17 +4,18 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
-import ariesvelasquez.com.republikapc.model.rigs.RigItem
+import ariesvelasquez.com.republikapc.model.rigs.Rig
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
-class RigItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, item: Rig) -> Unit) : RecyclerView.ViewHolder(view) {
 
     private var chipGroup = view.findViewById<ChipGroup>(R.id.chipGroupHighlights)
-    private var item : RigItem? = null
+    private var item : Rig? = null
 
     private var context = view.context
     private val chipWidth: Float by lazy {
@@ -23,18 +24,21 @@ class RigItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     }
 
     init {
-        view.setOnClickListener {
-//            item?.itemurl?.let { url ->
-//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-//                view.context.startActivity(intent)
-//            }
-        }
+        view.setOnClickListener {}
     }
 
-    fun bind(item: RigItem?) {
+    fun bind(item: Rig?) {
         this.item = item
 
+        // Init Views
+        val titleView = view.findViewById<TextView>(R.id.title)
+        val partsView = view.findViewById<LinearLayout>(R.id.linearLayoutParts)
 
+        // Set title
+        titleView.text = item?.name
+
+        // Parts Click
+        partsView.setOnClickListener { onClickCallback.invoke(it, item!!) }
 
         // Add Dummy Chips
         val chip1 = Chip(view.context)
@@ -78,14 +82,14 @@ class RigItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     }
 
     companion object {
-        fun create(parent: ViewGroup): RigItemViewHolder {
+        fun create(parent: ViewGroup, callback: (v: View, item: Rig) -> Unit): RigItemViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.rigs_recyclerview_item, parent, false)
-            return RigItemViewHolder(view)
+            return RigItemViewHolder(view, callback)
         }
     }
 
-    fun updateScore(item: RigItem?) {
+    fun updateScore(item: Rig?) {
         this.item = item
 //        score.text = "${item?.score ?: 0}"
     }
