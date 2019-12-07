@@ -4,12 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 
-class FeedsItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class FeedsItemViewHolder(view: View, private val onClickCallback: (v: View, item: FeedItem) -> Unit) : RecyclerView.ViewHolder(view) {
 
+    private val mainView: ConstraintLayout = view.findViewById(R.id.constraintLayoutParent)
     private val title: TextView = view.findViewById(R.id.title)
     private val sellerName: TextView = view.findViewById(R.id.textViewSellerName)
     private val page: TextView = view.findViewById(R.id.textViewItemDescription)
@@ -18,6 +20,7 @@ class FeedsItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     init {
         view.setOnClickListener {
+
 //            item?.itemurl?.let { url ->
 //                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
 //                view.context.startActivity(intent)
@@ -25,12 +28,17 @@ class FeedsItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    fun bind(item: FeedItem?) {
+    fun bind(item: FeedItem) {
         this.item = item
-        title.text = item?.title ?: "loading"
-        sellerName.text = item?.seller
-        price.text = item?.price
-        page.text = item?.page?.toString()
+        title.text = item.title ?: "loading"
+        sellerName.text = item.seller
+        price.text = item.price
+        page.text = item.page.toString()
+
+        mainView.setOnClickListener {
+            onClickCallback.invoke(it, item)
+        }
+
 //        subtitle.text = itemView.context.resources.getString(R.string.post_subtitle,
 //            post?.author ?: "unknown")
 //        score.text = "${post?.score ?: 0}"
@@ -47,10 +55,10 @@ class FeedsItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     companion object {
-        fun create(parent: ViewGroup): FeedsItemViewHolder {
+        fun create(parent: ViewGroup, onClickCallback: (v: View, item: FeedItem) -> Unit): FeedsItemViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.feeds_recyclerview_item, parent, false)
-            return FeedsItemViewHolder(view)
+            return FeedsItemViewHolder(view, onClickCallback)
         }
     }
 

@@ -18,6 +18,7 @@ import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.BaseActivity
 import ariesvelasquez.com.republikapc.ui.auth.AuthActivity
 import ariesvelasquez.com.republikapc.ui.create.rig.CreateRigActivity
+import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.addtorig.AddToRigBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.console.ConsoleBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.createrig.RigCreatorBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rigs.RigListFragment
@@ -31,6 +32,7 @@ import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.main_toolbar.*
 import timber.log.Timber
@@ -39,6 +41,7 @@ class DashboardActivity : BaseActivity(),
     TipidPCFragment.OnTPCFragmentListener,
     ConsoleBottomSheetFragment.ConsoleBottomSheetInteractionListener,
     RigCreatorBottomSheetFragment.RigCreatorBottomSheetInteractionListener,
+    AddToRigBottomSheetFragment.AddToRigBottomSheetFragmentListener,
     RigListFragment.OnRigListFragmentListener {
 
     private lateinit var viewPager: ViewPager
@@ -130,10 +133,6 @@ class DashboardActivity : BaseActivity(),
         // Handle UI Changes when logged in
     }
 
-    override fun onTPCItemClicked(feedItem: FeedItem) {
-
-    }
-
     override fun onAddedToRig(rigId: String) {
 
     }
@@ -186,6 +185,12 @@ class DashboardActivity : BaseActivity(),
         // Launch Create Rig Dialog
         createRigBottomSheet = RigCreatorBottomSheetFragment.newInstance()
         createRigBottomSheet.show(supportFragmentManager, createRigBottomSheet.TAG)
+    }
+
+    override fun onTPCItemClicked(feedItem: FeedItem) {
+        val rawFeedItem = Gson().toJson(feedItem)
+        val fragment = AddToRigBottomSheetFragment.newInstance(rawFeedItem)
+        fragment.show(supportFragmentManager, fragment.TAG)
     }
 
     override fun onNewRigCreated(rigName: String) {

@@ -47,9 +47,12 @@ class TipidPCFragment : DashboardFragment() {
     }
 
     private fun initAdapter() {
-        val adapter = FeedItemsAdapter {
-            dashboardViewModel.retryFeeds()
+        val adapter = FeedItemsAdapter({ dashboardViewModel.retryFeeds() }) { view, feedItem ->
+            Timber.e("Clicked Feed Item " + feedItem.title)
+            listener?.onTPCItemClicked(feedItem)
         }
+
+
         rootView.list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rootView.list.adapter = adapter
 

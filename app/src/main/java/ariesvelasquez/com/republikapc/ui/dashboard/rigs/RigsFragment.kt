@@ -76,7 +76,9 @@ class RigsFragment : DashboardFragment() {
     }
 
     private fun initAdapter() {
-        adapter = RigItemsAdapter ({ dashboardViewModel.refreshRigs() }, { v, item ->
+        adapter = RigItemsAdapter (
+            RigItemsAdapter.SHOW_RIGS_VIEW_TYPE,
+            { dashboardViewModel.refreshRigs() }) { v, item ->
             when (v.id) {
                 R.id.title -> Timber.e("Titleeee")
                 R.id.linearLayoutParts ->  {
@@ -85,7 +87,7 @@ class RigsFragment : DashboardFragment() {
                 }
                 else -> Timber.e("item")
             }
-        })
+        }
 
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL

@@ -1,16 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/rootBottomSheetCreator"
+<androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/rootBottomSheetCreator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/shape_bottom_sheet_dialog_rounded_top"
     android:padding="@dimen/view_padding_2"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    
+    <TextView
+        android:id="@+id/textViewItemLabel"
+        style="@style/TextAppearance.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorGray"
+        android:text="Item Details:"
+        app:layout_constraintBottom_toTopOf="@id/textViewItemName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    
+    <TextView
+        android:id="@+id/textViewItemName"
+        style="@style/TextAppearance.RigTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorDarkGray"
+        android:layout_marginTop="@dimen/view_padding_2"
+        app:layout_constraintTop_toBottomOf="@id/textViewItemLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Ryzen 2600x" />
+    
+    <TextView
+        android:id="@+id/textViewPrice"
+        style="@style/TextAppearance.TilePrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/view_padding"
+        android:paddingBottom="@dimen/view_padding"
+        android:paddingStart="@dimen/view_padding_2"
+        android:paddingEnd="@dimen/view_padding_2"
+        android:textStyle="bold"
+        android:textColor="@color/text_tpc_tile_description"
+        android:layout_marginTop="@dimen/view_padding_3"
+        android:background="@drawable/shape_rectangle_rounded_solid"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintTop_toBottomOf="@id/textViewSellerNameAndDate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="P6700"/>
+    
+    <TextView
+        android:id="@+id/textViewSellerNameAndDate"
+        style="@style/TextAppearance.TileTertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/view_half_padding"
+        tools:text="Aries Velasquez . 2 Mins ago"
+        android:textColor="@color/colorGray"
+        app:layout_constraintTop_toBottomOf="@id/textViewItemName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    
+    <TextView
+        android:id="@+id/textViewRigLabel"
+        style="@style/TextAppearance.Caption"
+        android:layout_marginTop="@dimen/view_padding_3"
+        android:textColor="@color/colorGray"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textViewPrice"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Add To Rig:"/>
     
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewRigList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/view_padding_2"
+        app:layout_constraintTop_toBottomOf="@id/textViewRigLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

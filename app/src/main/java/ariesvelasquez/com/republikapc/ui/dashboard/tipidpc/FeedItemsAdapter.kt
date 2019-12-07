@@ -1,5 +1,6 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -9,14 +10,16 @@ import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
 
 class FeedItemsAdapter(
-    private val retryCallback: () -> Unit)
+    private val retryCallback: () -> Unit,
+    private val onClickCallback: (v: View, item: FeedItem) -> Unit
+)
     : PagedListAdapter<FeedItem, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
-            R.layout.feeds_recyclerview_item -> (holder as FeedsItemViewHolder).bind(getItem(position))
+            R.layout.feeds_recyclerview_item -> (holder as FeedsItemViewHolder).bind(getItem(position)!!)
             R.layout.network_state_item -> (holder as NetworkStateItemViewHolder).bindTo(
                 networkState)
         }
@@ -36,7 +39,7 @@ class FeedItemsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.feeds_recyclerview_item -> FeedsItemViewHolder.create(parent)
+            R.layout.feeds_recyclerview_item -> FeedsItemViewHolder.create(parent, onClickCallback)
             R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
