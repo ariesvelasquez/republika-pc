@@ -1,18 +1,24 @@
 package ariesvelasquez.com.republikapc.model.rigs
 
+import com.google.firebase.firestore.ServerTimestamp
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 data class Rig(
     @SerializedName("name")
     var name: String = "",
     @SerializedName("id")
     var id: String = "",
-    @SerializedName("owner_id")
+    @SerializedName("ownerId")
     var ownerId: String = "",
-    @SerializedName("owner_name")
+    @SerializedName("ownerName")
     var ownerName: String = "",
-    @SerializedName("owner_thumb")
-    var ownerThumb: String = ""
+    @SerializedName("ownerThumb")
+    var ownerThumb: String = "",
+    @SerializedName("itemCount")
+    var itemCount: Int = -1,
+    @ServerTimestamp
+    var date: Date? = null
 //    @ServerTimestamp
 //    var date: Date? = null
 )

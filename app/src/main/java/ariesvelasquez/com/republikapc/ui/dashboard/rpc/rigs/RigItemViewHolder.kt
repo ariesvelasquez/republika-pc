@@ -1,9 +1,11 @@
-package ariesvelasquez.com.republikapc.ui.dashboard.rigs
+package ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs
 
+import android.annotation.SuppressLint
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +13,9 @@ import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, item: Rig) -> Unit) : RecyclerView.ViewHolder(view) {
 
@@ -27,22 +32,36 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
         view.setOnClickListener {}
     }
 
+    @SuppressLint("SetTextI18n")
     fun bind(item: Rig?) {
         this.item = item
 
         // Init Views
         val titleView = view.findViewById<TextView>(R.id.title)
         val partsView = view.findViewById<LinearLayout>(R.id.linearLayoutParts)
+        val countView = view.findViewById<TextView>(R.id.textViewItemCount)
+        val viewAllView = view.findViewById<TextView>(R.id.textViewViewAllParts)
+        val dateView = view.findViewById<TextView>(R.id.textViewDate)
+        val imageViewAll = view.findViewById<ImageView>(R.id.imageViewViewAllParts)
 
         // Set title
         titleView.text = item?.name
+        // Item Count
+        countView.text = item?.itemCount.toString()
+        // Date
+        val dateFormat = SimpleDateFormat.getDateInstance(DateFormat.MEDIUM, Locale.US)
+        val creationDate = dateFormat.format(item?.date)
+        dateView.text = "${context.getString(R.string.created_at_)} $creationDate"
 
         // Parts Click
         partsView.setOnClickListener { onClickCallback.invoke(it, item!!) }
+        viewAllView.setOnClickListener { onClickCallback.invoke(it, item!!) }
+        viewAllView.setOnClickListener { onClickCallback.invoke(it, item!!) }
+        imageViewAll.setOnClickListener { onClickCallback.invoke(it, item!!) }
 
         // Add Dummy Chips
         val chip1 = Chip(view.context)
-        chip1.text = "Ryzen 5 1600x"
+        chip1.text = "XXXXXXXXXXXXX"
 //        chip1.chipIcon = ContextCompat.getDrawable(view.context, R.drawable.ic_vector_star)
         chip1.chipStrokeWidth = chipWidth
         chip1.setChipStrokeColorResource(R.color.colorDarkGray)
@@ -51,7 +70,7 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
 //        chip1.setTextColor(ContextCompat.getColor(context, R.color.text_helper_dark))
 
         val chip2 = Chip(view.context)
-        chip2.text = "GTX 2080ti"
+        chip2.text = "XXXXXXXXX "
 //        chip2.chipIcon = ContextCompat.getDrawable(view.context, R.drawable.ic_vector_star)
         chip2.chipStrokeWidth = chipWidth
         chip2.setChipStrokeColorResource(R.color.colorDarkGray)
@@ -84,7 +103,7 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
     companion object {
         fun create(parent: ViewGroup, callback: (v: View, item: Rig) -> Unit): RigItemViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.rigs_recyclerview_item, parent, false)
+                .inflate(R.layout.item_recycler_view_rig_2, parent, false)
             return RigItemViewHolder(view, callback)
         }
     }

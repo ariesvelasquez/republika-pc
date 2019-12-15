@@ -2,12 +2,13 @@ package ariesvelasquez.com.republikapc.ui.dashboard
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.os.Handler
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,12 +18,12 @@ import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.BaseActivity
 import ariesvelasquez.com.republikapc.ui.auth.AuthActivity
-import ariesvelasquez.com.republikapc.ui.create.rig.CreateRigActivity
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.addtorig.AddToRigBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.console.ConsoleBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.createrig.RigCreatorBottomSheetFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.rigs.RigListFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.rigs.RigsFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigListFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.RepublikaPCFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.items.PartsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
 import ariesvelasquez.com.republikapc.ui.search.SearchActivity
@@ -30,7 +31,6 @@ import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
 import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_dashboard.*
@@ -42,6 +42,8 @@ class DashboardActivity : BaseActivity(),
     ConsoleBottomSheetFragment.ConsoleBottomSheetInteractionListener,
     RigCreatorBottomSheetFragment.RigCreatorBottomSheetInteractionListener,
     AddToRigBottomSheetFragment.AddToRigBottomSheetFragmentListener,
+    RepublikaPCFragment.OnRepublikaPCInteractionListener,
+    PartsFragment.OnPartsFragmentInteractionListener,
     RigListFragment.OnRigListFragmentListener {
 
     private lateinit var viewPager: ViewPager
@@ -73,6 +75,9 @@ class DashboardActivity : BaseActivity(),
         // Observe Rig Creation State
         handleRigCreationState()
 
+        // Observe Add Item to Rig Creation State
+        handleAddItemToRigCreationState()
+
         textViewToolbarTitle.setOnClickListener { launchActivity<SearchActivity>() }
 
         viewPager = findViewById(R.id.view_pager)
@@ -88,13 +93,17 @@ class DashboardActivity : BaseActivity(),
         initTitle()
     }
 
+    private fun handleUserState() {
+        viewModel.observeUser(mFirebaseUser!!.uid)
+    }
+
     private fun handleRigCreationState() {
         viewModel.createRigNetworkState.observe(this, Observer {
             when (it) {
                 NetworkState.LOADED -> {
                     createRigBottomSheet.dismiss()
                     // Todo Show Success dialog
-                    showCreationSuccessDialog()
+                    showCreationSuccessDialog(getString(R.string.rig_created_success))
                 }
                 NetworkState.LOADING -> {}
                 else -> Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
@@ -102,7 +111,30 @@ class DashboardActivity : BaseActivity(),
         })
     }
 
-    private fun showCreationSuccessDialog() {
+    private fun handleAddItemToRigCreationState() {
+        viewModel.addItemToRigNetworkState.observe(this, Observer {
+            when (it) {
+                NetworkState.LOADING -> {
+                    progressBarLoader.progress = 10
+                }
+                NetworkState.LOADED -> {
+                    progressBarLoader.progress = 100
+//                    showCreationSuccessDialog(getString(R.string.added_to_rig_success))
+
+                    Handler().postDelayed({
+                        progressBarLoader.progress = 0
+                    }, 1000)
+                }
+                NetworkState.LOADING -> {}
+                else -> {
+                    // Show Error Prompt
+                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+    }
+
+    private fun showCreationSuccessDialog(message: String) {
         val successDialog = AlertDialog.Builder(this)
             .setMessage("New Rig has been created")
             .setOnCancelListener {  }
@@ -130,6 +162,8 @@ class DashboardActivity : BaseActivity(),
     override fun onUserLoggedIn(user: FirebaseUser) {
         viewModel.setIsUserSignedIn(true)
         viewModel.setUser(user)
+
+        handleUserState()
         // Handle UI Changes when logged in
     }
 
@@ -156,7 +190,14 @@ class DashboardActivity : BaseActivity(),
 
         when (menuItem.itemId) {
             R.id.navigation_tipid_pc -> viewPager.currentItem = 0
-            R.id.navigation_rigs -> viewPager.currentItem = 1
+            R.id.navigation_rigs -> {
+                Timber.e("DashboardActivity : Clicked Rigs")
+                viewPager.currentItem = 1
+                if (viewModel.shouldRefreshRigs) {
+                    viewModel.shouldRefreshRigs = false
+                    viewModel.refreshRigs()
+                }
+            }
 //            R.id.navigation_settings -> viewPager.currentItem = 2
             R.id.navigation_settings -> {
                 val bottomSheetFragment = ConsoleBottomSheetFragment.newInstance()
@@ -166,22 +207,27 @@ class DashboardActivity : BaseActivity(),
         true
     }
 
-    private class DashboardFragmentPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+    private class DashboardFragmentPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         override fun getItem(position: Int): Fragment {
             return when (position) {
                 0 -> TipidPCFragment.newInstance()
-                1 -> RigsFragment.newInstance()
-                else -> SettingsFragment.newInstance()
+                else -> RepublikaPCFragment.newInstance()
             }
         }
 
         override fun getCount(): Int {
-            return 3
+            return 2
         }
     }
 
     override fun onCreateRigInvoked() {
+        // Check if Rig Count exceeds the maximum
+        if (viewModel.user.value?.rigCount!! >= 2) {
+            showSimplePrompt(getString(R.string.reached_max_rig_limit))
+            return
+        }
+
         // Launch Create Rig Dialog
         createRigBottomSheet = RigCreatorBottomSheetFragment.newInstance()
         createRigBottomSheet.show(supportFragmentManager, createRigBottomSheet.TAG)

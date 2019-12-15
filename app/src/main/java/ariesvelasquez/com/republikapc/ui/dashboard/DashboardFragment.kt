@@ -18,6 +18,9 @@ abstract class DashboardFragment: Fragment() {
     abstract fun onUserLoggedIn()
     abstract fun onUserLoggedOut()
 
+    protected var mIsUserLoggedIn: Boolean = false
+    protected var mIsRigInitialized: Boolean = false
+
     val dashboardViewModel: DashboardViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -37,13 +40,17 @@ abstract class DashboardFragment: Fragment() {
 
         // Check for User Status
         dashboardViewModel.isUserSignedIn.observe(this, Observer { isUserLoggedIn ->
-            Timber.e("DashboardFragment isUserLoggedIn " + isUserLoggedIn)
+            mIsUserLoggedIn = isUserLoggedIn
 
             if (isUserLoggedIn) {
                 onUserLoggedIn()
             } else {
                 onUserLoggedOut()
             }
+        })
+
+        dashboardViewModel.isRigsInitialized.observe(this, Observer {
+            mIsRigInitialized = it
         })
 
         return super.onCreateView(inflater, container, savedInstanceState)

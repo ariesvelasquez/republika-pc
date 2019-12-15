@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -26,22 +25,46 @@
         <!--android:background="#ffffff"-->
         <!--app:layout_scrollFlags="scroll|enterAlways|snap"-->
         <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
+    
+        <ProgressBar
+            android:id="@+id/progressBarLoader"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:progressTint="@color/colorLightGray"
+            android:progressBackgroundTint="@color/colorSmoke"
+            tools:progress="20"/>
+        
     </com.google.android.material.appbar.AppBarLayout>
     
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/refreshSwipe"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_marginTop="?attr/actionBarSize">
         
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rigList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#ffffff"
-            android:scrollbars="vertical"
-            android:paddingStart="@dimen/view_padding"/>
     
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refreshSwipe"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+        
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rigItemList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorSmoke"
+                android:scrollbars="vertical"/>
+    
+    
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        
+        <include layout="@layout/rig_items_total_bottom_sheet"/>
+
+    </LinearLayout>
+    
+   
+    
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

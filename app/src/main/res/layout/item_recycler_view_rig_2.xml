@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
+    app:cardCornerRadius="4dp">
+    
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/view_padding"
+        android:layout_marginBottom="@dimen/view_padding_2"
+        android:padding="@dimen/view_padding_2">
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutTools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            
+            <ImageView
+                android:id="@+id/imageViewOption"
+                style="@style/RigStat"
+                android:layout_width="@dimen/icon_size_24"
+                android:layout_height="@dimen/icon_size_24"
+                android:src="@drawable/ic_vector_option_horizontal"/>
+        </LinearLayout>
+        
+        <TextView
+            android:id="@+id/textViewStatus"
+            style="@style/TextAppearance.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/current_rig"
+            android:textColor="@color/colorRigCaptions"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayoutTools" />
+        
+        <TextView
+            android:id="@+id/title"
+            style="@style/TextAppearance.RigTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Potato Madness 2.0"
+            android:textColor="@color/colorRigTitle"
+            android:textStyle="bold"
+            android:paddingBottom="@dimen/view_padding_4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewStatus" />
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutParts"
+            style="@style/RigStat"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintEnd_toStartOf="@id/linearLayoutCopies">
+    
+            <TextView
+                android:id="@+id/textViewItemCount"
+                style="@style/TextAppearance.RigStatHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="22" />
+    
+            <TextView
+                android:id="@+id/textViewPartsCount"
+                style="@style/TextAppearance.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Parts"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"
+                tools:text="parts" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutCopies"
+            style="@style/RigStat"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/linearLayoutParts"
+            app:layout_constraintEnd_toStartOf="@id/linearLayoutViews"
+            app:layout_constraintTop_toTopOf="@id/linearLayoutParts">
+    
+            <TextView
+                style="@style/TextAppearance.RigStatHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="--"/>
+            
+            <TextView
+                android:id="@+id/textViewCopiesCount"
+                style="@style/TextAppearance.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="copies"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"
+                tools:text="copies" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutViews"
+            style="@style/RigStat"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/linearLayoutCopies"
+            app:layout_constraintTop_toTopOf="@id/linearLayoutParts"
+            app:layout_constraintEnd_toStartOf="@id/linearLayoutQRCode">
+    
+            <TextView
+                style="@style/TextAppearance.RigStatHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="--"/>
+            
+            <TextView
+                android:id="@+id/textViewViewsCount"
+                style="@style/TextAppearance.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="views"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"
+                tools:text="views" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutQRCode"
+            style="@style/RigStat"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/linearLayoutViews"
+            app:layout_constraintTop_toTopOf="@id/linearLayoutParts"
+            app:layout_constraintEnd_toEndOf="parent">
+    
+            <TextView
+                style="@style/TextAppearance.RigStatHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="QR"/>
+            
+            <TextView
+                android:id="@+id/textViewQRCode"
+                style="@style/TextAppearance.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="code"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"
+                tools:text="code" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/linearLayoutFeatured"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/view_padding"
+            android:paddingTop="@dimen/view_padding_5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayoutParts">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+    
+                <TextView
+                    android:id="@+id/textViewHighlights"
+                    style="@style/TextAppearance.Caption"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="@string/featured_parts"
+                    android:gravity="center|start"
+                    android:textColor="@color/colorRigCaptions" />
+                
+                <TextView
+                    android:id="@+id/textViewViewAllParts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:paddingTop="@dimen/view_half_padding"
+                    android:paddingBottom="@dimen/view_half_padding"
+                    android:paddingStart="@dimen/view_padding"
+                    android:paddingEnd="@dimen/view_padding"
+                    android:background="?android:selectableItemBackground"
+                    style="@style/TextAppearance.TileTertiary"
+                    android:text="View all parts"/>
+                
+                <ImageView
+                    android:id="@+id/imageViewViewAllParts"
+                    android:layout_width="@dimen/icon_size_18"
+                    android:layout_height="@dimen/icon_size_18"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="1dp"
+                    style="@style/RigStat"
+                    android:src="@drawable/ic_vector_right_arrow"/>
+                
+            </LinearLayout>
+    
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupHighlights"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/view_padding"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewHighlights" />
+            
+        </LinearLayout>
+    
+        <TextView
+            android:id="@+id/textViewDate"
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_size_small"
+            tools:text="Created on: July 21, 2019"
+            android:layout_marginTop="@dimen/view_padding_3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayoutFeatured"/>
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    
+</androidx.cardview.widget.CardView>
+

@@ -1,14 +1,18 @@
 package ariesvelasquez.com.republikapc.ui
 
+import android.content.DialogInterface
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import ariesvelasquez.com.republikapc.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import timber.log.Timber
 
 abstract class BaseActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
+    var mFirebaseUser = FirebaseAuth.getInstance().currentUser
     val mFirebaseAuth = FirebaseAuth.getInstance()
     val mGoogleClient by lazy {
         GoogleSignIn.getClient(this, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -26,6 +30,7 @@ abstract class BaseActivity : AppCompatActivity(), FirebaseAuth.AuthStateListene
             onUserLoggedOut()
         } else {
             onUserLoggedIn(firebaseUser)
+            mFirebaseUser = firebaseUser
         }
     }
 
@@ -37,5 +42,29 @@ abstract class BaseActivity : AppCompatActivity(), FirebaseAuth.AuthStateListene
     override fun onStop() {
         super.onStop()
         mFirebaseAuth.removeAuthStateListener(this)
+    }
+
+    protected fun showSimplePrompt(message: String) {
+        val dialogBuilder = AlertDialog.Builder(this)
+
+        // set message of alert dialog
+        dialogBuilder.setMessage(message)
+            // if the dialog is cancelable
+            .setCancelable(true)
+            // positive button text and action
+//            .setPositiveButton("Proceed", DialogInterface.OnClickListener {
+//
+//            })
+            // negative button text and action
+            .setNegativeButton("Okeeh") { dialog, id ->
+                dialog.cancel()
+            }
+
+        // create dialog box
+        val alert = dialogBuilder.create()
+        // set title for alert dialog box
+        alert.setTitle(" ")
+        // show alert dialog
+        alert.show()
     }
 }

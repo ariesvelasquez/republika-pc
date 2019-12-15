@@ -2,30 +2,25 @@ package ariesvelasquez.com.republikapc.repository.rigs
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.ItemKeyedDataSource
-import ariesvelasquez.com.republikapc.Const.OWNER_ID
-import ariesvelasquez.com.republikapc.Const.ITEM_PER_PAGE_10
-import ariesvelasquez.com.republikapc.model.rigs.Rig
+import ariesvelasquez.com.republikapc.Const.ITEM_PER_PAGE_20
+import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import timber.log.Timber
 import java.io.IOException
 
-class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<String, Rig>() {
+class RigItemsDataSource(rigItemsRef: CollectionReference, rigItemId: String) :
+    ItemKeyedDataSource<String, FeedItem>() {
 
     private var initialQuery: Query
     private var lastVisible: DocumentSnapshot? = null
     private var lastPageReached: Boolean = false
-    private var pageNumber = 1
+    private val mItemPerPage = ITEM_PER_PAGE_20
 
     init {
-        val firebaseUser = FirebaseAuth.getInstance().currentUser
-        initialQuery = rigsReference.
-            whereEqualTo(OWNER_ID, firebaseUser?.uid).
-            limit(ITEM_PER_PAGE_10)
-//        initialQuery = rigsReference.orderBy("name", Query.Direction.ASCENDING).limit(ITEM_PER_PAGE_10)
+        initialQuery = rigItemsRef.document(rigItemId).collection(rigItemId).limit(mItemPerPage)
     }
 
     /**
@@ -41,29 +36,25 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
 
     override fun loadInitial(
         params: LoadInitialParams<String>,
-        callback: LoadInitialCallback<Rig>
+        callback: LoadInitialCallback<FeedItem>
     ) {
         // set network value to loading.
         networkState.postValue(NetworkState.LOADING)
         initialLoad.postValue(NetworkState.LOADING)
 
-        Timber.e("loadInitial")
         try {
             initialQuery.get().addOnCompleteListener { task ->
-                val rigList = mutableListOf<Rig>()
+                val rigList = mutableListOf<FeedItem>()
                 if (task.isSuccessful) {
-                    Timber.e("task.isSuccessful")
 
                     val querySnapshot = task.result
-                    Timber.e("querySnapshot size " + querySnapshot?.size())
 
                     for (document in querySnapshot!!) {
-                        val rigItem = document.toObject(Rig::class.java)
+                        val rigItem = document.toObject(FeedItem::class.java)
                         rigList.add(rigItem)
                     }
 
                     // Return the collected list from firestore
-                    Timber.e("Riglist size = " + rigList.size)
                     callback.onResult(rigList)
                     networkState.postValue(NetworkState.LOADED)
                     initialLoad.postValue(NetworkState.LOADED)
@@ -72,7 +63,6 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
                     // what to fetch next.
                     val querySnapshotSize = querySnapshot.size() - 1
                     if (querySnapshotSize != -1) {
-                        Timber.e("has last item")
                         lastVisible = querySnapshot.documents[querySnapshotSize]
                     }
                 } else {
@@ -87,47 +77,55 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
             networkState.postValue(error)
             initialLoad.postValue(error)
         }
-
     }
 
-    override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<Rig>) {
+    override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<FeedItem>) {
         // set network value to loading.
         networkState.postValue(NetworkState.LOADING)
 
-        val nextQuery: Query = initialQuery.startAfter(lastVisible!!)
-        nextQuery.get().addOnCompleteListener { task ->
-            val nextRigList = mutableListOf<Rig>()
-            if (task.isSuccessful) {
-                val querySnapshot = task.result
-                if (!lastPageReached) {
-                    for (document in querySnapshot!!) {
-                        val rigItem = document.toObject(Rig::class.java)
-                        nextRigList.add(rigItem)
-                    }
-                    callback.onResult(nextRigList)
-                    pageNumber++
+        // Check if can still fetch more items
+        if (!lastPageReached) {
+            val nextQuery: Query = initialQuery.startAfter(lastVisible!!)
+            try {
+                nextQuery.get().addOnCompleteListener { task ->
+                    val nextRigList = mutableListOf<FeedItem>()
+                    if (task.isSuccessful) {
+                        val querySnapshot = task.result
+                        for (document in querySnapshot!!) {
+                            val rigItem = document.toObject(FeedItem::class.java)
+                            nextRigList.add(rigItem)
+                        }
+                        callback.onResult(nextRigList)
 
-                    // set network value to loading.
-                    networkState.postValue(NetworkState.LOADED)
+                        // set network value to loading.
+                        networkState.postValue(NetworkState.LOADED)
+                        initialLoad.postValue(NetworkState.LOADED)
 
-                    if (nextRigList.size < ITEM_PER_PAGE_10) {
-                        lastPageReached = true
+                        if (nextRigList.size < mItemPerPage) {
+                            lastPageReached = true
+                        } else {
+                            lastVisible = querySnapshot.documents[querySnapshot.size() - 1]
+                        }
                     } else {
-                        lastVisible = querySnapshot.documents[querySnapshot.size() - 1]
+                        val error = NetworkState.error(task.exception?.message!!)
+                        networkState.postValue(error)
+                        initialLoad.postValue(NetworkState.LOADED)
+                        Timber.e(task.exception?.message!!)
                     }
                 }
-            } else {
-                val error = NetworkState.error(task.exception?.message!!)
+            } catch (ioException: IOException) {
+                val error = NetworkState.error(ioException.message ?: "unknown error")
                 networkState.postValue(error)
-                initialLoad.postValue(NetworkState.LOADED)
-                Timber.e(task.exception?.message!!)
+                initialLoad.postValue(error)
             }
+        } else {
+            networkState.postValue(NetworkState.LOADED)
         }
     }
 
-    override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<Rig>) {
+    override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<FeedItem>) {
 
     }
 
-    override fun getKey(item: Rig): String = "something"
+    override fun getKey(item: FeedItem): String = "something"
 }

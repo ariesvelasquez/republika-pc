@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -15,9 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
-import ariesvelasquez.com.republikapc.ui.dashboard.rigs.RigItemsAdapter
+import ariesvelasquez.com.republikapc.repository.NetworkState
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigItemsAdapter
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
+import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_add_to_rig_bottom_sheet.view.*
@@ -71,8 +72,10 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
 
         setupRigList()
 
+        handleAddItemToRigCreationState()
+
         // Setup Rig Item Observer
-        dashboardViewModel.rigItems.observe(this, Observer<PagedList<Rig>> {
+        dashboardViewModel.rigs.observe(this, Observer<PagedList<Rig>> {
             adapter.submitList(it)
         })
 
@@ -98,13 +101,47 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
 
         adapter = RigItemsAdapter(
             RigItemsAdapter.ADD_TO_RIG_VIEW_TYPE,
-            { dashboardViewModel.refreshRigs() }) { v, item ->
+            { dashboardViewModel.refreshRigs() }) { v, rigItem ->
 
-            Timber.e("CLICKKKED " + item.name)
+            when (v.id) {
+                R.id.buttonAdd -> {
+                    dashboardViewModel.addItemToRig(rigItem, feedItemReference)
+                    Timber.e("Adding this item to rig.")
+                }
+            }
+
+            Timber.e("CLICKKKED " + rigItem.name)
         }
 
         rootView.recyclerViewRigList.adapter = adapter
     }
+
+    private fun handleAddItemToRigCreationState() {
+        dashboardViewModel.addItemToRigNetworkState.observe(this, Observer {
+            when (it) {
+                NetworkState.LOADING -> {
+
+                }
+                NetworkState.LOADED -> {
+
+                    rootView.coordinatorLayoutRoot.snack(R.string.added_to_rig_success, hasMargin = false) {
+
+                    }
+
+                    dashboardViewModel.addItemToRigNetworkState.postValue(NetworkState.LOADING)
+                }
+                NetworkState.LOADING -> {}
+                else -> {
+                    // Show Error
+                    val mess = it.msg
+                    rootView.snack(mess!!) {
+
+                    }
+                }
+            }
+        })
+    }
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

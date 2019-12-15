@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.ui.dashboard.rigs
+package ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs
 
 import android.view.View
 import android.view.ViewGroup

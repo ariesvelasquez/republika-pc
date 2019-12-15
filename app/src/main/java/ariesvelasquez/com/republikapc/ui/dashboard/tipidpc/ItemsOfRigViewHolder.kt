@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 
-class FeedsItemViewHolder(view: View, private val onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit) : RecyclerView.ViewHolder(view) {
+class ItemsOfRigViewHolder(view: View, private val onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit) : RecyclerView.ViewHolder(view) {
 
     private val mainView: ConstraintLayout = view.findViewById(R.id.constraintLayoutParent)
     private val title: TextView = view.findViewById(R.id.title)
@@ -21,7 +21,7 @@ class FeedsItemViewHolder(view: View, private val onClickCallback: (v: View, pos
     init {
         view.setOnClickListener {
 
-//            item?.itemurl?.let { url ->
+            //            item?.itemurl?.let { url ->
 //                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
 //                view.context.startActivity(intent)
 //            }
@@ -55,10 +55,10 @@ class FeedsItemViewHolder(view: View, private val onClickCallback: (v: View, pos
     }
 
     companion object {
-        fun create(parent: ViewGroup, onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit): FeedsItemViewHolder {
+        fun create(parent: ViewGroup, onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit): ItemsOfRigViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.feeds_recyclerview_item, parent, false)
-            return FeedsItemViewHolder(view, onClickCallback)
+                .inflate(R.layout.item_recycler_view_rig_item, parent, false)
+            return ItemsOfRigViewHolder(view, onClickCallback)
         }
     }
 

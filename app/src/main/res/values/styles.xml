@@ -43,6 +43,12 @@
         <item name="android:textStyle">bold</item>
     </style>
     
+    <style name="TextAppearance.CustomTab" parent="@style/TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/roboto_mono_medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
     <style name="TextAppearance.RigStatHead" parent="@style/TextAppearance.MaterialComponents.Subtitle1">
         <item name="android:letterSpacing">0.01</item>
         <item name="fontFamily">@font/roboto_mono_regular</item>
@@ -77,9 +83,9 @@
     </style>
     
     <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.BottomSheetDialog">
-        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorWhite</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColor">@color/colorDarkGray</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@color/colorWhite</item>
         <item name="android:windowIsFloating">false</item>

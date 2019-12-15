@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.ui.dashboard.rigs
+package ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs
 
 import android.net.Uri
 import android.os.Bundle
@@ -13,6 +13,9 @@ import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
+import ariesvelasquez.com.republikapc.ui.rigs.RigItemsActivity
+import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_rigs.view.*
 import timber.log.Timber
 
@@ -53,7 +56,9 @@ class RigsFragment : DashboardFragment() {
 
     override fun onResume() {
         super.onResume()
-        Timber.e("OnResume")
+        if (mIsUserLoggedIn and !mIsRigInitialized) {
+            dashboardViewModel.showRigs()
+        }
     }
 
     override fun onUserLoggedOut() {
@@ -63,7 +68,7 @@ class RigsFragment : DashboardFragment() {
 
     override fun onUserLoggedIn() {
         // TEST data
-        dashboardViewModel.showRigItems()
+//        dashboardViewModel.showRigs()
     }
 
     private fun initSwipeToRefresh() {
@@ -80,11 +85,10 @@ class RigsFragment : DashboardFragment() {
             RigItemsAdapter.SHOW_RIGS_VIEW_TYPE,
             { dashboardViewModel.refreshRigs() }) { v, item ->
             when (v.id) {
-                R.id.title -> Timber.e("Titleeee")
-                R.id.linearLayoutParts ->  {
-                    launchItemsActivity(item)
-                    Timber.e("Parts name " + item.name)
-                }
+                R.id.title -> Timber.e("Title")
+                R.id.textViewViewAllParts,
+                R.id.imageViewViewAllParts,
+                R.id.linearLayoutParts ->  { launchItemsActivity(item) }
                 else -> Timber.e("item")
             }
         }
@@ -98,14 +102,19 @@ class RigsFragment : DashboardFragment() {
 
         rootView.rigList.layoutManager = linearLayoutManager
         rootView.rigList.adapter = adapter
+        rootView.indefiniteIndicatorRigList.attachToRecyclerView(rootView.rigList)
     }
 
     private fun launchItemsActivity(item: Rig) {
+        val rawRigItem = Gson().toJson(item)
 
+        activity?.launchActivity<RigItemsActivity> {
+            putExtra(RigItemsActivity.RIG_ITEM_REFERENCE,rawRigItem)
+        }
     }
 
     private fun initRigList() {
-        dashboardViewModel.rigItems.observe(this, Observer<PagedList<Rig>> {
+        dashboardViewModel.rigs.observe(this, Observer<PagedList<Rig>> {
             adapter.submitList(it)
         })
         dashboardViewModel.rigNetworkState.observe(this, Observer {

@@ -2,25 +2,33 @@ package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
+import timber.log.Timber
 
 class FeedItemsAdapter(
+    private val viewTypeParam: Int = FEED_VIEW_TYPE,
     private val retryCallback: () -> Unit,
-    private val onClickCallback: (v: View, item: FeedItem) -> Unit
+    private val onClickCallback: (v: View, position: Int ,item: FeedItem) -> Unit
 )
     : PagedListAdapter<FeedItem, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
 
+//    private var varitems = mutableListOf<FeedItem>()
+    private var rigItemsTotal = 0
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+
         when (getItemViewType(position)) {
-            R.layout.feeds_recyclerview_item -> (holder as FeedsItemViewHolder).bind(getItem(position)!!)
-            R.layout.network_state_item -> (holder as NetworkStateItemViewHolder).bindTo(
+            FEED_VIEW_TYPE -> (holder as FeedsItemViewHolder).bind(getItem(position)!!, position)
+            RIG_ITEM_VIEW_TYPE -> (holder as ItemsOfRigViewHolder).bind(getItem(position)!!, position)
+            ERROR_VIEW_TYPE -> (holder as NetworkStateItemViewHolder).bindTo(
                 networkState)
         }
     }
@@ -39,8 +47,9 @@ class FeedItemsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.feeds_recyclerview_item -> FeedsItemViewHolder.create(parent, onClickCallback)
-            R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent, retryCallback)
+            FEED_VIEW_TYPE -> FeedsItemViewHolder.create(parent, onClickCallback)
+            RIG_ITEM_VIEW_TYPE -> ItemsOfRigViewHolder.create(parent, onClickCallback)
+            ERROR_VIEW_TYPE -> NetworkStateItemViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
     }
@@ -49,9 +58,9 @@ class FeedItemsAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return if (hasExtraRow() && position == itemCount - 1) {
-            R.layout.network_state_item
+            ERROR_VIEW_TYPE
         } else {
-            R.layout.feeds_recyclerview_item
+            viewTypeParam
         }
     }
 
@@ -75,7 +84,21 @@ class FeedItemsAdapter(
         }
     }
 
+    fun getItemTotal() : Double {
+        var total = 0.00
+        currentList?.forEach {
+            val toBeAdded = it.price.removePrefix("P").toDouble()
+            total = total.plus(toBeAdded)
+        }
+        return total
+    }
+
     companion object {
+
+        const val ERROR_VIEW_TYPE = 0
+        const val FEED_VIEW_TYPE = 1
+        const val RIG_ITEM_VIEW_TYPE = 2
+
         private val PAYLOAD_SCORE = Any()
         val POST_COMPARATOR = object : DiffUtil.ItemCallback<FeedItem>() {
             override fun areContentsTheSame(oldItem: FeedItem, newItem: FeedItem): Boolean =

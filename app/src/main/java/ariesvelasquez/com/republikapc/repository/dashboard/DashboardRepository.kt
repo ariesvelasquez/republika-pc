@@ -7,6 +7,8 @@ import androidx.lifecycle.Transformations
 import androidx.paging.Config
 import androidx.paging.toLiveData
 import ariesvelasquez.com.republikapc.Const.RIGS_COLLECTION
+import ariesvelasquez.com.republikapc.Const.RIGS_ITEM_COLLECTION
+import ariesvelasquez.com.republikapc.Const.USERS_COLLECTION
 import ariesvelasquez.com.republikapc.api.TipidPCApi
 import ariesvelasquez.com.republikapc.db.TipidPCDatabase
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
@@ -15,9 +17,15 @@ import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.Listing
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.repository.rigs.RigDataSourceFactory
+import ariesvelasquez.com.republikapc.repository.rigs.RigItemsDataSource
+import ariesvelasquez.com.republikapc.repository.rigs.RigItemsDataSourceFactory
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.WriteBatch
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +38,10 @@ class DashboardRepository(
     private val tipidPCApi: TipidPCApi,
     private val ioExecutor: Executor
 ) : IDashboardRepository {
+
+    override fun user(userID: String): DocumentReference {
+        return firestore.collection(USERS_COLLECTION).document(userID)
+    }
 
     /**
      * Inserts the response into the database while also assigning position indices to items.
@@ -156,22 +168,92 @@ class DashboardRepository(
         )
     }
 
+    override fun rigItems(rigId: String): Listing<FeedItem> {
+        val sourceFactory = RigItemsDataSourceFactory(firestore.collection(RIGS_ITEM_COLLECTION), rigId)
+
+        // We use toLiveData Kotlin ext. function here, you could also use LivePagedListBuilder
+        val livePagedList = sourceFactory.toLiveData(
+            // we use Config Kotlin ext. function here, could also use PagedList.Config.Builder
+            config = Config(
+                pageSize = 10,
+                enablePlaceholders = false,
+                initialLoadSizeHint = 10 * 2
+            )
+        )
+
+        val refreshState = Transformations.switchMap(sourceFactory.sourceLiveData) {
+            it.initialLoad
+        }
+        return Listing(
+            pagedList = livePagedList,
+            networkState = Transformations.switchMap(sourceFactory.sourceLiveData) {
+                it.networkState
+            },
+            retry = {
+                //                sourceFactory.sourceLiveData.value?.retryAllFailed()
+            },
+            refresh = {
+                sourceFactory.sourceLiveData.value?.invalidate()
+            },
+            refreshState = refreshState
+        )
+    }
+
     override fun createRig(firebaseUser: FirebaseUser, rigName: String): Task<Void> {
-        // Write a new Rig with the users data.
-        val createRigLiveData = MutableLiveData<NetworkState>()
-        createRigLiveData.postValue(NetworkState.LOADING)
+
+        val batchWrite: WriteBatch = firestore.batch()
 
         val rigRef = firestore.collection(RIGS_COLLECTION).document()
-        val newRigId = rigRef.id
 
         val newRigMap = hashMapOf<String, Any?>()
         newRigMap["name"] = rigName
-        newRigMap["id"] = newRigId
-        newRigMap["owner_id"] = firebaseUser.uid
-        newRigMap["owner_name"] = firebaseUser.displayName
-        newRigMap["owner_thumb"] = firebaseUser.photoUrl.toString()
+        newRigMap["id"] = rigRef.id
+        newRigMap["ownerId"] = firebaseUser.uid
+        newRigMap["ownerName"] = firebaseUser.displayName
+        newRigMap["ownerThumb"] = firebaseUser.photoUrl.toString()
+        newRigMap["date"] = FieldValue.serverTimestamp()
+        newRigMap["itemCount"] = 0
+        batchWrite.set(rigRef, newRigMap)
 
-        return rigRef.set(newRigMap)
+        val userRigCountRef = firestore.collection(USERS_COLLECTION).document(firebaseUser.uid)
+        batchWrite.update(userRigCountRef, "rigCount", FieldValue.increment(1))
+
+        return batchWrite.commit()
+    }
+
+    override fun addItemToRig(
+        firebaseUser: FirebaseUser,
+        rigItem: Rig,
+        feedItem: FeedItem
+    ): Task<Void> {
+
+        val batchWrite: WriteBatch = firestore.batch()
+
+        // Counter Ref
+        val rigRef = firestore.collection(RIGS_COLLECTION).document(rigItem.id)
+        val rigItemRef = firestore.collection(RIGS_ITEM_COLLECTION).document(rigItem.id)
+            .collection(rigItem.id).document()
+
+        val feedItemMap = hashMapOf<String, Any?>()
+        feedItemMap["id"] = feedItem.id
+        feedItemMap["title"] = feedItem.title
+        feedItemMap["seller"] = feedItem.seller
+        feedItemMap["price"] = feedItem.price
+        feedItemMap["docId"] = rigItemRef.id
+
+        batchWrite.update(rigRef, "itemCount", FieldValue.increment(1))
+        batchWrite.set(rigItemRef, feedItemMap)
+
+        return batchWrite.commit()
+    }
+
+    override fun deleteRigItem(rigId: String, rigItemId: String): Task<Void> {
+
+        val rigRef = firestore
+            .collection(RIGS_ITEM_COLLECTION).document(rigId)
+            .collection(rigId).document(rigItemId)
+
+        return rigRef.delete()
     }
 }
 

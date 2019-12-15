@@ -13,13 +13,15 @@ data class FeedItem(
     @SerializedName("id")
     var id: Int = 0,
     @SerializedName("title")
-    var title: String,
+    var title: String = "",
     @SerializedName("seller")
-    var seller: String,
+    var seller: String  = "",
     @SerializedName("price")
-    var price: String,
+    var price: String  = "",
+    @SerializedName("docId")
+    var docId: String = "",
     @SerializedName("page")
-    var page: Int
+    var page: Int = -1
 ) {
     var indexInResponse: Int = -1
 }

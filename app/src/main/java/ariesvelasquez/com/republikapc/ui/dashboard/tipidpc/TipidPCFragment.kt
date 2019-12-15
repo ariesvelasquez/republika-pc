@@ -1,7 +1,6 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
 import kotlinx.android.synthetic.main.fragment_tipid_pc.view.*
-import kotlinx.android.synthetic.main.fragment_tipid_pc.view.refreshSwipe
 import timber.log.Timber
 
 class TipidPCFragment : DashboardFragment() {
@@ -47,8 +45,9 @@ class TipidPCFragment : DashboardFragment() {
     }
 
     private fun initAdapter() {
-        val adapter = FeedItemsAdapter({ dashboardViewModel.retryFeeds() }) { view, feedItem ->
-            Timber.e("Clicked Feed Item " + feedItem.title)
+        val adapter = FeedItemsAdapter(
+            FeedItemsAdapter.FEED_VIEW_TYPE,
+            { dashboardViewModel.refreshFeeds() }) { v, pos, feedItem ->
             listener?.onTPCItemClicked(feedItem)
         }
 

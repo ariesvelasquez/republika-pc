@@ -25,8 +25,8 @@ class AuthRepository(
                     authenticatedUserMutableLiveData.postValue(
                         User().apply {
                             uid = firebaseUser.uid
-                            name = firebaseUser.displayName
-                            email = firebaseUser.email
+                            name = firebaseUser.displayName!!
+                            email = firebaseUser.email!!
                             photoUrl = Objects.requireNonNull(firebaseUser.photoUrl.toString())
                             isNew = isNewUser
                         }
@@ -43,7 +43,7 @@ class AuthRepository(
     fun createUserInFirestoreIfNotExisting(authenticatedUser: User): MutableLiveData<User> {
         val newCreatedUser = MutableLiveData<User>()
 
-        val uidRef = userRef.document(authenticatedUser.uid)
+        val uidRef = userRef.document(authenticatedUser.uid!!)
         uidRef.get().addOnCompleteListener { uidTask ->
             if (uidTask.isSuccessful) {
                 val document = uidTask.result

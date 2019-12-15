@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.ui.dashboard.rigs
+package ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs
 
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +29,10 @@ class AddToRigItemViewHolder(val view: View, private val onClickCallback: (v: Vi
         titleView.text = item?.name
 
         // Parts Click
-        buttonAdd.setOnClickListener { onClickCallback.invoke(it, item!!) }
+        buttonAdd.setOnClickListener {
+            it.isEnabled = false
+            onClickCallback.invoke(it, item!!)
+        }
     }
 
     companion object {

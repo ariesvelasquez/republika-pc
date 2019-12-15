@@ -59,7 +59,7 @@ class ConsoleBottomSheetFragment : BottomSheetDialogFragment() {
             if (isUserLoggedIn) {
                 setupLoggedInLayout()
                 // Todo: For improvement, implement databinding
-                Timber.e("Name: " + dashboardViewModel.userModel.value?.displayName)
+                Timber.e("Name: " + dashboardViewModel.firebaseUserModel.value?.displayName)
             } else {
                 setupLoggedOutLayout()
 //                onUserLoggedOut()
@@ -78,7 +78,7 @@ class ConsoleBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupLoggedInLayout() {
-        val userData = dashboardViewModel.userModel.value
+        val userData = dashboardViewModel.firebaseUserModel.value
         rootView.constraintLayoutSignedIn.visibility = View.VISIBLE
         rootView.constraintLayoutLoggedOutLayout.visibility = View.GONE
 

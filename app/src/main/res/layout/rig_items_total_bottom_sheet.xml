@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayoutTotalBottomSheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorDarkGray"
+    android:orientation="vertical"
+    android:padding="@dimen/view_padding_2"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="56dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+    
+    
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
+        
+        <TextView
+            android:id="@+id/textViewTotalLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rig Total: "
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/font_size_page_title_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/textViewTotal"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        
+        <ImageView
+            android:id="@+id/imageViewPeso"
+            android:layout_width="@dimen/icon_size_18"
+            android:layout_height="@dimen/icon_size_18"
+            android:src="@drawable/ic_vector_peso"
+            android:layout_marginEnd="@dimen/view_padding"
+            app:layout_constraintVertical_bias="0.7"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textViewTotalLabel"
+            app:layout_constraintEnd_toStartOf="@id/textViewTotal"
+            app:layout_constraintTop_toTopOf="parent" />
+        
+        <TextView
+            android:id="@+id/textViewTotal"
+            style="@style/TextAppearance.RigStatHead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="435.00"
+            android:textSize="@dimen/font_size_page_title_small"
+            android:textStyle="bold"
+            android:textColor="@color/colorWhite"
+            app:layout_constraintStart_toEndOf="@id/imageViewPeso"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

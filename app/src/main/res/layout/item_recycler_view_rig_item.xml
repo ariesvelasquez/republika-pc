@@ -6,11 +6,7 @@
     android:id="@+id/constraintLayoutParent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/shape_rectangle_rounded_bordered"
     android:padding="@dimen/view_padding_2"
-    android:layout_marginEnd="@dimen/view_padding"
-    android:layout_marginTop="@dimen/view_half_padding"
-    android:layout_marginBottom="@dimen/view_half_padding"
     android:orientation="vertical">
     
     <TextView
@@ -31,26 +27,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/view_padding"
-        android:textColor="@color/colorTipidPcOrange"
-        style="@style/TextAppearance.TilePrimary"
+        android:textColor="@color/text_main_dark"
+        style="@style/TextAppearance.RigTitle"
+        android:textSize="@dimen/font_size_inputs"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/textViewPrice"
-        tools:text="Hopper UX: The Right Ways To Ask" />
-
-    <TextView
-        android:id="@+id/textViewPrice"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        style="@style/TextAppearance.TileSecondary"
-        android:textColor="@color/colorDarkGray"
-        android:layout_marginTop="@dimen/view_padding_2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintBottom_toTopOf="@id/textViewSellerName"
-        tools:text="P 123.00"/>
+        tools:text="Hopper UX: The Right Ways To Ask" />
     
     <TextView
         android:id="@+id/textViewSellerName"
@@ -59,10 +44,25 @@
         android:layout_marginBottom="@dimen/view_padding"
         style="@style/TextAppearance.TileTertiary"
         android:textColor="@color/text_helper_dark"
+        android:textSize="@dimen/font_size_caption_small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewPrice"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintBottom_toTopOf="@id/textViewPrice"
         tools:text="submitted by foo"/>
+
+    <TextView
+        android:id="@+id/textViewPrice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.TilePrimary"
+        android:gravity="start"
+        android:textColor="@color/text_helper_dark"
+        android:layout_marginTop="@dimen/view_half_padding"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewSellerName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="P 123.00"/>
     
 </androidx.constraintlayout.widget.ConstraintLayout>

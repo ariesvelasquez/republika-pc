@@ -1,6 +1,4 @@
 <resources>
-    
-    
     <string name="hello_blank_fragment">Hello blank fragment</string>
     
     <!--Labels-->
@@ -21,6 +19,13 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="sign_in_with_google">Sign In With Google</string>
     <string name="term_and_condition_sign_in_agreement">By clicking "Sign Up With Google", you agree to our terms and that you have read our Privacy Policy</string>
-
+    
     <string name="rig_created_success">New Rig has been created</string>
+    <string name="added_to_rig_success">Added Item to Rig</string>
+    
+    <string name="updating">Updating...</string>
+    <string name="delete">Delete</string>
+    <string name="created_at_">Created at:</string>
+    <string name="working_in_progress">Feature coming soon</string>
+    <string name="reached_max_rig_limit">Sorry but you have reached the max rig limit (max is 2)</string>
 </resources>
