@@ -123,7 +123,6 @@ class RigsFragment : DashboardFragment() {
             adapter.submitList(it)
         })
         dashboardViewModel.rigNetworkState.observe(this, Observer {
-            Timber.e("err: ${it.msg}")
             adapter.setNetworkState(it)
         })
     }
@@ -133,7 +132,7 @@ class RigsFragment : DashboardFragment() {
         if (context is OnRigFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnRigFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnRigFragmentInteractionListener")
         }
     }
 

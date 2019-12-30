@@ -65,30 +65,52 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         rootView = inflater.inflate(R.layout.fragment_add_to_rig_bottom_sheet, container, false)
 
         // Setup something...
-
-        setItemUIDetails()
-
-        setupRigList()
+        setBasicUIDisplayData()
 
         handleAddItemToRigCreationState()
 
-        // Setup Rig Item Observer
-        dashboardViewModel.rigs.observe(this, Observer<PagedList<Rig>> {
-            adapter.submitList(it)
-        })
+        handleUserStatus()
+
+        setupRigList()
+
+        handleRigState()
 
         return rootView
     }
 
-    private fun setItemUIDetails() {
+    private fun handleRigState() {
+        dashboardViewModel.rigs.observe(this, Observer<PagedList<Rig>> {
+            adapter.submitList(it)
+        })
+        dashboardViewModel.rigNetworkState.observe(this, Observer {
+            adapter.setNetworkState(it)
+        })
+    }
+
+    private fun handleUserStatus() {
+        // Check for User Status
+        dashboardViewModel.isUserSignedIn.observe(this, Observer { isUserLoggedIn ->
+            if (isUserLoggedIn) {
+                // Show Rig List, Enable features only for logged in user.
+                rootView.linearLayoutSave.setOnClickListener {
+
+                }
+            } else {
+                // Disable features only for logged in user.
+                rootView.linearLayoutSave.setOnClickListener {
+                    listener?.showSignUpBottomSheet()
+                }
+            }
+        })
+    }
+
+    private fun setBasicUIDisplayData() {
         // Set Item Name
         rootView.textViewItemName.text = feedItemReference.title
-        // Set Seller Name
-        rootView.textViewSellerNameAndDate.text = feedItemReference.seller + " • 2 mins ago"
+        // Set Seller Name and Date
+        rootView.textViewSellerNameAndDate.text = feedItemReference.seller + " • xx mins ago"
         // Price
-        rootView.textViewPrice.text = feedItemReference.price
-        // Date
-//        rootView
+        rootView.textViewPrice.text = feedItemReference.price.removePrefix("P")
     }
 
     private fun setupRigList() {
@@ -104,11 +126,8 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
             when (v.id) {
                 R.id.buttonAdd -> {
                     dashboardViewModel.addItemToRig(rigItem, feedItemReference)
-                    Timber.e("Adding this item to rig.")
                 }
             }
-
-            Timber.e("CLICKKKED " + rigItem.name)
         }
 
         rootView.recyclerViewRigList.adapter = adapter
@@ -163,7 +182,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
      * for more information.
      */
     interface AddToRigBottomSheetFragmentListener {
-
+        fun showSignUpBottomSheet()
     }
 
     companion object {

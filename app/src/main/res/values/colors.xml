@@ -12,6 +12,7 @@
     <color name="text_main_dark">#DE000000</color>
     <color name="text_helper_dark">#99000000</color>
     <color name="colorTipidPcOrange">#DEd56217</color>
+    <color name="colorTipidPcGreen">#A6CF3C</color>
     
     <color name="colorCyan">#6DD3CE</color>
     <color name="colorRed">#D14952</color>

@@ -38,24 +38,88 @@
             app:layout_constraintTop_toBottomOf="@id/textViewItemLabel"
             tools:text="Ryzen 2600x" />
         
-        <TextView
-            android:id="@+id/textViewPrice"
-            style="@style/TextAppearance.TilePrimary"
+        <LinearLayout
+            android:id="@+id/linearLayoutPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/view_padding_3"
+            android:orientation="horizontal"
             android:background="@drawable/shape_rectangle_rounded_solid"
             android:paddingStart="@dimen/view_padding_2"
             android:paddingTop="@dimen/view_padding"
             android:paddingEnd="@dimen/view_padding_2"
             android:paddingBottom="@dimen/view_padding"
-            android:textColor="@color/colorTipidPcOrange"
-            android:textStyle="bold"
+            app:layout_constraintVertical_bias="1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/linearLayoutSave"
+            app:layout_constraintBottom_toBottomOf="@id/linearLayoutSave">
+            
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingTop="2dp"
+                android:layout_marginEnd="@dimen/view_half_padding"
+                android:src="@drawable/ic_peso_small"/>
+    
+            <TextView
+                android:id="@+id/textViewPrice"
+                style="@style/TextAppearance.TilePrimary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorTipidPcOrange"
+                android:textStyle="bold"
+                tools:text="6700" />
+            
+        </LinearLayout>
+    
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutSave"
+            style="@style/RigStat"
+            android:padding="@dimen/view_padding_12"
+            android:layout_marginTop="@dimen/view_padding_3"
+            android:background="@drawable/shape_rectangle_rounded_bordered_2dp"
             app:layout_constraintTop_toBottomOf="@id/textViewSellerNameAndDate"
-            tools:text="P6700" />
+            app:layout_constraintStart_toStartOf="parent">
+        
+            <ImageView
+                android:src="@drawable/ic_save_solid"
+                android:layout_width="@dimen/icon_size_18"
+                android:layout_height="@dimen/icon_size_18"
+                android:layout_marginBottom="@dimen/view_half_padding"/>
+        
+            <TextView
+                style="@style/TextAppearance.TileTertiary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="save"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    
+        <LinearLayout
+            android:id="@+id/linearLayoutLink"
+            style="@style/RigStat"
+            android:padding="@dimen/view_padding_12"
+            android:layout_marginTop="@dimen/view_padding_3"
+            android:layout_marginStart="@dimen/view_padding"
+            android:background="@drawable/shape_rectangle_rounded_bordered_2dp"
+            app:layout_constraintTop_toBottomOf="@id/textViewSellerNameAndDate"
+            app:layout_constraintStart_toEndOf="@id/linearLayoutSave">
+        
+            <ImageView
+                android:src="@drawable/ic_cube_send"
+                android:layout_width="@dimen/icon_size_18"
+                android:layout_height="@dimen/icon_size_18"
+                android:layout_marginBottom="@dimen/view_half_padding"/>
+        
+            <TextView
+                style="@style/TextAppearance.TileTertiary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="link"
+                android:textAlignment="center"
+                android:textColor="@color/colorRigStatsText"/>
+        </LinearLayout>
         
         <TextView
             android:id="@+id/textViewSellerNameAndDate"
@@ -80,7 +144,7 @@
             android:textColor="@color/colorGray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewPrice" />
+            app:layout_constraintTop_toBottomOf="@id/linearLayoutSave" />
         
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewRigList"

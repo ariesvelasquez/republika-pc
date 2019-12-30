@@ -288,6 +288,11 @@ class DashboardActivity : BaseActivity(),
 
     }
 
+    override fun showSignUpBottomSheet() {
+        val bottomSheetFragment = ConsoleBottomSheetFragment.newInstance()
+        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.TAG)
+    }
+
     override fun onLoginInvoked() {
         launchActivity<AuthActivity> {}
         finish()
