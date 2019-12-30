@@ -3,21 +3,20 @@
 
     <item
         android:id="@+id/navigation_tipid_pc"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/ic_ruby"
         android:enabled="true"
         android:title="@string/label_tipid_pc"/>
 
     <item
         android:id="@+id/navigation_rigs"
-        android:icon="@android:drawable/ic_menu_help"
+        android:icon="@drawable/ic_roman_helmet"
         android:enabled="true"
         android:title="@string/label_rigs"/>
 
     <item
         android:id="@+id/navigation_settings"
-        android:icon="@android:drawable/ic_menu_camera"
+        android:icon="@drawable/ic_bag"
         android:enabled="true"
-
         android:title="@string/label_settings"/>
 
 </menu>

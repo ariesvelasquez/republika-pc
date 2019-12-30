@@ -3,6 +3,7 @@ package ariesvelasquez.com.republikapc.repository.rigs
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.ItemKeyedDataSource
 import ariesvelasquez.com.republikapc.Const.ITEM_PER_PAGE_20
+import ariesvelasquez.com.republikapc.Const.RIGS_ITEM_COLLECTION
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import com.google.firebase.firestore.CollectionReference
@@ -20,7 +21,8 @@ class RigItemsDataSource(rigItemsRef: CollectionReference, rigItemId: String) :
     private val mItemPerPage = ITEM_PER_PAGE_20
 
     init {
-        initialQuery = rigItemsRef.document(rigItemId).collection(rigItemId).limit(mItemPerPage)
+        initialQuery = rigItemsRef.document(rigItemId)
+            .collection(RIGS_ITEM_COLLECTION).limit(mItemPerPage)
     }
 
     /**

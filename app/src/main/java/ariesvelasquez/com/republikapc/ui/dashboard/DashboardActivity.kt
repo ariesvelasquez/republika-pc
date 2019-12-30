@@ -14,16 +14,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import ariesvelasquez.com.republikapc.R
+import ariesvelasquez.com.republikapc.RepublikaPC
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.BaseActivity
 import ariesvelasquez.com.republikapc.ui.auth.AuthActivity
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.addtorig.AddToRigBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.console.ConsoleBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.createrig.RigCreatorBottomSheetFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.rigdetail.RigDetailBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigListFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.RepublikaPCFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.items.PartsFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
 import ariesvelasquez.com.republikapc.ui.search.SearchActivity
@@ -35,22 +39,25 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.main_toolbar.*
-import timber.log.Timber
 
 class DashboardActivity : BaseActivity(),
     TipidPCFragment.OnTPCFragmentListener,
+    RigsFragment.OnRigFragmentInteractionListener,
     ConsoleBottomSheetFragment.ConsoleBottomSheetInteractionListener,
     RigCreatorBottomSheetFragment.RigCreatorBottomSheetInteractionListener,
     AddToRigBottomSheetFragment.AddToRigBottomSheetFragmentListener,
     RepublikaPCFragment.OnRepublikaPCInteractionListener,
     PartsFragment.OnPartsFragmentInteractionListener,
+    RigDetailBottomSheetFragment.OnRigDetailInteractionListener,
     RigListFragment.OnRigListFragmentListener {
 
     private lateinit var viewPager: ViewPager
     private lateinit var toolbar: Toolbar
+    private var mCurrentMenuFragment = R.id.navigation_rigs
 
     // Create Rig Bottom Sheet
     private lateinit var createRigBottomSheet : RigCreatorBottomSheetFragment
+    private lateinit var rigDetailBottomSheet : RigDetailBottomSheetFragment
 
     private val viewModel: DashboardViewModel by viewModels {
         object : ViewModelProvider.Factory {
@@ -73,7 +80,7 @@ class DashboardActivity : BaseActivity(),
         initOnClicks()
 
         // Observe Rig Creation State
-        handleRigCreationState()
+        handleRigState()
 
         // Observe Add Item to Rig Creation State
         handleAddItemToRigCreationState()
@@ -93,19 +100,43 @@ class DashboardActivity : BaseActivity(),
         initTitle()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        if (mCurrentMenuFragment == R.id.navigation_rigs && RepublikaPC.getGlobalFlags().shouldRefreshRigs) {
+            RepublikaPC.getGlobalFlags().shouldRefreshRigs = false
+            viewModel.refreshRigs()
+        }
+    }
+
     private fun handleUserState() {
         viewModel.observeUser(mFirebaseUser!!.uid)
     }
 
-    private fun handleRigCreationState() {
+    private fun handleRigState() {
         viewModel.createRigNetworkState.observe(this, Observer {
             when (it) {
                 NetworkState.LOADED -> {
                     createRigBottomSheet.dismiss()
                     // Todo Show Success dialog
-                    showCreationSuccessDialog(getString(R.string.rig_created_success))
+                    showSnackBar(getString(R.string.rig_created_success))
                 }
                 NetworkState.LOADING -> {}
+                else -> Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
+            }
+        })
+
+        viewModel.deleteRigNetworkState.observe(this, Observer {
+            when (it) {
+                NetworkState.LOADING -> {
+                    progressBarLoader.progress = 10
+                }
+                NetworkState.LOADED -> {
+                    rigDetailBottomSheet.dismiss()
+                    RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
+                    finishedLoading()
+                    showSnackBar(getString(R.string.rig_deleted))
+                }
                 else -> Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
             }
         })
@@ -118,12 +149,8 @@ class DashboardActivity : BaseActivity(),
                     progressBarLoader.progress = 10
                 }
                 NetworkState.LOADED -> {
-                    progressBarLoader.progress = 100
-//                    showCreationSuccessDialog(getString(R.string.added_to_rig_success))
-
-                    Handler().postDelayed({
-                        progressBarLoader.progress = 0
-                    }, 1000)
+                    RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
+                    finishedLoading()
                 }
                 NetworkState.LOADING -> {}
                 else -> {
@@ -134,12 +161,20 @@ class DashboardActivity : BaseActivity(),
         })
     }
 
-    private fun showCreationSuccessDialog(message: String) {
+    private fun finishedLoading() {
+        progressBarLoader.progress = 100
+
+        Handler().postDelayed({
+            progressBarLoader.progress = 0
+        }, 1000)
+    }
+
+    private fun showSnackBar(message: String) {
         val successDialog = AlertDialog.Builder(this)
             .setMessage("New Rig has been created")
             .setOnCancelListener {  }
 
-        navigation.snack(R.string.rig_created_success) {
+        navigation.snack(message) {
 
         }
     }
@@ -187,14 +222,14 @@ class DashboardActivity : BaseActivity(),
     private val mOnNavigationItemClickedListener = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
 
         //toolbar.title = menuItem.title
+        mCurrentMenuFragment = menuItem.itemId
 
         when (menuItem.itemId) {
             R.id.navigation_tipid_pc -> viewPager.currentItem = 0
             R.id.navigation_rigs -> {
-                Timber.e("DashboardActivity : Clicked Rigs")
                 viewPager.currentItem = 1
-                if (viewModel.shouldRefreshRigs) {
-                    viewModel.shouldRefreshRigs = false
+                if (RepublikaPC.getGlobalFlags().shouldRefreshRigs) {
+                    RepublikaPC.getGlobalFlags().shouldRefreshRigs = false
                     viewModel.refreshRigs()
                 }
             }
@@ -237,6 +272,12 @@ class DashboardActivity : BaseActivity(),
         val rawFeedItem = Gson().toJson(feedItem)
         val fragment = AddToRigBottomSheetFragment.newInstance(rawFeedItem)
         fragment.show(supportFragmentManager, fragment.TAG)
+    }
+
+    override fun onRigMenuClicked(rig: Rig) {
+        val rawRigRef = Gson().toJson(rig)
+        rigDetailBottomSheet = RigDetailBottomSheetFragment.newInstance(rawRigRef)
+        rigDetailBottomSheet.show(supportFragmentManager, rigDetailBottomSheet.TAG)
     }
 
     override fun onNewRigCreated(rigName: String) {

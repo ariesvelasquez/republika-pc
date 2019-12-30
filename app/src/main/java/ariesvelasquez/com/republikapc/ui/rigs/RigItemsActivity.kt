@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import ariesvelasquez.com.republikapc.R
+import ariesvelasquez.com.republikapc.RepublikaPC
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.NetworkState
@@ -144,6 +145,8 @@ class RigItemsActivity : BaseActivity() {
                 Handler().postDelayed({
                     progressBarLoader.progress = 0
                 }, 1000)
+
+                RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
             }
             NetworkState.LOADING -> {}
             else -> {

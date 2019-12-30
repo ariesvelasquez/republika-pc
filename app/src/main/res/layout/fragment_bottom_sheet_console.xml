@@ -25,7 +25,7 @@
             android:layout_height="@dimen/icon_size_36"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_vector_parts" />
+            android:src="@drawable/ic_helmet_colored" />
     
         <TextView
             android:id="@+id/textViewDisplayName"
@@ -55,7 +55,7 @@
             android:id="@+id/imageViewLogOut"
             android:layout_width="@dimen/icon_size_24"
             android:layout_height="@dimen/icon_size_24"
-            android:src="@drawable/ic_vector_logout"
+            android:src="@drawable/ic_catapult"
             app:layout_constraintBottom_toBottomOf="@+id/textViewEmail"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textViewDisplayName" />

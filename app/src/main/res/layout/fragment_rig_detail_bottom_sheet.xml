@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/coordinatorLayoutRoot"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:paddingTop="@dimen/view_half_padding"
+    android:layout_height="match_parent">
+    
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rootBottomSheetCreator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_bottom_sheet_dialog_rounded_top"
+        android:padding="@dimen/view_padding_2">
+        
+        <TextView
+            android:id="@+id/textViewItemLabel"
+            style="@style/TextAppearance.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_rig_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textColor="@color/colorGray"
+            app:layout_constraintTop_toTopOf="parent" />
+        
+        <EditText
+            android:id="@+id/editTextRigName"
+            style="@style/TextAppearance.RigTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorDarkGray"
+            android:enabled="true"
+            android:focusable="true"
+            android:hint="New Rig Title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewItemLabel"
+            tools:text="Ryzen 2600x" />
+        
+        <Button
+            android:id="@+id/buttonSaveName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:textAllCaps="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="@string/save_new_name"
+            app:layout_constraintTop_toBottomOf="@id/editTextRigName"/>
+    
+        <TextView
+            android:id="@+id/textViewDeleteLabel"
+            style="@style/TextAppearance.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/want_to_delete_this_rig"
+            android:textColor="@color/colorGray"
+            android:layout_marginTop="@dimen/view_padding_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/buttonSaveName" />
+    
+        <Button
+            android:id="@+id/buttonDeleteRig"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Delete"
+            android:layout_marginTop="@dimen/view_padding"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewDeleteLabel"/>
+    
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

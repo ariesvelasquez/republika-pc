@@ -232,7 +232,7 @@ class DashboardRepository(
         // Counter Ref
         val rigRef = firestore.collection(RIGS_COLLECTION).document(rigItem.id)
         val rigItemRef = firestore.collection(RIGS_ITEM_COLLECTION).document(rigItem.id)
-            .collection(rigItem.id).document()
+            .collection(RIGS_ITEM_COLLECTION).document()
 
         val feedItemMap = hashMapOf<String, Any?>()
         feedItemMap["id"] = feedItem.id
@@ -247,13 +247,36 @@ class DashboardRepository(
         return batchWrite.commit()
     }
 
+    override fun deleteRig(firebaseUser: FirebaseUser, rigId: String): Task<Void> {
+
+        val batchWrite: WriteBatch = firestore.batch()
+
+        val rigRef = firestore.collection(RIGS_COLLECTION).document(rigId)
+        val rigItemsRef = firestore.collection(RIGS_ITEM_COLLECTION).document(rigId)
+        val userRigCountRef = firestore.collection(USERS_COLLECTION).document(firebaseUser.uid)
+
+        batchWrite.delete(rigRef)
+        batchWrite.delete(rigItemsRef)
+        batchWrite.update(userRigCountRef, "rigCount", FieldValue.increment(-1))
+
+        return batchWrite.commit()
+    }
+
     override fun deleteRigItem(rigId: String, rigItemId: String): Task<Void> {
 
-        val rigRef = firestore
-            .collection(RIGS_ITEM_COLLECTION).document(rigId)
-            .collection(rigId).document(rigItemId)
+        val batchWrite: WriteBatch = firestore.batch()
 
-        return rigRef.delete()
+        // Delete Rig Item Task
+        val rigRef = firestore.collection(RIGS_COLLECTION).document(rigId)
+        val rigItemRef = firestore
+            .collection(RIGS_ITEM_COLLECTION).document(rigId)
+            .collection(RIGS_ITEM_COLLECTION).document(rigItemId)
+        batchWrite.delete(rigItemRef)
+
+        // Decrement Rig Item Count Task
+        batchWrite.update(rigRef, "itemCount", FieldValue.increment(-1))
+
+        return batchWrite.commit()
     }
 }
 

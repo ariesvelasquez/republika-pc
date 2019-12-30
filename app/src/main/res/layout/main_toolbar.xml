@@ -49,15 +49,18 @@
             style="@style/TextAppearance.TileSecondary"/>
         
         <!-- This is a custom left side button -->
-        <ImageButton
-            android:layout_width="?attr/actionBarSize"
+        <ImageView
             android:id="@+id/hamburgerButton"
+            android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginEnd="?attr/actionBarSize"
             android:layout_gravity="start|center_vertical"
+            android:paddingTop="@dimen/view_padding_2"
+            android:paddingBottom="@dimen/view_padding_2"
+            android:paddingStart="@dimen/view_padding"
+            android:paddingEnd="@dimen/view_padding"
             android:visibility="visible"
-            android:src="@drawable/ic_vector_hamburger"
-            style="@style/Widget.AppCompat.ActionButton" />
+            android:src="@drawable/ic_vector_cute_knight" />
         
         <!-- This is a custom right side button -->
         <ImageButton

@@ -1,6 +1,7 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs
 
 import android.annotation.SuppressLint
+import android.media.Image
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -43,6 +44,7 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
         val viewAllView = view.findViewById<TextView>(R.id.textViewViewAllParts)
         val dateView = view.findViewById<TextView>(R.id.textViewDate)
         val imageViewAll = view.findViewById<ImageView>(R.id.imageViewViewAllParts)
+        val imageViewOption = view.findViewById<ImageView>(R.id.imageViewOption)
 
         // Set title
         titleView.text = item?.name
@@ -58,6 +60,7 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
         viewAllView.setOnClickListener { onClickCallback.invoke(it, item!!) }
         viewAllView.setOnClickListener { onClickCallback.invoke(it, item!!) }
         imageViewAll.setOnClickListener { onClickCallback.invoke(it, item!!) }
+        imageViewOption.setOnClickListener { onClickCallback.invoke(it, item!!) }
 
         // Add Dummy Chips
         val chip1 = Chip(view.context)

@@ -13,9 +13,13 @@ import java.security.NoSuchAlgorithmException;
 
 public class RepublikaPC extends Application {
 
+    private static GlobalFlags globalFlags;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        globalFlags = new GlobalFlags();
 
         // Setup Timber Logger
         if (BuildConfig.DEBUG) {
@@ -42,5 +46,9 @@ public class RepublikaPC extends Application {
 //                | NoSuchAlgorithmException | KeyManagementException e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    public static GlobalFlags getGlobalFlags() {
+        return globalFlags;
     }
 }

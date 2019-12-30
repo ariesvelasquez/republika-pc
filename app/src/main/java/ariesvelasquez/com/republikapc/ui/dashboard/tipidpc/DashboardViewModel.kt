@@ -1,6 +1,8 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.model.user.User
@@ -31,8 +33,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     val rigRefreshState = Transformations.switchMap(rigRepoResult) { it.refreshState }!!
     val createRigNetworkState = MutableLiveData<NetworkState>()
     val addItemToRigNetworkState = MutableLiveData<NetworkState>()
-    // After adding an item to a rig, update the flag that will check if rigs need to be refreshed
-    var shouldRefreshRigs = false
+    val deleteRigNetworkState = MutableLiveData<NetworkState>()
 
     /**
      * Rig Item Vars
@@ -81,6 +82,18 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         this.isRigsInitialized.value = false
     }
 
+    fun deleteRig(rigId: String) {
+        deleteRigNetworkState.postValue(NetworkState.LOADING)
+
+        repository.deleteRig(this.firebaseUserModel.value!!, rigId).addOnSuccessListener {
+            refreshRigs()
+            deleteRigNetworkState.postValue(NetworkState.LOADED)
+        }.addOnFailureListener {
+            val error = NetworkState.error(it.message)
+            deleteRigNetworkState.postValue(error)
+        }
+    }
+
     // RIG_ITEMS_COLLECTION
     fun getRigItems(rigId: String): Boolean {
         Timber.e("view model getRigItems " + rigId)
@@ -91,7 +104,6 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     }
 
     fun deleteRigItem(rigId: String, rigItemId: String) {
-        Timber.e("deleting, rigId: $rigId | rigItemId: $rigItemId")
         deleteRigItemNetworkState.postValue(NetworkState.LOADING)
 
         repository.deleteRigItem(rigId, rigItemId).addOnSuccessListener {
@@ -133,7 +145,6 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         addItemToRigNetworkState.postValue(NetworkState.LOADING)
         repository.addItemToRig(this.firebaseUserModel.value!!, rigItem, feedItem)
             .addOnSuccessListener {
-                shouldRefreshRigs = true
                 addItemToRigNetworkState.postValue(NetworkState.LOADED)
             }.addOnFailureListener {
                 val error = NetworkState.error(it.message)

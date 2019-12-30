@@ -38,9 +38,8 @@
                 android:id="@+id/progressBarLoader"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
+                android:layout_height="3dp"
                 android:progressTint="@color/colorLightGray"
-                android:progressBackgroundTint="@color/colorSmoke"
                 tools:progress="20"/>
             
         </com.google.android.material.appbar.AppBarLayout>

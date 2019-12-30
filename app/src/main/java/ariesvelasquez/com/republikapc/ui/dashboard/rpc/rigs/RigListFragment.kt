@@ -40,7 +40,7 @@ class RigListFragment : DialogFragment() {
         if (context is OnRigListFragmentListener) {
             listener = context
         } else {
-            throw RuntimeException("$context must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnRigFragmentInteractionListener")
         }
     }
 

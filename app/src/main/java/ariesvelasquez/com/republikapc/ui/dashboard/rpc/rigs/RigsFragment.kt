@@ -1,5 +1,6 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.PagerSnapHelper
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.rigs.Rig
@@ -24,7 +26,7 @@ class RigsFragment : DashboardFragment() {
     private lateinit var rootView: View
     private lateinit var adapter: RigItemsAdapter
 
-    private var listener: OnFragmentInteractionListener? = null
+    private var listener: OnRigFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +91,9 @@ class RigsFragment : DashboardFragment() {
                 R.id.textViewViewAllParts,
                 R.id.imageViewViewAllParts,
                 R.id.linearLayoutParts ->  { launchItemsActivity(item) }
+                R.id.imageViewOption -> {
+                    listener?.onRigMenuClicked(item)
+                }
                 else -> Timber.e("item")
             }
         }
@@ -97,7 +102,7 @@ class RigsFragment : DashboardFragment() {
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
 
         // Snapper
-        val snapHelper = PagerSnapHelper()
+        val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(rootView.rigList)
 
         rootView.rigList.layoutManager = linearLayoutManager
@@ -109,7 +114,7 @@ class RigsFragment : DashboardFragment() {
         val rawRigItem = Gson().toJson(item)
 
         activity?.launchActivity<RigItemsActivity> {
-            putExtra(RigItemsActivity.RIG_ITEM_REFERENCE,rawRigItem)
+            putExtra(RigItemsActivity.RIG_ITEM_REFERENCE, rawRigItem)
         }
     }
 
@@ -123,6 +128,15 @@ class RigsFragment : DashboardFragment() {
         })
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnRigFragmentInteractionListener) {
+            listener = context
+        } else {
+            throw RuntimeException(context.toString() + " must implement OnRigFragmentInteractionListener")
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -134,8 +148,8 @@ class RigsFragment : DashboardFragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface OnFragmentInteractionListener {
-        fun onFragmentInteraction(uri: Uri)
+    interface OnRigFragmentInteractionListener {
+        fun onRigMenuClicked(rig: Rig)
     }
 
     companion object {

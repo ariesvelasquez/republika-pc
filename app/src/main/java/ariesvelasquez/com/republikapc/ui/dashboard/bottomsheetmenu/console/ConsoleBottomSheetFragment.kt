@@ -13,7 +13,7 @@ import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.fragment_dashboard_bottom_sheet.view.*
+import kotlinx.android.synthetic.main.fragment_bottom_sheet_console.view.*
 import timber.log.Timber
 
 
@@ -50,7 +50,7 @@ class ConsoleBottomSheetFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_dashboard_bottom_sheet, container, false)
+        rootView = inflater.inflate(R.layout.fragment_bottom_sheet_console, container, false)
 
         // Setup something...
 

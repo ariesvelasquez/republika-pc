@@ -15,6 +15,8 @@ interface IDashboardRepository {
 
     fun rigs(): Listing<Rig>
 
+    fun deleteRig(firebaseUser: FirebaseUser, rigId: String): Task<Void>
+
     fun rigItems(rigId: String) : Listing<FeedItem>
 
     fun createRig(firebaseUser: FirebaseUser, rigName: String): Task<Void>

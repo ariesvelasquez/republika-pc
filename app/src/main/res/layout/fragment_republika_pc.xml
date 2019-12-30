@@ -14,6 +14,7 @@
         app:tabMode="scrollable"
         app:tabIndicatorFullWidth="false"
         app:tabTextColor="@color/colorLightGray"
+        app:tabRippleColor="@null"
         app:tabSelectedTextColor="@color/text_main_dark"
         app:tabTextAppearance="@style/TextAppearance.CustomTab"
         android:background="@color/colorSmoke">

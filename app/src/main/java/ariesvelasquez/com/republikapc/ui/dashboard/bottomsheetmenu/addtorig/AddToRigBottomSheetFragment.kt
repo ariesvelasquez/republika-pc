@@ -55,8 +55,6 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         arguments?.apply {
             feedItemReference = Gson().fromJson(getString(ARG_RAW_FEED_ITEM), FeedItem::class.java)
         }
-
-        Timber.e("onCreate " + feedItemReference.title)
     }
 
     override fun onCreateView(
@@ -123,11 +121,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
 
                 }
                 NetworkState.LOADED -> {
-
-                    rootView.coordinatorLayoutRoot.snack(R.string.added_to_rig_success, hasMargin = false) {
-
-                    }
-
+                    rootView.coordinatorLayoutRoot.snack(R.string.added_to_rig_success, hasMargin = false) {}
                     dashboardViewModel.addItemToRigNetworkState.postValue(NetworkState.LOADING)
                 }
                 NetworkState.LOADING -> {}
