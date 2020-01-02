@@ -1,49 +1,47 @@
-package ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs
+package ariesvelasquez.com.republikapc.ui.dashboard.rpc.saved
 
 import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ariesvelasquez.com.republikapc.model.rigs.Rig
+import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.NetworkStateViewHolder
 
-class RigItemsAdapter(
-    private val viewTypeParam: Int = SHOW_RIGS_VIEW_TYPE,
+class SavedItemsAdapter(
+    private val viewTypeParam: Int = SAVED_ITEMS_VIEW_TYPE,
     private val retryCallback: () -> Unit,
-    private val onClickCallback: (v: View, item: Rig) -> Unit
-) : PagedListAdapter<Rig, RecyclerView.ViewHolder>(POST_COMPARATOR) {
+    private val onClickCallback: (v: View, item: Saved) -> Unit
+) : PagedListAdapter<Saved, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
-            SHOW_RIGS_VIEW_TYPE -> (holder as RigItemViewHolder).bind(getItem(position))
-            ADD_TO_RIG_VIEW_TYPE -> (holder as AddToRigItemViewHolder).bind(getItem(position))
+            SAVED_ITEMS_VIEW_TYPE -> (holder as SavedItemViewHolder).bind(getItem(position))
             ERROR_VIEW_TYPE -> (holder as NetworkStateViewHolder).bindTo(
                 networkState
             )
         }
     }
 
-    override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
-        if (payloads.isNotEmpty()) {
-            val item = getItem(position)
-            (holder as RigItemViewHolder).updateScore(item)
-        } else {
-            onBindViewHolder(holder, position)
-        }
-    }
+//    override fun onBindViewHolder(
+//        holder: RecyclerView.ViewHolder,
+//        position: Int,
+//        payloads: MutableList<Any>
+//    ) {
+//        if (payloads.isNotEmpty()) {
+//            val item = getItem(position)
+//            (holder as RigItemViewHolder).updateScore(item)
+//        } else {
+//            onBindViewHolder(holder, position)
+//        }
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            SHOW_RIGS_VIEW_TYPE -> RigItemViewHolder.create(parent, onClickCallback)
-            ADD_TO_RIG_VIEW_TYPE -> AddToRigItemViewHolder.create(parent, onClickCallback)
+            SAVED_ITEMS_VIEW_TYPE -> SavedItemViewHolder.create(parent, onClickCallback)
             ERROR_VIEW_TYPE -> NetworkStateViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
@@ -82,19 +80,18 @@ class RigItemsAdapter(
     companion object {
 
         const val ERROR_VIEW_TYPE = 0
-        const val SHOW_RIGS_VIEW_TYPE = 1
-        const val ADD_TO_RIG_VIEW_TYPE = 2
+        const val SAVED_ITEMS_VIEW_TYPE = 1
 
         private val PAYLOAD_SCORE = Any()
 
-        val POST_COMPARATOR = object : DiffUtil.ItemCallback<Rig>() {
-            override fun areContentsTheSame(old: Rig, aNew: Rig): Boolean =
+        val POST_COMPARATOR = object : DiffUtil.ItemCallback<Saved>() {
+            override fun areContentsTheSame(old: Saved, aNew: Saved): Boolean =
                 old == aNew
 
-            override fun areItemsTheSame(old: Rig, aNew: Rig): Boolean =
+            override fun areItemsTheSame(old: Saved, aNew: Saved): Boolean =
                 old.name == aNew.name
 
-            override fun getChangePayload(old: Rig, aNew: Rig): Any? {
+            override fun getChangePayload(old: Saved, aNew: Saved): Any? {
                 return if (sameExceptScore(old, aNew)) {
                     PAYLOAD_SCORE
                 } else {
@@ -103,7 +100,7 @@ class RigItemsAdapter(
             }
         }
 
-        private fun sameExceptScore(old: Rig, aNew: Rig): Boolean {
+        private fun sameExceptScore(old: Saved, aNew: Saved): Boolean {
             // DON'T do this copy in a real app, it is just convenient here for the demo :)
             // because reddit randomizes scores, we want to pass it as a payload to minimize
             // UI updates between refreshes

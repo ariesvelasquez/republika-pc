@@ -8,12 +8,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.viewpager.widget.ViewPager
 import ariesvelasquez.com.republikapc.R
+import ariesvelasquez.com.republikapc.RepublikaPC
 import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.SettingsFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.SavedFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.items.PartsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigsFragment
 import kotlinx.android.synthetic.main.fragment_republika_pc.view.*
+import timber.log.Timber
 
 class RepublikaPCFragment : DashboardFragment() {
 
@@ -48,6 +51,31 @@ class RepublikaPCFragment : DashboardFragment() {
         rootView.viewPagerRpc.adapter = viewPagerFragmentAdapter
         rootView.viewPagerRpc.offscreenPageLimit = viewPagerFragmentAdapter.count - 1
 
+        rootView.viewPagerRpc.addOnPageChangeListener(object: ViewPager.OnPageChangeListener{
+            override fun onPageScrollStateChanged(state: Int) {}
+            override fun onPageScrolled(pos: Int, posOffSet: Float, posOffSetPixel: Int) {}
+            override fun onPageSelected(position: Int) {
+
+                // On page change, if selected is Rigs Fragment, Check if need to refresh
+                if (position == 0) {
+                    if (RepublikaPC.getGlobalFlags().shouldRefreshRigs) {
+                        RepublikaPC.getGlobalFlags().shouldRefreshRigs = false
+                        dashboardViewModel.refreshRigs()
+                    }
+                }
+            }
+        })
+
+//        viewPager.addOnPageChangeListener(new OnPageChangeListener() {
+//            public void onPageScrollStateChanged(int state) {}
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+//
+//            public void onPageSelected(int position) {
+//                // Check if this is the page you want.
+//            }
+//        });
+
+
         rootView.tabLayoutRpc.setupWithViewPager(rootView.viewPagerRpc)
     }
 
@@ -79,7 +107,7 @@ class RepublikaPCFragment : DashboardFragment() {
         override fun getItem(position: Int): Fragment {
             return when (position) {
                 0 -> RigsFragment.newInstance()
-                1 -> SettingsFragment.newInstance()
+                1 -> SavedFragment.newInstance()
                 else -> PartsFragment.newInstance()
             }
         }
@@ -95,6 +123,7 @@ class RepublikaPCFragment : DashboardFragment() {
                 else ->  "Parts"
             }
         }
+
     }
 
     /**

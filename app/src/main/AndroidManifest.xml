@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.rigs.RigItemsActivity"/>
+        <activity android:name=".ui.webview.WebViewActivity"></activity>
+        <activity android:name=".ui.rigs.RigItemsActivity" />
         <activity android:name=".ui.create.rig.CreateRigActivity" />
         <activity android:name=".ui.auth.AuthActivity" />
         <activity android:name=".ui.search.SearchActivity" />

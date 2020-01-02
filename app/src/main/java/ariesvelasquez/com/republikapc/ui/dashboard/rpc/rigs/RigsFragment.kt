@@ -121,6 +121,8 @@ class RigsFragment : DashboardFragment() {
     private fun initRigList() {
         dashboardViewModel.rigs.observe(this, Observer<PagedList<Rig>> {
             adapter.submitList(it)
+
+            Timber.e("RIGGGGZZZZ Items count " + adapter.itemCount)
         })
         dashboardViewModel.rigNetworkState.observe(this, Observer {
             adapter.setNetworkState(it)

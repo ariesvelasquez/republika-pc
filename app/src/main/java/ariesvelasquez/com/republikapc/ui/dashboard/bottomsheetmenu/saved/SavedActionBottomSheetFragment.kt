@@ -1,6 +1,5 @@
-package ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.addtorig
+package ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.saved
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,8 +13,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import ariesvelasquez.com.republikapc.R
-import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
+import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigItemsAdapter
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
@@ -23,13 +22,13 @@ import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.fragment_add_to_rig_bottom_sheet.view.*
+import kotlinx.android.synthetic.main.fragment_saved_action_bottom_sheet.view.*
 
 
-class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
+class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
 
-    val TAG = "AddToRigBottomSheetFragment"
-    private lateinit var feedItemReference: FeedItem
+    val TAG = "SavedActionBottomSheetFragment"
+    private lateinit var savedItemReference: Saved
 
     private lateinit var adapter: RigItemsAdapter
 
@@ -46,7 +45,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var rootView: View
 
-    private var listener: AddToRigBottomSheetFragmentListener? = null
+    private var listener: OnSavedActionInteractionFragmentListener? = null
 
     override fun getTheme(): Int = R.style.BottomSheetDialogTheme
 
@@ -54,7 +53,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.apply {
-            feedItemReference = Gson().fromJson(getString(ARG_RAW_FEED_ITEM), FeedItem::class.java)
+            savedItemReference = Gson().fromJson(getString(ARG_RAW_SAVED_ITEM), Saved::class.java)
         }
     }
 
@@ -63,15 +62,13 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_add_to_rig_bottom_sheet, container, false)
+        rootView = inflater.inflate(R.layout.fragment_saved_action_bottom_sheet, container, false)
 
-        // Setup something...
         setBasicUIDisplayData()
-
         handleAddItemToRigCreationState()
 
         handleRigState()
-        handleItemSaveState()
+        handleItemDeletedState()
         handleUserStatus()
 
         setupRigList()
@@ -88,22 +85,19 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         })
     }
 
-    private fun handleItemSaveState() {
-        dashboardViewModel.saveItemNetworkState.observe(this, Observer {
+    private fun handleItemDeletedState() {
+        dashboardViewModel.deleteSavedItemNetworkState.observe(this, Observer {
             when (it) {
                 NetworkState.LOADING -> {
                     // Disable the Button after it was clicked
                 }
                 NetworkState.LOADED -> {
-                    rootView.coordinatorLayoutRoot.snack(R.string.item_saved, hasMargin = false) {}
-                    dashboardViewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
+                    rootView.coordinatorLayoutRoot.snack(R.string.item_deleted, hasMargin = false) {}
+                    dashboardViewModel.deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
                 }
-                else -> {
-                    // Show Error
+                else -> {  // Show Error
                     val mess = it.msg
-                    rootView.snack(mess!!) {
-
-                    }
+                    rootView.snack(mess!!) {}
                 }
             }
         })
@@ -121,10 +115,10 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
             // Show Rig List, Enable features only for logged in user.
             rootView.linearLayoutSave.setOnClickListener {
                 it.isEnabled = false
-                rootView.imageViewSaveIcon.setImageResource(R.drawable.ic_save_solid_disabled)
-                rootView.imageViewSaveText.setTextColor(ContextCompat.getColor(context!!, R.color.colorGray))
+                rootView.imageViewDeleteIcon.setImageResource(R.drawable.ic_delete_outline_disabled)
+                rootView.imageViewDeleteText.setTextColor(ContextCompat.getColor(context!!, R.color.colorGray))
 
-                listener?.onItemSave(feedItemReference)
+                listener?.onItemDelete(savedItemReference)
             }
         } else {
             // Disable features only for logged in user.
@@ -134,18 +128,17 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun setBasicUIDisplayData() {
         // Set Item Name
-        rootView.textViewItemName.text = feedItemReference.name
+        rootView.textViewItemName.text = savedItemReference.name
         // Set Seller Name and Date
-        rootView.textViewSellerNameAndDate.text = feedItemReference.seller + " • xx mins ago"
+        rootView.textViewSellerNameAndDate.text = savedItemReference.seller + " • xx mins ago"
         // Price
-        rootView.textViewPrice.text = feedItemReference.price.removePrefix("P")
+        rootView.textViewPrice.text = savedItemReference.price.removePrefix("P")
 
         // Link On Click
         rootView.linearLayoutLink.setOnClickListener {
-            listener?.onGoToLink(feedItemReference.linkId)
+            listener?.onGoToLink(savedItemReference.linkId)
         }
     }
 
@@ -161,7 +154,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
 
             when (v.id) {
                 R.id.buttonAdd -> {
-                    listener?.onItemAddedToRig(rigItem, feedItemReference)
+                    listener?.onSavedItemAddedToRIg(rigItem, savedItemReference)
                 }
             }
         }
@@ -194,10 +187,10 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is AddToRigBottomSheetFragmentListener) {
+        if (context is OnSavedActionInteractionFragmentListener) {
             listener = context
         } else {
-            throw RuntimeException("$context must implement AddToRigBottomSheetFragment")
+            throw RuntimeException("$context must implement OnSavedActionInteractionFragmentListener")
         }
     }
 
@@ -217,24 +210,24 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface AddToRigBottomSheetFragmentListener {
+    interface OnSavedActionInteractionFragmentListener {
         fun showSignUpBottomSheet()
         fun onGoToLink(linkId: String)
-        fun onItemSave(feedItem: FeedItem)
-        fun onItemAddedToRig(rigItem: Rig, feedItemReference: FeedItem)
+        fun onItemDelete(savedItem: Saved)
+        fun onSavedItemAddedToRIg(rigItem: Rig, savedItemReference: Saved)
     }
 
     companion object {
 
-        const val TAG = "AddToRigBottomSheetFragment"
+        const val TAG = "SavedActionBottomSheetFragment"
 
-        private const val ARG_RAW_FEED_ITEM = "rawFeedItem"
+        private const val ARG_RAW_SAVED_ITEM = "rawSavedItem"
 
         @JvmStatic
-        fun newInstance(rawFeedItem: String) =
-            AddToRigBottomSheetFragment().apply {
+        fun newInstance(rawSavedItem: String) =
+            SavedActionBottomSheetFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_RAW_FEED_ITEM, rawFeedItem)
+                    putString(ARG_RAW_SAVED_ITEM, rawSavedItem)
                 }
             }
     }

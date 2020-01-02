@@ -20,9 +20,9 @@ import ariesvelasquez.com.republikapc.ui.BaseActivity
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.FeedItemsAdapter
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
+import ariesvelasquez.com.republikapc.utils.Tools
 import ariesvelasquez.com.republikapc.utils.extensions.action
 import ariesvelasquez.com.republikapc.utils.extensions.snack
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_rig_items.*
@@ -38,9 +38,6 @@ class RigItemsActivity : BaseActivity() {
     private lateinit var rigItemsAdapter: FeedItemsAdapter
 
     private lateinit var rigItemReference: Rig
-
-    private val decimalFormatter: DecimalFormat? by lazy { DecimalFormat("0.00") }
-    private val numberFormatter: NumberFormat? by lazy { NumberFormat.getNumberInstance(Locale.US) }
 
     private var rigItemsTotal = 0
 
@@ -78,7 +75,8 @@ class RigItemsActivity : BaseActivity() {
     private fun setupRigList() {
         rigItemsAdapter = FeedItemsAdapter(
             FeedItemsAdapter.RIG_ITEM_VIEW_TYPE,
-            { dashboardViewModel.refreshRigItems() }) { v, pos, item ->
+            { dashboardViewModel.refreshRigItems() }
+            ) { v, pos, item ->
 
 
             // OnItemClick: Validate if the viewer is also the owner of the rig
@@ -102,11 +100,11 @@ class RigItemsActivity : BaseActivity() {
 
         if (!owner) return
 
-        linearLayoutTotalBottomSheet.snack(item.title) {
+        linearLayoutTotalBottomSheet.snack(item.name) {
             action(
                 getString(R.string.delete),
                 ContextCompat.getColor(context, R.color.colorBlue)) {
-                Timber.e("CLicked " + item.title)
+                Timber.e("CLicked " + item.name)
                 deleteRigItem(item)
             }
         }
@@ -165,7 +163,7 @@ class RigItemsActivity : BaseActivity() {
             }
             NetworkState.LOADED -> {
                 val numberFormattedTotal =
-                    numberFormatter?.format(rigItemsAdapter.getItemTotal().toInt())
+                    Tools().numberFormatter?.format(rigItemsAdapter.getItemTotal().toInt())
                 textViewTotal.text = "$numberFormattedTotal.00"
             }
         }

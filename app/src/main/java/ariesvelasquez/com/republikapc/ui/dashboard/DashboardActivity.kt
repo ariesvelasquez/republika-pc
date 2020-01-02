@@ -3,9 +3,13 @@ package ariesvelasquez.com.republikapc.ui.dashboard
 import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
+import android.view.Gravity
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -13,10 +17,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
+import ariesvelasquez.com.republikapc.Const.TIPID_PC_VIEW_ITEM
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.RepublikaPC
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
+import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.BaseActivity
 import ariesvelasquez.com.republikapc.ui.auth.AuthActivity
@@ -24,17 +30,19 @@ import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.addtorig.AddT
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.console.ConsoleBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.createrig.RigCreatorBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.rigdetail.RigDetailBottomSheetFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigListFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.saved.SavedActionBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.RepublikaPCFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.items.PartsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
 import ariesvelasquez.com.republikapc.ui.search.SearchActivity
+import ariesvelasquez.com.republikapc.ui.webview.WebViewActivity
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
 import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseUser
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_dashboard.*
@@ -49,7 +57,8 @@ class DashboardActivity : BaseActivity(),
     RepublikaPCFragment.OnRepublikaPCInteractionListener,
     PartsFragment.OnPartsFragmentInteractionListener,
     RigDetailBottomSheetFragment.OnRigDetailInteractionListener,
-    RigListFragment.OnRigListFragmentListener {
+    SavedFragment.OnSavedFragmentInteractionListener,
+    SavedActionBottomSheetFragment.OnSavedActionInteractionFragmentListener {
 
     private lateinit var viewPager: ViewPager
     private lateinit var toolbar: Toolbar
@@ -58,6 +67,7 @@ class DashboardActivity : BaseActivity(),
     // Create Rig Bottom Sheet
     private lateinit var createRigBottomSheet : RigCreatorBottomSheetFragment
     private lateinit var rigDetailBottomSheet : RigDetailBottomSheetFragment
+    private lateinit var savedItemBottomSheet : SavedActionBottomSheetFragment
 
     private val viewModel: DashboardViewModel by viewModels {
         object : ViewModelProvider.Factory {
@@ -85,6 +95,9 @@ class DashboardActivity : BaseActivity(),
         // Observe Add Item to Rig Creation State
         handleAddItemToRigCreationState()
 
+        // Observe Saved item State
+        handleSaveItemState()
+
         textViewToolbarTitle.setOnClickListener { launchActivity<SearchActivity>() }
 
         viewPager = findViewById(R.id.view_pager)
@@ -97,7 +110,10 @@ class DashboardActivity : BaseActivity(),
 
         bottomNavigationView = findViewById(R.id.navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemClickedListener)
+
         initTitle()
+
+        bindNavigationDrawer()
     }
 
     override fun onResume() {
@@ -151,6 +167,47 @@ class DashboardActivity : BaseActivity(),
                 NetworkState.LOADED -> {
                     RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
                     finishedLoading()
+                    showSnackBar(getString(R.string.added_to_rig_success))
+                }
+                NetworkState.LOADING -> {}
+                else -> {
+                    // Show Error Prompt
+                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+    }
+
+    private fun handleSaveItemState() {
+        viewModel.saveItemNetworkState.observe(this, Observer {
+            when (it) {
+                NetworkState.LOADING -> {
+                    progressBarLoader.progress = 10
+                }
+                NetworkState.LOADED -> {
+                    finishedLoading()
+                    showSnackBar(getString(R.string.item_saved))
+                    viewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
+                }
+                NetworkState.LOADING -> {}
+                else -> {
+                    // Show Error Prompt
+                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
+                }
+            }
+        })
+
+        // Saved Item Deleted
+        viewModel.deleteSavedItemNetworkState.observe(this, Observer {
+            when (it) {
+                NetworkState.LOADING -> {
+                    progressBarLoader.progress = 10
+                }
+                NetworkState.LOADED -> {
+                    savedItemBottomSheet.dismiss()
+                    finishedLoading()
+                    showSnackBar(getString(R.string.item_deleted))
+                    viewModel.deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
                 }
                 NetworkState.LOADING -> {}
                 else -> {
@@ -202,26 +259,10 @@ class DashboardActivity : BaseActivity(),
         // Handle UI Changes when logged in
     }
 
-    override fun onAddedToRig(rigId: String) {
-
-    }
-
-    private fun displayRigListFragment() {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val prev = supportFragmentManager.findFragmentByTag(RigListFragment.TAG)
-        if (prev != null) {
-            fragmentTransaction.remove(prev)
-        }
-        fragmentTransaction.addToBackStack(null)
-        val dialogFragment = RigListFragment.newInstance() //here MyDialog is my custom dialog
-        dialogFragment.show(fragmentTransaction, RigListFragment.TAG)
-    }
-
     // Bottom Navigation Setup
     private lateinit var bottomNavigationView: BottomNavigationView
     private val mOnNavigationItemClickedListener = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
 
-        //toolbar.title = menuItem.title
         mCurrentMenuFragment = menuItem.itemId
 
         when (menuItem.itemId) {
@@ -293,6 +334,35 @@ class DashboardActivity : BaseActivity(),
         bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.TAG)
     }
 
+    override fun onItemAddedToRig(rigItem: Rig, feedItemReference: FeedItem) {
+        viewModel.addItemToRig(rigItem, feedItemReference)
+    }
+
+    override fun onItemSave(feedItem: FeedItem) {
+        viewModel.save(feedItem)
+    }
+
+    override fun onSavedItemClicked(saved: Saved) {
+        val rawSavedItem = Gson().toJson(saved)
+        savedItemBottomSheet = SavedActionBottomSheetFragment.newInstance(rawSavedItem)
+        savedItemBottomSheet.show(supportFragmentManager, savedItemBottomSheet.TAG)
+    }
+
+    override fun onItemDelete(savedItem: Saved) {
+        viewModel.deleteSaved(savedItem.docId)
+    }
+
+    override fun onSavedItemAddedToRIg(rigItem: Rig, savedItemReference: Saved) {
+        viewModel.addSavedItemToRig(rigItem, savedItemReference)
+    }
+
+    override fun onGoToLink(linkId: String) {
+        val url = TIPID_PC_VIEW_ITEM + linkId
+        launchActivity<WebViewActivity> {
+            putExtra(WebViewActivity.WEB_VIEW_URL, url)
+        }
+    }
+
     override fun onLoginInvoked() {
         launchActivity<AuthActivity> {}
         finish()
@@ -307,15 +377,23 @@ class DashboardActivity : BaseActivity(),
     /**
      * This is for drawer functionality
      */
-//    private fun bindNavigationDrawer() {
-//
-//        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
+    private fun bindNavigationDrawer() {
+
+        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
 //        val toggle = ActionBarDrawerToggle(
 //            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
 //        )
 //        drawer.addDrawerListener(toggle)
 //        toggle.syncState()
-//
+
+        hamburgerButton.setOnClickListener {
+            drawer.openDrawer(GravityCompat.START)
+        }
+
+        supportActionBar?.setHomeButtonEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+//        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_vector_cute_knight)
+
 //        val navigationView = findViewById<NavigationView>(R.id.nav_view)
 //        navigationView.setNavigationItemSelectedListener { item ->
 //            // Handle navigation view item clicks here.
@@ -333,5 +411,5 @@ class DashboardActivity : BaseActivity(),
 //            drawer.closeDrawer(GravityCompat.START)
 //            true
 //        }
-//    }
+    }
 }

@@ -3,7 +3,9 @@ package ariesvelasquez.com.republikapc.ui.auth
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -21,6 +23,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.android.synthetic.main.activity_auth.*
 import timber.log.Timber
 
 class AuthActivity : AppCompatActivity() {
@@ -67,6 +70,9 @@ class AuthActivity : AppCompatActivity() {
             try {
                 val googleSignInAccount = task.getResult(ApiException::class.java)
                 if (googleSignInAccount != null) {
+
+                    setUIToLoadingState()
+
                     getGoogleAuthCredential(googleSignInAccount)
                 }
             } catch (e: ApiException) {
@@ -74,6 +80,11 @@ class AuthActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    private fun setUIToLoadingState() {
+        textViewSigningUp.text = getString(R.string.creating_user_please_wait)
+        progressBarSigningIn.visibility = View.VISIBLE
     }
 
     private fun getGoogleAuthCredential(googleSignInAccount: GoogleSignInAccount) {
@@ -98,15 +109,22 @@ class AuthActivity : AppCompatActivity() {
         authViewModel.createdUserLiveData.observe(this, Observer<User>{ user ->
             if (user.isCreated) {
                 // handle Set user name setup, etc.
-
-            } else {
+                // Todo : implement user inputs
+//                goToDashboardActivity(user)
                 goToDashboardActivity(user)
+            } else {
+//                goToDashboardActivity(user)
             }
         })
     }
 
     private fun goToDashboardActivity(user: User) {
-        launchActivity<DashboardActivity> {}
-        finish()
+
+        Handler().postDelayed({
+            launchActivity<DashboardActivity> {}
+            finish()
+        }, 2000)
+
+
     }
 }

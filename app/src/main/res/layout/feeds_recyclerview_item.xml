@@ -50,7 +50,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintBottom_toTopOf="@id/textViewSellerName"
-        tools:text="P 123.00"/>
+        tools:text="P123.00"/>
     
     <TextView
         android:id="@+id/textViewSellerName"

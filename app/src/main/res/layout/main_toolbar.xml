@@ -30,7 +30,7 @@
             <!--android:layout_marginBottom="4dp"-->
             <!--android:layout_gravity="center" />-->
         
-        <!-- This is a centered title -->
+        <!-- This is a centered name -->
         <TextView
             android:id="@+id/textViewToolbarTitle"
             android:orientation="horizontal"

@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:elevation="4dp">
         
-        <!-- This is a centered title -->
+        <!-- This is a centered name -->
         <SearchView
             android:id="@+id/editTextSearch"
             android:orientation="horizontal"

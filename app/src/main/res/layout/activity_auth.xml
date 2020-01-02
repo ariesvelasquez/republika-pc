@@ -1,9 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:background="@color/colorSmoke"
     tools:context="ariesvelasquez.com.republikapc.ui.auth.AuthActivity">
+    
+    
+    <ImageView
+        android:layout_width="@dimen/icon_size_64"
+        android:layout_height="@dimen/icon_size_64"
+        android:src="@drawable/ic_vector_cute_knight"/>
+    
+    <TextView
+        android:id="@+id/textViewSigningUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.TileTertiary"
+        android:gravity="center"
+        android:text="@string/signing_up"
+        android:layout_marginTop="@dimen/view_padding_2"/>
+    
+    <ProgressBar
+        android:id="@+id/progressBarSigningIn"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        android:progressBackgroundTint="@color/colorSmoke"
+        android:progressTint="@color/colorBlue"
+        android:layout_marginTop="@dimen/view_padding_2"
+        android:layout_marginStart="@dimen/view_padding_5"
+        android:layout_marginEnd="@dimen/view_padding_5"
+        tools:visibility="visible"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

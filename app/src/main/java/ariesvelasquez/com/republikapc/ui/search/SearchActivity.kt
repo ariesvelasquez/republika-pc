@@ -59,7 +59,7 @@ class SearchActivity : AppCompatActivity() {
             FeedItemsAdapter.FEED_VIEW_TYPE,
             { viewModel.retry() }) { v, pos, feedItem ->
 
-            Timber.e("Clicked Feed Item From Search " + feedItem.title)
+            Timber.e("Clicked Feed Item From Search " + feedItem.name)
         }
         searchList.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         searchList.adapter = adapter

@@ -20,6 +20,7 @@ abstract class DashboardFragment: Fragment() {
 
     protected var mIsUserLoggedIn: Boolean = false
     protected var mIsRigInitialized: Boolean = false
+    protected var mIsSavedInitialized: Boolean = false
 
     val dashboardViewModel: DashboardViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
@@ -51,6 +52,10 @@ abstract class DashboardFragment: Fragment() {
 
         dashboardViewModel.isRigsInitialized.observe(this, Observer {
             mIsRigInitialized = it
+        })
+
+        dashboardViewModel.isSavedInitialized.observe(this, Observer {
+            mIsSavedInitialized = it
         })
 
         return super.onCreateView(inflater, container, savedInstanceState)

@@ -1,5 +1,6 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +9,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.utils.Tools
 
 class ItemsOfRigViewHolder(view: View, private val onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit) : RecyclerView.ViewHolder(view) {
 
+    private var tools = Tools().numberFormatter
+
     private val mainView: ConstraintLayout = view.findViewById(R.id.constraintLayoutParent)
-    private val title: TextView = view.findViewById(R.id.title)
+    private val name: TextView = view.findViewById(R.id.name)
     private val sellerName: TextView = view.findViewById(R.id.textViewSellerName)
     private val page: TextView = view.findViewById(R.id.textViewItemDescription)
     private val price: TextView = view.findViewById(R.id.textViewPrice)
@@ -28,11 +32,12 @@ class ItemsOfRigViewHolder(view: View, private val onClickCallback: (v: View, po
         }
     }
 
+    @SuppressLint("SetTextI18n")
     fun bind(item: FeedItem, position: Int) {
         this.item = item
-        title.text = item.title ?: "loading"
+        name.text = item.name ?: "loading"
         sellerName.text = item.seller
-        price.text = item.price
+        price.text = tools?.format(item.price.toDouble()) + ".00"
         page.text = item.page.toString()
 
         mainView.setOnClickListener {

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:fitsSystemWindows="true"
+    android:background="@color/colorBlue">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/view_padding_2">
+        
+        
+        <ImageView
+            android:layout_width="@dimen/icon_size_70"
+            android:layout_height="@dimen/icon_size_70"
+            android:src="@drawable/ic_vector_cute_knight"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/view_padding_2"
+            android:layout_marginBottom="@dimen/view_padding_2"/>
+    
+        <TextView
+            style="@style/TextAppearance.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/i_would_like_to_give_credits_to"
+            android:textAlignment="textStart"
+            android:textSize="@dimen/font_size_list_title"
+            android:textColor="@color/colorWhite"/>
+    
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_marginTop="@dimen/view_padding_2"
+            android:text="@string/freepick_flaticon_com_for_my_main_app_icon_and_some_of_the_icons_used_in_the_app"
+            android:textStyle="bold"
+            android:textSize="@dimen/font_size_caption_small"
+            android:textColor="@color/colorSmoke"/>
+    
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_marginTop="@dimen/view_half_padding"
+            android:text="@string/link_www_flaticon_com_authors_freepik"
+            android:textSize="@dimen/font_size_small"
+            android:textStyle="bold"
+            android:textColor="@color/colorSmoke"/>
+    
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_marginTop="@dimen/view_padding_2"
+            android:text="@string/materialdesignicons_com_community_for_some_of_the_icons_used_in_the_app"
+            android:textStyle="bold"
+            android:textSize="@dimen/font_size_caption_small"
+            android:textColor="@color/colorSmoke"/>
+    
+        <TextView
+            style="@style/TextAppearance.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_padding_4"
+            android:text="@string/and_special_thanks_to"
+            android:textSize="@dimen/font_size_list_title"
+            android:textColor="@color/colorWhite"/>
+    
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_padding_2"
+            android:orientation="horizontal">
+        
+            <ImageView
+                android:layout_width="@dimen/icon_size_18"
+                android:layout_height="@dimen/icon_size_18"
+                android:src="@drawable/ic_cube_outline"/>
+        
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/view_padding"
+                style="@style/TextAppearance.TileTertiary"
+                android:text="@string/sir_jesus_a_domingo_tipidpc_com"
+                android:textStyle="bold"
+                android:gravity="bottom"
+                android:textSize="@dimen/font_size_caption_small"
+                android:textColor="@color/colorSmoke"/>
+            
+        </LinearLayout>
+    
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_marginTop="@dimen/view_half_padding"
+            android:text="@string/thank_you_sir_for_letting_me_use_tpc_data_to_my_app_salamat_po_sir"
+            android:textStyle="bold"
+            android:textSize="@dimen/font_size_small"
+            android:textColor="@color/colorSmoke"/>
+    
+    </LinearLayout>
+
+</LinearLayout>

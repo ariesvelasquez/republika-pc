@@ -23,6 +23,15 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
     private var chipGroup = view.findViewById<ChipGroup>(R.id.chipGroupHighlights)
     private var item : Rig? = null
 
+    // Init Views
+    private val titleView = view.findViewById<TextView>(R.id.title)
+    private val partsView = view.findViewById<LinearLayout>(R.id.linearLayoutParts)
+    private val countView = view.findViewById<TextView>(R.id.textViewItemCount)
+    private val viewAllView = view.findViewById<TextView>(R.id.textViewViewAllParts)
+    private val dateView = view.findViewById<TextView>(R.id.textViewDate)
+    private val imageViewAll = view.findViewById<ImageView>(R.id.imageViewViewAllParts)
+    private val imageViewOption = view.findViewById<ImageView>(R.id.imageViewOption)
+
     private var context = view.context
     private val chipWidth: Float by lazy {
         TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 1f,
@@ -37,16 +46,7 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
     fun bind(item: Rig?) {
         this.item = item
 
-        // Init Views
-        val titleView = view.findViewById<TextView>(R.id.title)
-        val partsView = view.findViewById<LinearLayout>(R.id.linearLayoutParts)
-        val countView = view.findViewById<TextView>(R.id.textViewItemCount)
-        val viewAllView = view.findViewById<TextView>(R.id.textViewViewAllParts)
-        val dateView = view.findViewById<TextView>(R.id.textViewDate)
-        val imageViewAll = view.findViewById<ImageView>(R.id.imageViewViewAllParts)
-        val imageViewOption = view.findViewById<ImageView>(R.id.imageViewOption)
-
-        // Set title
+        // Set name
         titleView.text = item?.name
         // Item Count
         countView.text = item?.itemCount.toString()
@@ -84,7 +84,7 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
         chipGroup.addView(chip1)
         chipGroup.addView(chip2)
 
-//        title.text = item?.title ?: "loading"
+//        name.text = item?.name ?: "loading"
 //        sellerName.text = item?.seller
 //        price.text = item?.price
 //        page.text = item?.page?.toString()

@@ -1,10 +1,10 @@
-package ariesvelasquez.com.republikapc.repository.rigs
+package ariesvelasquez.com.republikapc.repository.saved
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.ItemKeyedDataSource
 import ariesvelasquez.com.republikapc.Const.OWNER_ID
-import ariesvelasquez.com.republikapc.Const.ITEM_PER_PAGE_10
-import ariesvelasquez.com.republikapc.model.rigs.Rig
+import ariesvelasquez.com.republikapc.Const.ITEM_PER_PAGE_20
+import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
@@ -13,19 +13,16 @@ import com.google.firebase.firestore.Query
 import timber.log.Timber
 import java.io.IOException
 
-class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<String, Rig>() {
+class SavedDataSource(savedReference: CollectionReference) : ItemKeyedDataSource<String, Saved>() {
 
     private var initialQuery: Query
     private var lastVisible: DocumentSnapshot? = null
     private var lastPageReached: Boolean = false
-    private var pageNumber = 1
+    private val mItemPerPage = ITEM_PER_PAGE_20
 
     init {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
-        initialQuery = rigsReference.
-            whereEqualTo(OWNER_ID, firebaseUser?.uid).
-            limit(ITEM_PER_PAGE_10)
-//        initialQuery = rigsReference.orderBy("name", Query.Direction.ASCENDING).limit(ITEM_PER_PAGE_10)
+        initialQuery = savedReference.whereEqualTo(OWNER_ID, firebaseUser?.uid).limit(mItemPerPage)
     }
 
     /**
@@ -41,7 +38,7 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
 
     override fun loadInitial(
         params: LoadInitialParams<String>,
-        callback: LoadInitialCallback<Rig>
+        callback: LoadInitialCallback<Saved>
     ) {
         // set network value to loading.
         networkState.postValue(NetworkState.LOADING)
@@ -50,7 +47,7 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
         Timber.e("loadInitial")
         try {
             initialQuery.get().addOnCompleteListener { task ->
-                val rigList = mutableListOf<Rig>()
+                val savedList = mutableListOf<Saved>()
                 if (task.isSuccessful) {
                     Timber.e("task.isSuccessful")
 
@@ -58,13 +55,13 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
                     Timber.e("querySnapshot size " + querySnapshot?.size())
 
                     for (document in querySnapshot!!) {
-                        val rigItem = document.toObject(Rig::class.java)
-                        rigList.add(rigItem)
+                        val savedItem = document.toObject(Saved::class.java)
+                        savedList.add(savedItem)
                     }
 
                     // Return the collected list from firestore
-                    Timber.e("Riglist size = " + rigList.size)
-                    callback.onResult(rigList)
+                    Timber.e("SavedList size = " + savedList.size)
+                    callback.onResult(savedList)
                     networkState.postValue(NetworkState.LOADED)
                     initialLoad.postValue(NetworkState.LOADED)
 
@@ -90,7 +87,7 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
 
     }
 
-    override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<Rig>) {
+    override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<Saved>) {
         // set network value to loading.
         networkState.postValue(NetworkState.LOADING)
 
@@ -99,20 +96,20 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
             val nextQuery: Query = initialQuery.startAfter(lastVisible!!)
             try {
                 nextQuery.get().addOnCompleteListener { task ->
-                    val nextRigList = mutableListOf<Rig>()
+                    val nextSavedList = mutableListOf<Saved>()
                     if (task.isSuccessful) {
                         val querySnapshot = task.result
                         for (document in querySnapshot!!) {
-                            val rigItem = document.toObject(Rig::class.java)
-                            nextRigList.add(rigItem)
+                            val savedItem = document.toObject(Saved::class.java)
+                            nextSavedList.add(savedItem)
                         }
-                        callback.onResult(nextRigList)
+                        callback.onResult(nextSavedList)
 
                         // set network value to loading.
                         networkState.postValue(NetworkState.LOADED)
                         initialLoad.postValue(NetworkState.LOADED)
 
-                        if (nextRigList.size < ITEM_PER_PAGE_10) {
+                        if (nextSavedList.size < mItemPerPage) {
                             lastPageReached = true
                         } else {
                             lastVisible = querySnapshot.documents[querySnapshot.size() - 1]
@@ -134,9 +131,9 @@ class RigsDataSource(rigsReference: CollectionReference) : ItemKeyedDataSource<S
         }
     }
 
-    override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<Rig>) {
+    override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<Saved>) {
 
     }
 
-    override fun getKey(item: Rig): String = "something"
+    override fun getKey(item: Saved): String = "something"
 }

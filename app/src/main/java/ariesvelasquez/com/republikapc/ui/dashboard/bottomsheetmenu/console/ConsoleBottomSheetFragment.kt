@@ -12,8 +12,15 @@ import androidx.lifecycle.ViewModelProvider
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.android.synthetic.main.dashboard_bottom_sheet_dialog.view.*
 import kotlinx.android.synthetic.main.fragment_bottom_sheet_console.view.*
+import kotlinx.android.synthetic.main.fragment_bottom_sheet_console.view.buttonCreateRig
+import kotlinx.android.synthetic.main.fragment_bottom_sheet_console.view.imageViewLogOut
+import kotlinx.android.synthetic.main.fragment_bottom_sheet_console.view.imageViewThumbnail
+import kotlinx.android.synthetic.main.fragment_bottom_sheet_console.view.textViewEmail
 import timber.log.Timber
 
 
@@ -82,10 +89,16 @@ class ConsoleBottomSheetFragment : BottomSheetDialogFragment() {
         rootView.constraintLayoutSignedIn.visibility = View.VISIBLE
         rootView.constraintLayoutLoggedOutLayout.visibility = View.GONE
 
+        // Thumbnail
+        Glide.with(this)
+            .load(userData!!.photoUrl)
+            .apply(RequestOptions.circleCropTransform())
+            .into(rootView.imageViewThumbnail)
+
         // Display Name
-        rootView.textViewDisplayName.text = userData?.displayName
+        rootView.textViewDisplayName.text = userData.displayName
         // Email
-        rootView.textViewEmail.text = userData?.email
+        rootView.textViewEmail.text = userData.email
 
         rootView.buttonCreateRig.setOnClickListener { listener?.onCreateRigInvoked() }
     }

@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorDarkGray"
             android:layout_marginStart="@dimen/view_padding"
+            android:layout_marginTop="@dimen/view_half_padding"
             app:layout_constraintStart_toEndOf="@+id/imageViewThumbnail"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Aries Velasquez" />

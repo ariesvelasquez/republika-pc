@@ -6,7 +6,10 @@
     android:id="@+id/constraintLayoutParent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/view_padding_2"
+    android:paddingStart="@dimen/view_padding"
+    android:paddingEnd="@dimen/view_padding"
+    android:paddingTop="@dimen/view_padding_2"
+    android:paddingBottom="@dimen/view_padding_2"
     android:orientation="vertical">
     
     <TextView
@@ -54,10 +57,9 @@
     
     <ImageView
         android:id="@+id/imageViewPesoIcon"
-        android:layout_width="@dimen/icon_size_20"
-        android:layout_height="@dimen/icon_size_20"
+        android:layout_width="@dimen/icon_size_12"
+        android:layout_height="@dimen/icon_size_12"
         android:layout_gravity="center_vertical"
-        android:padding="@dimen/view_half_padding"
         android:layout_marginTop="2dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/textViewPrice"
@@ -72,6 +74,7 @@
         style="@style/TextAppearance.TilePrimary"
         android:gravity="start"
         android:layout_marginBottom="@dimen/view_padding"
+        android:layout_marginStart="@dimen/view_half_padding"
         android:textColor="@color/text_helper_dark"
         android:layout_marginTop="@dimen/view_half_padding"
         app:layout_constraintEnd_toEndOf="parent"

@@ -39,7 +39,8 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:progressTint="@color/colorLightGray"
+                android:progressBackgroundTint="@color/colorSmoke"
+                android:progressTint="@color/colorBlue"
                 tools:progress="20"/>
             
         </com.google.android.material.appbar.AppBarLayout>
@@ -76,20 +77,23 @@
             app:useCompatPadding="true" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    
+    <include
+        layout="@layout/side_nav_layout" />
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        android:background="@color/colorLightGray">
-        
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorWhite"
-            android:text="TEST"/>
-    </com.google.android.material.navigation.NavigationView>
+<!--    <com.google.android.material.navigation.NavigationView-->
+<!--        android:id="@+id/nav_view"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_gravity="start"-->
+<!--        android:fitsSystemWindows="true"-->
+<!--        android:background="@color/colorBlue">-->
+<!--        -->
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="@color/colorWhite"-->
+<!--            android:text="TEST"/>-->
+<!--    </com.google.android.material.navigation.NavigationView>-->
 
 </androidx.drawerlayout.widget.DrawerLayout>

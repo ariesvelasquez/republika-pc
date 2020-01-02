@@ -62,7 +62,7 @@ abstract class BaseActivity : AppCompatActivity(), FirebaseAuth.AuthStateListene
 
         // create dialog box
         val alert = dialogBuilder.create()
-        // set title for alert dialog box
+        // set name for alert dialog box
         alert.setTitle(" ")
         // show alert dialog
         alert.show()

@@ -2,14 +2,11 @@ package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
-import timber.log.Timber
 
 class FeedItemsAdapter(
     private val viewTypeParam: Int = FEED_VIEW_TYPE,
@@ -28,7 +25,7 @@ class FeedItemsAdapter(
         when (getItemViewType(position)) {
             FEED_VIEW_TYPE -> (holder as FeedsItemViewHolder).bind(getItem(position)!!, position)
             RIG_ITEM_VIEW_TYPE -> (holder as ItemsOfRigViewHolder).bind(getItem(position)!!, position)
-            ERROR_VIEW_TYPE -> (holder as NetworkStateItemViewHolder).bindTo(
+            ERROR_VIEW_TYPE -> (holder as NetworkStateViewHolder).bindTo(
                 networkState)
         }
     }
@@ -49,7 +46,7 @@ class FeedItemsAdapter(
         return when (viewType) {
             FEED_VIEW_TYPE -> FeedsItemViewHolder.create(parent, onClickCallback)
             RIG_ITEM_VIEW_TYPE -> ItemsOfRigViewHolder.create(parent, onClickCallback)
-            ERROR_VIEW_TYPE -> NetworkStateItemViewHolder.create(parent, retryCallback)
+            ERROR_VIEW_TYPE -> NetworkStateViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
     }

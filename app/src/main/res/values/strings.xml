@@ -17,12 +17,16 @@
     <string name="create_a_part">Create a Part</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="terms_of_service">Terms of Service</string>
-    <string name="sign_in_with_google">Sign In With Google</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="sign_in">Sign In</string>
+    <string name="retry">Retry</string>
     <string name="term_and_condition_sign_in_agreement">By clicking "Sign Up With Google", you agree to our terms and that you have read our Privacy Policy</string>
     
     <string name="rig_created_success">New Rig has been created</string>
     <string name="rig_deleted">Rig deleted</string>
     <string name="added_to_rig_success">Added Item to Rig</string>
+    <string name="item_saved">Item Saved!</string>
+    <string name="item_deleted">Item Deleted!</string>
     
     <string name="updating">Updating...</string>
     <string name="delete">Delete</string>
@@ -32,4 +36,18 @@
     <string name="edit_rig_name">Edit rig name (Click name to edit)</string>
     <string name="save_new_name">Save new name (Not yet available.)</string>
     <string name="want_to_delete_this_rig">Do you want to delete this rig?</string>
+    <string name="dlit">dlit</string>
+    <string name="sign_in_to_unlock_feature">Please sign in to unlock feature, press the bag icon</string>
+    <string name="signing_up">Signing up</string>
+    <string name="creating_user_please_wait">Loading user data... please wait...</string>
+    
+    <string name="navigation_drawer_open">open drawer</string>
+    <string name="navigation_drawer_close">close drawer</string>
+    <string name="i_would_like_to_give_credits_to">I would like to give credits to...</string>
+    <string name="freepick_flaticon_com_for_my_main_app_icon_and_some_of_the_icons_used_in_the_app">Freepik (flaticon.com) for my main app icon and some of the icons used in the app</string>
+    <string name="link_www_flaticon_com_authors_freepik">link: www.flaticon.com/authors/freepik</string>
+    <string name="materialdesignicons_com_community_for_some_of_the_icons_used_in_the_app">Materialdesignicons.com community for some of the icons used in the app</string>
+    <string name="and_special_thanks_to">and special thanks to...</string>
+    <string name="sir_jesus_a_domingo_tipidpc_com">Sir Jesus A. Domingo / TipidPC.com</string>
+    <string name="thank_you_sir_for_letting_me_use_tpc_data_to_my_app_salamat_po_sir">Thank you sir for letting me use tpc data to my app. Salamat po sir.</string>
 </resources>

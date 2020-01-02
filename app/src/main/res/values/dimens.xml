@@ -36,10 +36,14 @@
     <dimen name="design_bottom_navigation_height" tools:override="true">48dp</dimen>
     
     <!--ICON SIZES-->
+    <dimen name="icon_size_12">12dp</dimen>
     <dimen name="icon_size_18">18dp</dimen>
+    <dimen name="icon_size_20">20dp</dimen>
     <dimen name="icon_size_24">24dp</dimen>
     <dimen name="icon_size_36">36dp</dimen>
     <dimen name="icon_size_48">48dp</dimen>
+    <dimen name="icon_size_64">64dp</dimen>
+    <dimen name="icon_size_70">70dp</dimen>
     
     <!-- Rig Item Layout Dimens-->
     <dimen name="rig_stat_icon">@dimen/icon_size_24</dimen>

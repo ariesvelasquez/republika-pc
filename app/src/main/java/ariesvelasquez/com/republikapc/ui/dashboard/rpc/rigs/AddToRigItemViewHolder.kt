@@ -25,7 +25,7 @@ class AddToRigItemViewHolder(val view: View, private val onClickCallback: (v: Vi
         val titleView = view.findViewById<TextView>(R.id.title)
         val buttonAdd = view.findViewById<ImageView>(R.id.buttonAdd)
 
-        // Set title
+        // Set name
         titleView.text = item?.name
 
         // Parts Click

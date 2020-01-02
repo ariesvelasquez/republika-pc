@@ -44,6 +44,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@drawable/shape_rectangle_rounded_solid"
+            android:backgroundTint="@color/colorLightGray"
             android:paddingStart="@dimen/view_padding_2"
             android:paddingTop="@dimen/view_padding"
             android:paddingEnd="@dimen/view_padding_2"
@@ -59,14 +60,15 @@
                 android:layout_gravity="center_vertical"
                 android:paddingTop="2dp"
                 android:layout_marginEnd="@dimen/view_half_padding"
-                android:src="@drawable/ic_peso_small"/>
+                android:src="@drawable/ic_peso_small"
+                android:tint="@color/colorLightGray"/>
     
             <TextView
                 android:id="@+id/textViewPrice"
                 style="@style/TextAppearance.TilePrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorTipidPcOrange"
+                android:textColor="@color/colorLightGray"
                 android:textStyle="bold"
                 tools:text="6700" />
             
@@ -82,18 +84,18 @@
             app:layout_constraintStart_toStartOf="parent">
         
             <ImageView
-                android:id="@+id/imageViewSaveIcon"
-                android:src="@drawable/ic_save_solid"
+                android:id="@+id/imageViewDeleteIcon"
+                android:src="@drawable/ic_delete_outline"
                 android:layout_width="@dimen/icon_size_18"
                 android:layout_height="@dimen/icon_size_18"
                 android:layout_marginBottom="@dimen/view_half_padding"/>
         
             <TextView
-                android:id="@+id/imageViewSaveText"
+                android:id="@+id/imageViewDeleteText"
                 style="@style/TextAppearance.TileTertiary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="save"
+                android:text="@string/dlit"
                 android:textAlignment="center"
                 android:textColor="@color/colorRigStatsText"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
