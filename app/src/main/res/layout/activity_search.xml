@@ -24,6 +24,15 @@
             <include
                 android:id="@+id/toolbar"
                 layout="@layout/search_toolbar"/>
+    
+            <ProgressBar
+                android:id="@+id/progressBarLoader"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:progressBackgroundTint="@color/colorSmoke"
+                android:progressTint="@color/colorBlue"
+                tools:progress="20"/>
             
             <!--<androidx.appcompat.widget.Toolbar-->
             <!--android:id="@+id/toolbar"-->
@@ -41,11 +50,12 @@
             android:layout_marginTop="?attr/actionBarSize">
     
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/searchList"
+                android:id="@+id/recyclerViewSearch"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#ffffff"
                 android:scrollbars="vertical"
+                android:paddingTop="@dimen/view_padding"
                 android:paddingStart="@dimen/view_padding"/>
         
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

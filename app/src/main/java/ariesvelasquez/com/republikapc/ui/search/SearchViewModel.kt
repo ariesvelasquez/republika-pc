@@ -9,21 +9,16 @@ import ariesvelasquez.com.republikapc.repository.search.ISearchRepository
 class SearchViewModel(private val repository: ISearchRepository) : ViewModel() {
 
     private val searchVal = MutableLiveData<String>()
-    private val repoResult = map(searchVal) {
-        repository.searchItems(it)
-    }
-    val items = Transformations.switchMap(repoResult) { it.pagedList }!!
-    val networkState = Transformations.switchMap(repoResult) { it.networkState }!!
-    val refreshState = Transformations.switchMap(repoResult) { it.refreshState }!!
+    private val repoResult = map(searchVal) { repository.searchItems(it) }
+    val items = Transformations.switchMap(repoResult) { it.pagedList }
+    val networkState = Transformations.switchMap(repoResult) { it.networkState }
+    val refreshState = Transformations.switchMap(repoResult) { it.refreshState }
 
     fun refresh() {
         repoResult.value?.refresh?.invoke()
     }
 
     fun searchItems(searchVal: String) : Boolean {
-        if (this.searchVal.value == searchVal) {
-            return false
-        }
         this.searchVal.value = searchVal
         return true
     }
@@ -37,7 +32,7 @@ class SearchViewModel(private val repository: ISearchRepository) : ViewModel() {
 //    }
 
     fun retry() {
-        val listing = repoResult?.value
+        val listing = repoResult.value
         listing?.retry?.invoke()
     }
 }

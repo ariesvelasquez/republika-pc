@@ -48,37 +48,11 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.main_toolbar.*
 
-class DashboardActivity : BaseActivity(),
-    TipidPCFragment.OnTPCFragmentListener,
-    RigsFragment.OnRigFragmentInteractionListener,
-    ConsoleBottomSheetFragment.ConsoleBottomSheetInteractionListener,
-    RigCreatorBottomSheetFragment.RigCreatorBottomSheetInteractionListener,
-    AddToRigBottomSheetFragment.AddToRigBottomSheetFragmentListener,
-    RepublikaPCFragment.OnRepublikaPCInteractionListener,
-    PartsFragment.OnPartsFragmentInteractionListener,
-    RigDetailBottomSheetFragment.OnRigDetailInteractionListener,
-    SavedFragment.OnSavedFragmentInteractionListener,
-    SavedActionBottomSheetFragment.OnSavedActionInteractionFragmentListener {
+class DashboardActivity : BaseDashboardActivity() {
 
     private lateinit var viewPager: ViewPager
     private lateinit var toolbar: Toolbar
     private var mCurrentMenuFragment = R.id.navigation_rigs
-
-    // Create Rig Bottom Sheet
-    private lateinit var createRigBottomSheet : RigCreatorBottomSheetFragment
-    private lateinit var rigDetailBottomSheet : RigDetailBottomSheetFragment
-    private lateinit var savedItemBottomSheet : SavedActionBottomSheetFragment
-
-    private val viewModel: DashboardViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ServiceLocator.instance(this@DashboardActivity)
-                    .getDashboardRepository()
-                @Suppress("UNCHECKED_CAST")
-                return DashboardViewModel(repo) as T
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,12 +65,6 @@ class DashboardActivity : BaseActivity(),
 
         // Observe Rig Creation State
         handleRigState()
-
-        // Observe Add Item to Rig Creation State
-        handleAddItemToRigCreationState()
-
-        // Observe Saved item State
-        handleSaveItemState()
 
         textViewToolbarTitle.setOnClickListener { launchActivity<SearchActivity>() }
 
@@ -125,16 +93,11 @@ class DashboardActivity : BaseActivity(),
         }
     }
 
-    private fun handleUserState() {
-        viewModel.observeUser(mFirebaseUser!!.uid)
-    }
-
     private fun handleRigState() {
         viewModel.createRigNetworkState.observe(this, Observer {
             when (it) {
                 NetworkState.LOADED -> {
                     createRigBottomSheet.dismiss()
-                    // Todo Show Success dialog
                     showSnackBar(getString(R.string.rig_created_success))
                 }
                 NetworkState.LOADING -> {}
@@ -158,7 +121,7 @@ class DashboardActivity : BaseActivity(),
         })
     }
 
-    private fun handleAddItemToRigCreationState() {
+    override fun handleAddItemToRigCreationState() {
         viewModel.addItemToRigNetworkState.observe(this, Observer {
             when (it) {
                 NetworkState.LOADING -> {
@@ -178,7 +141,7 @@ class DashboardActivity : BaseActivity(),
         })
     }
 
-    private fun handleSaveItemState() {
+    override fun handleSaveItemState() {
         viewModel.saveItemNetworkState.observe(this, Observer {
             when (it) {
                 NetworkState.LOADING -> {
@@ -247,18 +210,6 @@ class DashboardActivity : BaseActivity(),
         toolbar.post { toolbar.title = bottomNavigationView.menu.getItem(0).title }
     }
 
-    override fun onUserLoggedOut() {
-        viewModel.setIsUserSignedIn(false)
-    }
-
-    override fun onUserLoggedIn(user: FirebaseUser) {
-        viewModel.setIsUserSignedIn(true)
-        viewModel.setUser(user)
-
-        handleUserState()
-        // Handle UI Changes when logged in
-    }
-
     // Bottom Navigation Setup
     private lateinit var bottomNavigationView: BottomNavigationView
     private val mOnNavigationItemClickedListener = BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
@@ -295,83 +246,6 @@ class DashboardActivity : BaseActivity(),
         override fun getCount(): Int {
             return 2
         }
-    }
-
-    override fun onCreateRigInvoked() {
-        // Check if Rig Count exceeds the maximum
-        if (viewModel.user.value?.rigCount!! >= 2) {
-            showSimplePrompt(getString(R.string.reached_max_rig_limit))
-            return
-        }
-
-        // Launch Create Rig Dialog
-        createRigBottomSheet = RigCreatorBottomSheetFragment.newInstance()
-        createRigBottomSheet.show(supportFragmentManager, createRigBottomSheet.TAG)
-    }
-
-    override fun onTPCItemClicked(feedItem: FeedItem) {
-        val rawFeedItem = Gson().toJson(feedItem)
-        val fragment = AddToRigBottomSheetFragment.newInstance(rawFeedItem)
-        fragment.show(supportFragmentManager, fragment.TAG)
-    }
-
-    override fun onRigMenuClicked(rig: Rig) {
-        val rawRigRef = Gson().toJson(rig)
-        rigDetailBottomSheet = RigDetailBottomSheetFragment.newInstance(rawRigRef)
-        rigDetailBottomSheet.show(supportFragmentManager, rigDetailBottomSheet.TAG)
-    }
-
-    override fun onNewRigCreated(rigName: String) {
-        viewModel.createRig(rigName)
-    }
-
-    override fun onCreatePartInvoked() {
-
-    }
-
-    override fun showSignUpBottomSheet() {
-        val bottomSheetFragment = ConsoleBottomSheetFragment.newInstance()
-        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.TAG)
-    }
-
-    override fun onItemAddedToRig(rigItem: Rig, feedItemReference: FeedItem) {
-        viewModel.addItemToRig(rigItem, feedItemReference)
-    }
-
-    override fun onItemSave(feedItem: FeedItem) {
-        viewModel.save(feedItem)
-    }
-
-    override fun onSavedItemClicked(saved: Saved) {
-        val rawSavedItem = Gson().toJson(saved)
-        savedItemBottomSheet = SavedActionBottomSheetFragment.newInstance(rawSavedItem)
-        savedItemBottomSheet.show(supportFragmentManager, savedItemBottomSheet.TAG)
-    }
-
-    override fun onItemDelete(savedItem: Saved) {
-        viewModel.deleteSaved(savedItem.docId)
-    }
-
-    override fun onSavedItemAddedToRIg(rigItem: Rig, savedItemReference: Saved) {
-        viewModel.addSavedItemToRig(rigItem, savedItemReference)
-    }
-
-    override fun onGoToLink(linkId: String) {
-        val url = TIPID_PC_VIEW_ITEM + linkId
-        launchActivity<WebViewActivity> {
-            putExtra(WebViewActivity.WEB_VIEW_URL, url)
-        }
-    }
-
-    override fun onLoginInvoked() {
-        launchActivity<AuthActivity> {}
-        finish()
-    }
-
-    override fun onLogoutInvoked() {
-        mFirebaseAuth.signOut()
-        mGoogleClient.signOut()
-        Toast.makeText(this, "User has been signed out", Toast.LENGTH_SHORT).show()
     }
 
     /**

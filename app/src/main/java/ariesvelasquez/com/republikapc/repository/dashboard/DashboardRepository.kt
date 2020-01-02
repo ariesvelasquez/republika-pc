@@ -22,6 +22,7 @@ import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.repository.rigs.RigDataSourceFactory
 import ariesvelasquez.com.republikapc.repository.rigs.RigItemsDataSourceFactory
 import ariesvelasquez.com.republikapc.repository.saved.SavedDataSourceFactory
+import ariesvelasquez.com.republikapc.repository.search.SearchSourceFactory
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
@@ -368,6 +369,39 @@ class DashboardRepository(
         batchWrite.update(rigRef, "itemCount", FieldValue.increment(-1))
 
         return batchWrite.commit()
+    }
+
+    @MainThread
+    override fun searchFeeds(searchVal: String): Listing<FeedItem> {
+        val sourceFactory = SearchSourceFactory(tipidPCApi, searchVal, ioExecutor)
+
+        // We use toLiveData Kotlin ext. function here, you could also use LivePagedListBuilder
+        val livePagedList = sourceFactory.toLiveData(
+            // we use Config Kotlin ext. function here, could also use PagedList.Config.Builder
+            config = Config(
+                pageSize = 10,
+                enablePlaceholders = false,
+                initialLoadSizeHint = 10 * 2),
+            // provide custom executor for network requests, otherwise it will default to
+            // Arch Components' IO pool which is also used for disk access
+            fetchExecutor = ioExecutor)
+
+        val refreshState = Transformations.switchMap(sourceFactory.sourceLiveData) {
+            it.initialLoad
+        }
+        return Listing(
+            pagedList = livePagedList,
+            networkState = Transformations.switchMap(sourceFactory.sourceLiveData) {
+                it.networkState
+            },
+            retry = {
+                sourceFactory.sourceLiveData.value?.retryAllFailed()
+            },
+            refresh = {
+                sourceFactory.sourceLiveData.value?.invalidate()
+            },
+            refreshState = refreshState
+        )
     }
 }
 

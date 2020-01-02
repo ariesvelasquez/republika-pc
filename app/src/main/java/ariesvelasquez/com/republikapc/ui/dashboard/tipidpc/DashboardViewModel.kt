@@ -2,6 +2,7 @@ package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.Transformations.map
 import androidx.lifecycle.ViewModel
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
@@ -203,6 +204,32 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         }
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Search Items Vars
+     */
+
+    private val searchVal = MutableLiveData<String>()
+    private val searchRepoResult = map(searchVal) { repository.searchFeeds(it) }
+    val searchItems = Transformations.switchMap(searchRepoResult) { it.pagedList }
+    val searchNetworkState = Transformations.switchMap(searchRepoResult) { it.networkState }
+    val searchRefreshNetworkState = Transformations.switchMap(searchRepoResult) { it.refreshState }
+
+    fun refreshSearch() {
+        searchRepoResult.value?.refresh?.invoke()
+    }
+
+    fun searchItems(searchVal: String) : Boolean {
+        this.searchVal.value = searchVal
+        return true
+    }
+
+    fun retrySearch() {
+        val listing = searchRepoResult.value
+        listing?.retry?.invoke()
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 

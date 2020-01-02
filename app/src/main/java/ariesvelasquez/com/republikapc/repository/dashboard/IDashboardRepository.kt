@@ -28,6 +28,8 @@ interface IDashboardRepository {
 
     fun createRig(firebaseUser: FirebaseUser, rigName: String): Task<Void>
 
+    fun searchFeeds(searchVal: String): Listing<FeedItem>
+
     fun addItemToRig(
         firebaseUser: FirebaseUser,
         rigItem: Rig,
