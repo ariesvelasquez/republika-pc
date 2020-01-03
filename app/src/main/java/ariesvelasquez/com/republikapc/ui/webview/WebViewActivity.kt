@@ -6,12 +6,14 @@ import android.view.KeyEvent
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.Keep
 import ariesvelasquez.com.republikapc.Const.TIPID_PC_BASE_URL
 import ariesvelasquez.com.republikapc.Const.TIPID_PC_RAW_URL
 import ariesvelasquez.com.republikapc.R
 import kotlinx.android.synthetic.main.activity_web_view.*
 import timber.log.Timber
 
+@Keep
 class WebViewActivity : AppCompatActivity() {
 
     companion object {

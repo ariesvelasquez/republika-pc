@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:99764930943:android:91db7e53b5108e33b6324a",
+        "mobilesdk_app_id": "1:99764930943:android:3b0023b2233aeb15b6324a",
         "android_client_info": {
-          "package_name": "com.ariesvelasquez.republikapc.debug"
+          "package_name": "ariesvelasquez.com.republikapc"
         }
       },
       "oauth_client": [
         {
-          "client_id": "99764930943-ablpjr4q0li9flthoutravadjau8jt4f.apps.googleusercontent.com",
+          "client_id": "99764930943-9md6vrdsf4341pjv5ph99kp78pfeolic.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.ariesvelasquez.republikapc.debug",
+            "package_name": "ariesvelasquez.com.republikapc",
             "certificate_hash": "99904a2edf8b9fef335c342ee52a90bbdc38d367"
           }
         },
@@ -45,17 +45,54 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:99764930943:android:33488d293b3db885b6324a",
+        "mobilesdk_app_id": "1:99764930943:android:6f142708fd877548b6324a",
         "android_client_info": {
-          "package_name": "com.ariesvelasquez.republikapc"
+          "package_name": "ariesvelasquez.com.republikapc.debug"
         }
       },
       "oauth_client": [
         {
-          "client_id": "99764930943-4pc00irec774umco1gk0a7a8nq7lkuq6.apps.googleusercontent.com",
+          "client_id": "99764930943-ce5qrtn55q4d5ntdsh1ouftdqs0vpuil.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.ariesvelasquez.republikapc",
+            "package_name": "ariesvelasquez.com.republikapc.debug",
+            "certificate_hash": "99904a2edf8b9fef335c342ee52a90bbdc38d367"
+          }
+        },
+        {
+          "client_id": "99764930943-tj1e5fvbra67jto02t2gn538t4uibmrg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFx7amJUDkgCXDz096un3m8Ti35znNaKM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "99764930943-tj1e5fvbra67jto02t2gn538t4uibmrg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99764930943:android:22dbaa9ab3b91649b6324a",
+        "android_client_info": {
+          "package_name": "ariesvelasquez.com.republikapc.dev.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "99764930943-t07p4723kcuq00auo08l9icepgrru17u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ariesvelasquez.com.republikapc.dev.debug",
             "certificate_hash": "99904a2edf8b9fef335c342ee52a90bbdc38d367"
           }
         },

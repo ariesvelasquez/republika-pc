@@ -1,0 +1,113 @@
+final roomSchemaDir = "$projectDir/roomSchemas"
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "ariesvelasquez.com.republikapc"
+        minSdkVersion android_min_sdk_version
+        targetSdkVersion android_target_sdk_version
+        versionCode 1
+        versionName "0.1"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildTypes {
+        debug {
+            debuggable true
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions 'version'
+    productFlavors {
+        dev {
+            dimension 'version'
+            applicationIdSuffix ".debug"
+            applicationId "ariesvelasquez.com.republikapc.dev"
+            resValue "string", "flavored_app_name", "[Dev]Republika PC"
+        }
+        prod {
+            dimension 'version'
+            applicationId "ariesvelasquez.com.republikapc"
+            resValue "string", "flavored_app_name", "Republika PC"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+kapt {
+    mapDiagnosticLocations = true
+    arguments {
+        arg("room.schemaLocation", roomSchemaDir)
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Support Libraries
+    implementation 'androidx.appcompat:appcompat:1.2.0-alpha01'
+    implementation "androidx.core:core:1.1.0"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
+    implementation "androidx.recyclerview:recyclerview:$support_lib_version"
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+    implementation 'androidx.fragment:fragment-ktx:1.2.0-rc03'
+
+
+    // Networking (Retrofit)
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttp_version"
+
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+
+
+    // Lifecycle (ViewModel + LiveData)
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation 'com.google.firebase:firebase-database:19.2.0'
+    implementation 'com.google.firebase:firebase-firestore:21.3.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
+//    implementation "android.lifecycle:lifecycle-common-java8:1.1.1"
+    // Room
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    // Timber
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
+    // Indefinite Recyclerview Indicator
+    implementation 'com.ryanjeffreybrooks:indefinitepagerindicator:1.0.10'
+
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.3.0-alpha03'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+}
