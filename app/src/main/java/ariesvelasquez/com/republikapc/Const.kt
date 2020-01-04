@@ -4,10 +4,10 @@ object Const {
 
     const val BASE_URL = BUILD_CONFIG_BASE_URL
 
-    const val USERS_COLLECTION = "users"
-    const val RIGS_COLLECTION = "rigs"
-    const val SAVED_COLLECTION = "saved"
-    const val RIGS_ITEM_COLLECTION = "rig_items"
+    const val USERS_COLLECTION = BUILD_CONFIG_USERS_COLLECTION
+    const val RIGS_COLLECTION = BUILD_CONFIG_RIGS_COLLECTION
+    const val SAVED_COLLECTION = BUILD_CONFIG_SAVED_COLLECTION
+    const val RIGS_ITEM_COLLECTION = BUILD_CONFIG_RIGS_ITEM_COLLECTION
     const val ITEM_PER_PAGE_20 : Long = 20
     const val ITEM_PER_PAGE_10 : Long = 10
     const val ITEM_PER_PAGE_5 : Long = 5

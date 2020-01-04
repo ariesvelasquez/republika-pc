@@ -5,6 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: "io.fabric"
 
 android {
     compileSdkVersion 28
@@ -31,7 +32,7 @@ android {
     productFlavors {
         dev {
             dimension 'version'
-            applicationIdSuffix ".debug"
+            applicationIdSuffix ".dev"
             versionNameSuffix "-dev"
             resValue "string", "flavored_app_name", "[Dev]Republika PC"
         }
@@ -109,8 +110,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.firebase:firebase-database:19.2.0'
     implementation 'com.google.firebase:firebase-firestore:21.3.1'
+    implementation "com.google.firebase:firebase-crash:16.2.1"
 
-    // Add the Firebase Crashlytics dependency.
+    // Firebase Crashlytics
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     testImplementation 'junit:junit:4.12'

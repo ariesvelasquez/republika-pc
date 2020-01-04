@@ -139,7 +139,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         // Set Item Name
         rootView.textViewItemName.text = feedItemReference.name
         // Set Seller Name and Date
-        rootView.textViewSellerNameAndDate.text = feedItemReference.seller + " • xx mins ago"
+        rootView.textViewSellerNameAndDate.text = feedItemReference.seller + " • " + feedItemReference.date
         // Price
         rootView.textViewPrice.text = feedItemReference.price.removePrefix("P")
 

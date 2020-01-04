@@ -1,5 +1,6 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.saved
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -128,11 +129,12 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setBasicUIDisplayData() {
         // Set Item Name
         rootView.textViewItemName.text = savedItemReference.name
         // Set Seller Name and Date
-        rootView.textViewSellerNameAndDate.text = savedItemReference.seller + " • xx mins ago"
+        rootView.textViewSellerNameAndDate.text = savedItemReference.seller + " • " + savedItemReference.date
         // Price
         rootView.textViewPrice.text = savedItemReference.price.removePrefix("P")
 
