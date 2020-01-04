@@ -14,12 +14,27 @@ import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
 import kotlinx.android.synthetic.main.fragment_tipid_pc.view.*
 import timber.log.Timber
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.formats.UnifiedNativeAd
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
 
 class TipidPCFragment : DashboardFragment() {
 
     private var listener: OnTPCFragmentListener? = null
 
     private lateinit var rootView: View
+
+    // The number of native ads to load and display.
+    val NUMBER_OF_ADS = 5
+
+    // The AdLoader used to load ads.
+    private var adLoader: AdLoader? = null
+
+    // List of native ads that have been successfully loaded.
+    private val mNativeAds = mutableListOf<UnifiedNativeAd>()
+
+    private lateinit var feedAdapter: FeedItemsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,29 +54,66 @@ class TipidPCFragment : DashboardFragment() {
         initAdapter()
         initSwipeToRefresh()
 
+        loadNativeAds()
+
         dashboardViewModel.showFeedItems()
 
         return rootView
     }
 
+    private fun loadNativeAds() {
+
+        val builder = AdLoader.Builder(context!!, getString(R.string.test_native_advanced_ad_unit))
+        adLoader = builder.forUnifiedNativeAd { unifiedNativeAd ->
+            // A native ad loaded successfully, check if the ad loader has finished loading
+            // and if so, insert the ads into the list.
+            mNativeAds.add(unifiedNativeAd)
+            Timber.e("builder.forUnifiedNativeAd loading")
+
+            if (!adLoader?.isLoading!!) {
+                Timber.e("builder.forUnifiedNativeAd finished loading")
+
+                feedAdapter.adList.add(unifiedNativeAd)
+            }
+        }.withAdListener (
+            object : AdListener() {
+                override fun onAdFailedToLoad(errorCode: Int) {
+                    // A native ad failed to load, check if the ad loader has finished loading
+                    // and if so, insert the ads into the list.
+                    Timber.e("The previous native ad failed to load. Attempting to" + " load another.")
+                    if (!adLoader!!.isLoading) {
+
+                    }
+                }
+            }).build()
+
+        adLoader!!.loadAds(AdRequest.Builder().build(), NUMBER_OF_ADS)
+    }
+
     private fun initAdapter() {
-        val adapter = FeedItemsAdapter(
+        feedAdapter = FeedItemsAdapter(
             FeedItemsAdapter.FEED_VIEW_TYPE,
             { dashboardViewModel.refreshFeeds() }) { v, pos, feedItem ->
             listener?.onTPCItemClicked(feedItem)
         }
 
-
         rootView.list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        rootView.list.adapter = adapter
+        rootView.list.adapter = feedAdapter
 
         // Init Items
-        dashboardViewModel.feedItems.observe(this, Observer<PagedList<FeedItem>> {
+        dashboardViewModel.feedItems.observe(viewLifecycleOwner, Observer<PagedList<FeedItem>> {
             Timber.e("Feeds ViewModel Observer: new items added size: %s", it.size)
-            adapter.submitList(it)
+            feedAdapter.submitList(it)
         })
-        dashboardViewModel.feedsNetworkState.observe(this, Observer {
-            adapter.setNetworkState(it)
+        dashboardViewModel.feedsNetworkState.observe(viewLifecycleOwner, Observer {
+            // Trigger Ad Loader when it loads more item
+            when (it) {
+                NetworkState.LOADING -> {
+                    Timber.e("Feed Loading")
+                    loadNativeAds()
+                }
+            }
+            feedAdapter.setNetworkState(it)
         })
     }
 
@@ -71,7 +123,7 @@ class TipidPCFragment : DashboardFragment() {
     }
 
     private fun initSwipeToRefresh() {
-        dashboardViewModel.feedsRefreshState.observe(this, Observer {
+        dashboardViewModel.feedsRefreshState.observe(viewLifecycleOwner, Observer {
             rootView.refreshSwipe.isRefreshing = it == NetworkState.LOADING
         })
         rootView.refreshSwipe.setOnRefreshListener {

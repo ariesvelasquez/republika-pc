@@ -24,6 +24,8 @@ data class FeedItem(
     var linkId: String = "",
     @SerializedName("date")
     var date: String = "",
+    @SerializedName("is_ad")
+    var isAd: Boolean = false,
     @SerializedName("page")
     var page: Int = -1
 ) {

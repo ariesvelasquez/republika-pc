@@ -3,6 +3,8 @@ package ariesvelasquez.com.republikapc;
 import android.app.Application;
 import android.util.Log;
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.MobileAds;
+
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
@@ -13,6 +15,8 @@ public class RepublikaPC extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        MobileAds.initialize(getApplicationContext(), getString(R.string.admob_app_id));
 
         globalFlags = new GlobalFlags();
 

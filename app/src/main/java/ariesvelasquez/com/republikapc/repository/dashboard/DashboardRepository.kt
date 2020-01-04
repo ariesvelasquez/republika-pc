@@ -108,7 +108,7 @@ class DashboardRepository(
 
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
-        val boundaryCallback = DashboardBoundaryCallback(
+        val boundaryCallback = FeedBoundaryCallback(
             webservice = tipidPCApi,
             handleResponse = this::insertResultIntoDb,
             ioExecutor = ioExecutor

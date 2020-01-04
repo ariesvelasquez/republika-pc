@@ -74,7 +74,7 @@ class RigsFragment : DashboardFragment() {
     }
 
     private fun initSwipeToRefresh() {
-        dashboardViewModel.rigRefreshState.observe(this, Observer {
+        dashboardViewModel.rigRefreshState.observe(viewLifecycleOwner, Observer {
             rootView.swipeRefreshRigs.isRefreshing = it == NetworkState.LOADING
         })
         rootView.swipeRefreshRigs.setOnRefreshListener {
@@ -119,12 +119,12 @@ class RigsFragment : DashboardFragment() {
     }
 
     private fun initRigList() {
-        dashboardViewModel.rigs.observe(this, Observer<PagedList<Rig>> {
+        dashboardViewModel.rigs.observe(viewLifecycleOwner, Observer<PagedList<Rig>> {
             adapter.submitList(it)
 
             Timber.e("RIGGGGZZZZ Items count " + adapter.itemCount)
         })
-        dashboardViewModel.rigNetworkState.observe(this, Observer {
+        dashboardViewModel.rigNetworkState.observe(viewLifecycleOwner, Observer {
             adapter.setNetworkState(it)
         })
     }

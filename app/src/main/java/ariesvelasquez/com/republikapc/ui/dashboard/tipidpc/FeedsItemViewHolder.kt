@@ -11,7 +11,6 @@ import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 
 class FeedsItemViewHolder(view: View, private val onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit) : RecyclerView.ViewHolder(view) {
 
-
     private val mainView: ConstraintLayout = view.findViewById(R.id.constraintLayoutParent)
     private val title: TextView = view.findViewById(R.id.title)
     private val sellerName: TextView = view.findViewById(R.id.textViewSellerName)
