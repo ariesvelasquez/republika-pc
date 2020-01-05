@@ -65,9 +65,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_add_to_rig_bottom_sheet, container, false)
 
-        // Setup something...
         setBasicUIDisplayData()
-
         handleAddItemToRigCreationState()
 
         handleRigState()
@@ -80,16 +78,16 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun handleRigState() {
-        dashboardViewModel.rigs.observe(this, Observer<PagedList<Rig>> {
+        dashboardViewModel.rigs.observe( viewLifecycleOwner, Observer<PagedList<Rig>> {
             adapter.submitList(it)
         })
-        dashboardViewModel.rigNetworkState.observe(this, Observer {
+        dashboardViewModel.rigNetworkState.observe( viewLifecycleOwner, Observer {
             adapter.setNetworkState(it)
         })
     }
 
     private fun handleItemSaveState() {
-        dashboardViewModel.saveItemNetworkState.observe(this, Observer {
+        dashboardViewModel.saveItemNetworkState.observe( viewLifecycleOwner, Observer {
             when (it) {
                 NetworkState.LOADING -> {
                     // Disable the Button after it was clicked
@@ -111,7 +109,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun handleUserStatus() {
         // Check for User Status
-        dashboardViewModel.isUserSignedIn.observe(this, Observer { isUserLoggedIn ->
+        dashboardViewModel.isUserSignedIn.observe( viewLifecycleOwner, Observer { isUserLoggedIn ->
             setOnClickEvents(isUserLoggedIn)
         })
     }
@@ -170,7 +168,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun handleAddItemToRigCreationState() {
-        dashboardViewModel.addItemToRigNetworkState.observe(this, Observer {
+        dashboardViewModel.addItemToRigNetworkState.observe( viewLifecycleOwner, Observer {
             when (it) {
                 NetworkState.LOADING -> {
 

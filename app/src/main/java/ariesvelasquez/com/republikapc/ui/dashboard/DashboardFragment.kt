@@ -40,7 +40,7 @@ abstract class DashboardFragment: Fragment() {
     ): View? {
 
         // Check for User Status
-        dashboardViewModel.isUserSignedIn.observe(this, Observer { isUserLoggedIn ->
+        dashboardViewModel.isUserSignedIn.observe( viewLifecycleOwner, Observer { isUserLoggedIn ->
             mIsUserLoggedIn = isUserLoggedIn
 
             if (isUserLoggedIn) {
@@ -50,11 +50,11 @@ abstract class DashboardFragment: Fragment() {
             }
         })
 
-        dashboardViewModel.isRigsInitialized.observe(this, Observer {
+        dashboardViewModel.isRigsInitialized.observe( viewLifecycleOwner, Observer {
             mIsRigInitialized = it
         })
 
-        dashboardViewModel.isSavedInitialized.observe(this, Observer {
+        dashboardViewModel.isSavedInitialized.observe( viewLifecycleOwner, Observer {
             mIsSavedInitialized = it
         })
 

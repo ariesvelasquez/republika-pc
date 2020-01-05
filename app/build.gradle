@@ -13,8 +13,8 @@ android {
         applicationId "com.ariesvelasquez.republikapc"
         minSdkVersion android_min_sdk_version
         targetSdkVersion android_target_sdk_version
-        versionCode 2
-        versionName "0.1.1"
+        versionCode 3
+        versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

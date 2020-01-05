@@ -44,6 +44,13 @@ class TipidPCFragment : DashboardFragment() {
         return rootView
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (mIsUserLoggedIn and !mIsRigInitialized) {
+            dashboardViewModel.showRigs()
+        }
+    }
+
     private fun initAdapter() {
         val adapter = FeedItemsAdapter(
             FeedItemsAdapter.FEED_VIEW_TYPE,
@@ -56,11 +63,11 @@ class TipidPCFragment : DashboardFragment() {
         rootView.list.adapter = adapter
 
         // Init Items
-        dashboardViewModel.feedItems.observe(this, Observer<PagedList<FeedItem>> {
+        dashboardViewModel.feedItems.observe( viewLifecycleOwner, Observer<PagedList<FeedItem>> {
             Timber.e("Feeds ViewModel Observer: new items added size: %s", it.size)
             adapter.submitList(it)
         })
-        dashboardViewModel.feedsNetworkState.observe(this, Observer {
+        dashboardViewModel.feedsNetworkState.observe( viewLifecycleOwner, Observer {
             adapter.setNetworkState(it)
         })
     }
@@ -71,7 +78,7 @@ class TipidPCFragment : DashboardFragment() {
     }
 
     private fun initSwipeToRefresh() {
-        dashboardViewModel.feedsRefreshState.observe(this, Observer {
+        dashboardViewModel.feedsRefreshState.observe( viewLifecycleOwner, Observer {
             rootView.refreshSwipe.isRefreshing = it == NetworkState.LOADING
         })
         rootView.refreshSwipe.setOnRefreshListener {

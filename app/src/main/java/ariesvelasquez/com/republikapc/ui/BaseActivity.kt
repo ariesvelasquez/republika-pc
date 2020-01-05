@@ -12,9 +12,11 @@ import timber.log.Timber
 
 abstract class BaseActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
-    var mFirebaseUser = FirebaseAuth.getInstance().currentUser
-    val mFirebaseAuth = FirebaseAuth.getInstance()
-    val mGoogleClient by lazy {
+    protected var mIsUserLoggedIn: Boolean = false
+
+    protected var mFirebaseUser = FirebaseAuth.getInstance().currentUser
+    protected val mFirebaseAuth = FirebaseAuth.getInstance()
+    protected val mGoogleClient by lazy {
         GoogleSignIn.getClient(this, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(application.getString(R.string.default_web_client_id))
             .requestEmail()
@@ -25,10 +27,13 @@ abstract class BaseActivity : AppCompatActivity(), FirebaseAuth.AuthStateListene
     abstract fun onUserLoggedIn(user: FirebaseUser)
 
     override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
+
         val firebaseUser = firebaseAuth.currentUser
         if (firebaseUser == null) {
+            mIsUserLoggedIn = false
             onUserLoggedOut()
         } else {
+            mIsUserLoggedIn = true
             onUserLoggedIn(firebaseUser)
             mFirebaseUser = firebaseUser
         }

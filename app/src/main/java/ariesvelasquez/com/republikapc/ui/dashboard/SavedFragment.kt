@@ -67,7 +67,7 @@ class SavedFragment : DashboardFragment() {
     }
 
     private fun initSwipeToRefresh() {
-        dashboardViewModel.savedRefreshState.observe(this, Observer {
+        dashboardViewModel.savedRefreshState.observe( viewLifecycleOwner, Observer {
             rootView.swipeRefreshSaved.isRefreshing = it == NetworkState.LOADING
         })
         rootView.swipeRefreshSaved.setOnRefreshListener {
@@ -90,10 +90,10 @@ class SavedFragment : DashboardFragment() {
     }
 
     private fun initSavedList() {
-        dashboardViewModel.saved.observe(this, Observer<PagedList<Saved>> {
+        dashboardViewModel.saved.observe( viewLifecycleOwner, Observer<PagedList<Saved>> {
             adapter.submitList(it)
         })
-        dashboardViewModel.savedNetworkState.observe(this, Observer {
+        dashboardViewModel.savedNetworkState.observe( viewLifecycleOwner, Observer {
             adapter.setNetworkState(it)
         })
     }

@@ -26,6 +26,8 @@ class SearchActivity : BaseDashboardActivity() {
 
     private lateinit var searchAdapter: FeedItemsAdapter
 
+    private var mIsRigInitialized = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -33,11 +35,18 @@ class SearchActivity : BaseDashboardActivity() {
         // Focus to search edit text
         initSearchView()
 
+        handleRigState()
+
         initAdapter()
         handleSearchState()
         handleRefreshSearchState()
 
         initOnClicks()
+    }
+
+    private fun handleRigState() {
+        // init rigs
+        viewModel.showRigs()
     }
 
     private fun handleSearchState() {
