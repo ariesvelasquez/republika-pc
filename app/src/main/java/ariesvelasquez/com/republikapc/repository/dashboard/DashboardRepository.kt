@@ -49,14 +49,28 @@ class DashboardRepository(
     /**
      * Inserts the response into the database while also assigning position indices to items.
      */
-    private fun insertResultIntoDb(reponse: FeedItemsResource) {
-        reponse.items.let { posts ->
+    private fun insertResultIntoDb(response: FeedItemsResource) {
+        Timber.e("insertResultIntoDb")
+        response.items.let { posts ->
             db.runInTransaction {
-                val itemsWithIndex = posts?.mapIndexed { index, child ->
-                    child.indexInResponse = child.page
-                    child
+                val itemsWithIndex: List<FeedItem>
+
+                // Lsst Item View Type
+                if (response.isListEmpty && response.page.toInt() > 1) {
+                    // Add a last item model Type
+                    itemsWithIndex = listOf(FeedItem(isLastItem = true))
+                } else if (response.isListEmpty && response.page.toInt() == 1) {
+                    Timber.e("no item found else")
+                    // Add a No Item Found Model Type
+                    itemsWithIndex = listOf(FeedItem(isEmptyItem = true))
+                } else {
+                    itemsWithIndex = posts?.mapIndexed { index, child ->
+                        child.indexInResponse = child.page
+                        child
+                    }!!
                 }
-                db.items().insert(itemsWithIndex!!).run {
+
+                db.items().insert(itemsWithIndex).run {
                     Timber.e("Inserted new item with page %s", itemsWithIndex.size)
                 }
             }
@@ -108,7 +122,7 @@ class DashboardRepository(
 
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
-        val boundaryCallback = DashboardBoundaryCallback(
+        val boundaryCallback = FeedBoundaryCallback(
             webservice = tipidPCApi,
             handleResponse = this::insertResultIntoDb,
             ioExecutor = ioExecutor
@@ -138,6 +152,85 @@ class DashboardRepository(
             },
             refreshState = refreshState
         )
+    }
+
+    /**
+     * Returns a Listing of tipid pc items.
+     */
+    @MainThread
+    override fun sellerItems(sellerName: String): Listing<FeedItem> {
+
+        // create a boundary callback which will observe when the user reaches to the edges of
+        // the list and update the database with extra data.
+        val boundaryCallback = SellerItemsBoundaryCallback(
+            sellerName,
+            webservice = tipidPCApi,
+            handleResponse = this::insertResultIntoDb,
+            ioExecutor = ioExecutor
+        )
+        // we are using a mutable live data to trigger refreshSellerItems requests which eventually calls
+        // refreshSellerItems method and gets a new live data. Each refreshSellerItems request by the user becomes a newly
+        // dispatched data in refreshTrigger
+        val refreshTrigger = MutableLiveData<Unit>()
+        val refreshState = Transformations.switchMap(refreshTrigger) {
+            refreshSellerItems(sellerName)
+        }
+
+        // We use toLiveData Kotlin extension function here, you could also use LivePagedListBuilder
+        val livePagedList = db.items().sellerItems(sellerName).toLiveData(
+            pageSize = 7000,
+            boundaryCallback = boundaryCallback
+        )
+
+        return Listing(
+            pagedList = livePagedList,
+            networkState = boundaryCallback.networkState,
+            retry = {
+                boundaryCallback.helper.retryAllFailed()
+            },
+            refresh = {
+                refreshTrigger.value = null
+            },
+            refreshState = refreshState
+        )
+    }
+
+    /**
+     * When refreshFeeds is called, we simply run a fresh network request and when it arrives, clear
+     * the database table and insert all new items in a transaction.
+     * <p>
+     * Since the PagedList already uses a database bound data source, it will automatically be
+     * updated after the database transaction is finished.
+     */
+    @MainThread
+    private fun refreshSellerItems(sellerName: String): LiveData<NetworkState> {
+        val networkState = MutableLiveData<NetworkState>()
+        networkState.value = NetworkState.LOADING
+        tipidPCApi.run {
+            networkState.value = NetworkState.LOADING
+            Timber.e("refreshSellerItems repo")
+            getSellerItems(sellerName).enqueue(object : Callback<FeedItemsResource> {
+                override fun onFailure(call: Call<FeedItemsResource>, t: Throwable) {
+                    // retrofit calls this on main thread so safe to call set value
+                    networkState.value = NetworkState.error(t.message)
+                }
+
+                override fun onResponse(
+                    call: Call<FeedItemsResource>,
+                    response: Response<FeedItemsResource>
+                ) {
+                    ioExecutor.execute {
+                        db.runInTransaction {
+                            db.items().deleteOldSellerItems(sellerName)
+                            insertResultIntoDb(response.body()!!)
+                        }
+                        // since we are in bg thread now, post the result.
+                        networkState.postValue(NetworkState.LOADED)
+                    }
+                }
+            })
+        }
+        return networkState
     }
 
     override fun rigs(): Listing<Rig> {
@@ -204,7 +297,7 @@ class DashboardRepository(
 
     override fun saveItem(firebaseUser: FirebaseUser, feedItem: FeedItem): Task<Void> {
 
-         val batchWrite: WriteBatch = firestore.batch()
+        val batchWrite: WriteBatch = firestore.batch()
 
         // Counter Ref
         val savedRef = firestore.collection(SAVED_COLLECTION).document()
@@ -224,7 +317,8 @@ class DashboardRepository(
     }
 
     override fun rigItems(rigId: String): Listing<FeedItem> {
-        val sourceFactory = RigItemsDataSourceFactory(firestore.collection(RIGS_ITEM_COLLECTION), rigId)
+        val sourceFactory =
+            RigItemsDataSourceFactory(firestore.collection(RIGS_ITEM_COLLECTION), rigId)
 
         // We use toLiveData Kotlin ext. function here, you could also use LivePagedListBuilder
         val livePagedList = sourceFactory.toLiveData(
@@ -381,10 +475,12 @@ class DashboardRepository(
             config = Config(
                 pageSize = 10,
                 enablePlaceholders = false,
-                initialLoadSizeHint = 10 * 2),
+                initialLoadSizeHint = 10 * 2
+            ),
             // provide custom executor for network requests, otherwise it will default to
             // Arch Components' IO pool which is also used for disk access
-            fetchExecutor = ioExecutor)
+            fetchExecutor = ioExecutor
+        )
 
         val refreshState = Transformations.switchMap(sourceFactory.sourceLiveData) {
             it.initialLoad

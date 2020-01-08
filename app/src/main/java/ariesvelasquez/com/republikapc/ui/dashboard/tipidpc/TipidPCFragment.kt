@@ -111,7 +111,7 @@ class TipidPCFragment : DashboardFragment() {
 
 
     interface OnTPCFragmentListener {
-        fun onTPCItemClicked(feedItem: FeedItem)
+        fun onTPCItemClicked(feedItem: FeedItem, enabledName: Boolean = true)
     }
 
     companion object {

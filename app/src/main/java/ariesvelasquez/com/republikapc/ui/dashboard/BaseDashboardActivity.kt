@@ -1,7 +1,5 @@
 package ariesvelasquez.com.republikapc.ui.dashboard
 
-import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
@@ -23,6 +21,7 @@ import ariesvelasquez.com.republikapc.ui.dashboard.rpc.items.PartsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
+import ariesvelasquez.com.republikapc.ui.selleritems.SellerItemsActivity
 import ariesvelasquez.com.republikapc.ui.webview.WebViewActivity
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
@@ -60,13 +59,6 @@ abstract class BaseDashboardActivity : BaseActivity(),
     abstract fun handleAddItemToRigCreationState()
     abstract fun handleSaveItemState()
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-
-        handleAddItemToRigCreationState()
-        handleSaveItemState()
-    }
-
     override fun onUserLoggedOut() {
         viewModel.setIsUserSignedIn(false)
     }
@@ -94,9 +86,9 @@ abstract class BaseDashboardActivity : BaseActivity(),
         createRigBottomSheet.show(supportFragmentManager, createRigBottomSheet.TAG)
     }
 
-    override fun onTPCItemClicked(feedItem: FeedItem) {
+    override fun onTPCItemClicked(feedItem: FeedItem, enabledName: Boolean) {
         val rawFeedItem = Gson().toJson(feedItem)
-        val fragment = AddToRigBottomSheetFragment.newInstance(rawFeedItem)
+        val fragment = AddToRigBottomSheetFragment.newInstance(rawFeedItem, enabledName)
         fragment.show(supportFragmentManager, fragment.TAG)
     }
 
@@ -125,6 +117,12 @@ abstract class BaseDashboardActivity : BaseActivity(),
 
     override fun onItemSave(feedItem: FeedItem) {
         viewModel.save(feedItem)
+    }
+
+    override fun onGoToSellerItems(sellerName: String) {
+        launchActivity<SellerItemsActivity> {
+            putExtra(SellerItemsActivity.SELLER_NAME_REFERENCE, sellerName)
+        }
     }
 
     override fun onSavedItemClicked(saved: Saved) {

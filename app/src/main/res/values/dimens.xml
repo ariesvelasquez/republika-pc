@@ -11,7 +11,8 @@
     <dimen name="view_padding_5">40dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
     
-    <dimen name="view_padding_12">10dp</dimen>
+    <dimen name="view_padding_10">10dp</dimen>
+    <dimen name="view_padding_20">20dp</dimen>
     
     <!--Default font size, per the Android Design Guidelines for Roboto font-->
     <dimen name="font_size_page_title">20sp</dimen>

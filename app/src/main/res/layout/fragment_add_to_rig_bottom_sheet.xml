@@ -19,7 +19,7 @@
             style="@style/TextAppearance.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Item Details:"
+            android:text="@string/item_details"
             android:textColor="@color/colorGray"
             app:layout_constraintBottom_toTopOf="@id/textViewItemName"
             app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
         
         <TextView
             android:id="@+id/textViewItemName"
-            style="@style/TextAppearance.RigTitle"
+            style="@style/TextAppearance.FeedItemDetailed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/view_padding_2"
@@ -75,10 +75,10 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearLayoutSave"
             style="@style/RigStat"
-            android:padding="@dimen/view_padding_12"
+            android:padding="@dimen/view_padding_10"
             android:layout_marginTop="@dimen/view_padding_3"
             android:background="@drawable/shape_rectangle_rounded_bordered_2dp"
-            app:layout_constraintTop_toBottomOf="@id/textViewSellerNameAndDate"
+            app:layout_constraintTop_toBottomOf="@id/textViewSellerName"
             app:layout_constraintStart_toStartOf="parent">
         
             <ImageView
@@ -93,7 +93,7 @@
                 style="@style/TextAppearance.TileTertiary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="save"
+                android:text="@string/save"
                 android:textAlignment="center"
                 android:textColor="@color/colorRigStatsText"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -101,11 +101,11 @@
         <LinearLayout
             android:id="@+id/linearLayoutLink"
             style="@style/RigStat"
-            android:padding="@dimen/view_padding_12"
+            android:padding="@dimen/view_padding_10"
             android:layout_marginTop="@dimen/view_padding_3"
             android:layout_marginStart="@dimen/view_padding"
             android:background="@drawable/shape_rectangle_rounded_bordered_2dp"
-            app:layout_constraintTop_toBottomOf="@id/textViewSellerNameAndDate"
+            app:layout_constraintTop_toBottomOf="@id/textViewSellerName"
             app:layout_constraintStart_toEndOf="@id/linearLayoutSave">
         
             <ImageView
@@ -118,23 +118,33 @@
                 style="@style/TextAppearance.TileTertiary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="link"
+                android:text="@string/link"
                 android:textAlignment="center"
                 android:textColor="@color/colorRigStatsText"/>
         </LinearLayout>
         
         <TextView
-            android:id="@+id/textViewSellerNameAndDate"
+            android:id="@+id/textViewSellerName"
             style="@style/TextAppearance.TileTertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/view_half_padding"
-            android:textColor="@color/colorGray"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@color/colorTipidPcOrange"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewItemName"
-            tools:text="Aries Velasquez . 2 Mins ago" />
+            tools:text="Aries Velasquez" />
+        
+        <TextView
+            android:id="@+id/textViewItemDatePosted"
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorGray"
+            app:layout_constraintStart_toEndOf="@id/textViewSellerName"
+            app:layout_constraintTop_toTopOf="@id/textViewSellerName"
+            app:layout_constraintBottom_toBottomOf="@id/textViewSellerName"
+            tools:text=" • 2 Mins Ago"/>
         
         <TextView
             android:id="@+id/textViewRigLabel"
@@ -142,7 +152,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/view_padding_3"
-            android:text="Add To Rig:"
+            android:text="@string/add_to_rig"
             android:textColor="@color/colorGray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

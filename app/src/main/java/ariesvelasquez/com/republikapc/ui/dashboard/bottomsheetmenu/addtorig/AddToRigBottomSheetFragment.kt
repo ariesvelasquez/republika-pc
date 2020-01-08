@@ -24,12 +24,14 @@ import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_add_to_rig_bottom_sheet.view.*
+import timber.log.Timber
 
 
 class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
 
     val TAG = "AddToRigBottomSheetFragment"
     private lateinit var feedItemReference: FeedItem
+    private var enabledName = true
 
     private lateinit var adapter: RigItemsAdapter
 
@@ -55,6 +57,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
 
         arguments?.apply {
             feedItemReference = Gson().fromJson(getString(ARG_RAW_FEED_ITEM), FeedItem::class.java)
+            enabledName = getBoolean(ARG_ENABLED_NAME, true)
         }
     }
 
@@ -137,13 +140,26 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         // Set Item Name
         rootView.textViewItemName.text = feedItemReference.name
         // Set Seller Name and Date
-        rootView.textViewSellerNameAndDate.text = feedItemReference.seller + " • " + feedItemReference.date
+        rootView.textViewSellerName.text = feedItemReference.seller
+        // Date
+        rootView.textViewItemDatePosted.text = " • " + feedItemReference.date
         // Price
-        rootView.textViewPrice.text = feedItemReference.price.removePrefix("P")
+        rootView.textViewPrice.text = feedItemReference.price.removePrefix("PHP").removePrefix("P")
 
         // Link On Click
         rootView.linearLayoutLink.setOnClickListener {
             listener?.onGoToLink(feedItemReference.linkId)
+        }
+
+        // Tpc User Items On Click
+
+        if (!enabledName) {
+            rootView.textViewSellerName.setTextColor(ContextCompat.getColor(context!!, R.color.colorGray))
+        } else {
+            rootView.textViewSellerName.setOnClickListener {
+                Timber.e("Clicked TPC User " + feedItemReference.seller)
+                listener?.onGoToSellerItems(feedItemReference.seller)
+            }
         }
     }
 
@@ -189,7 +205,6 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         })
     }
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is AddToRigBottomSheetFragmentListener) {
@@ -218,6 +233,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
     interface AddToRigBottomSheetFragmentListener {
         fun showSignUpBottomSheet()
         fun onGoToLink(linkId: String)
+        fun onGoToSellerItems(sellerName: String)
         fun onItemSave(feedItem: FeedItem)
         fun onItemAddedToRig(rigItem: Rig, feedItemReference: FeedItem)
     }
@@ -227,12 +243,14 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         const val TAG = "AddToRigBottomSheetFragment"
 
         private const val ARG_RAW_FEED_ITEM = "rawFeedItem"
+        private const val ARG_ENABLED_NAME = "enableName"
 
         @JvmStatic
-        fun newInstance(rawFeedItem: String) =
+        fun newInstance(rawFeedItem: String, enabledName: Boolean = false) =
             AddToRigBottomSheetFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_RAW_FEED_ITEM, rawFeedItem)
+                    putBoolean(ARG_ENABLED_NAME, enabledName)
                 }
             }
     }

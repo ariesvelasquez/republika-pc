@@ -20,7 +20,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
      * Feeds Vars
      */
     private val isFeedsInitialized = MutableLiveData<Boolean>()
-    private val feedsRepoResult = Transformations.map(isFeedsInitialized) { repository.feeds() }
+    private val feedsRepoResult = map(isFeedsInitialized) { repository.feeds() }
     val feedItems = Transformations.switchMap(feedsRepoResult) { it.pagedList }
     val feedsNetworkState = Transformations.switchMap(feedsRepoResult) { it.networkState }
     val feedsRefreshState = Transformations.switchMap(feedsRepoResult) { it.refreshState }
@@ -43,10 +43,36 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * Seller Items Vars
+     */
+    private var sellerName: String = ""
+    private val isSellerItemsInitialized = MutableLiveData<Boolean>()
+    private val sellerItemsRepoResult = map(isSellerItemsInitialized) { repository.sellerItems(sellerName) }
+    val sellerItems = Transformations.switchMap(sellerItemsRepoResult) { it.pagedList }
+    val sellerItemsNetworkState = Transformations.switchMap(sellerItemsRepoResult) { it.networkState }
+    val sellerItemsRefreshState = Transformations.switchMap(sellerItemsRepoResult) { it.refreshState }
+
+    // Seller Items
+    fun refreshSellerItems() {
+        sellerItemsRepoResult.value?.refresh?.invoke()
+    }
+
+    fun showSellerItems(sellerName: String): Boolean {
+        this.sellerName = sellerName
+        this.isSellerItemsInitialized.value = true
+        return true
+    }
+
+    fun retrySellerItems() {
+        val listing = sellerItemsRepoResult.value
+        listing?.retry?.invoke()
+    }
+
+    /**
      * Rigs Vars
      */
     val isRigsInitialized = MutableLiveData<Boolean>()
-    private val rigRepoResult = Transformations.map(isRigsInitialized) { repository.rigs() }
+    private val rigRepoResult = map(isRigsInitialized) { repository.rigs() }
     val rigs = Transformations.switchMap(rigRepoResult) { it.pagedList }
     val rigNetworkState = Transformations.switchMap(rigRepoResult) { it.networkState }
     val rigRefreshState = Transformations.switchMap(rigRepoResult) { it.refreshState }
@@ -98,7 +124,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
      */
     private var rigId: String = ""
     private val isRigItemsInitialized = MutableLiveData<Boolean>()
-    private val rigItemsRepoResult = Transformations.map(isRigItemsInitialized) { repository.rigItems(rigId) }
+    private val rigItemsRepoResult = map(isRigItemsInitialized) { repository.rigItems(rigId) }
     val rigItems = Transformations.switchMap(rigItemsRepoResult) { it.pagedList }
     val rigItemsNetworkState = Transformations.switchMap(rigItemsRepoResult) { it.networkState }
     val rigItemsRefreshState = Transformations.switchMap(rigItemsRepoResult) { it.refreshState }
@@ -158,7 +184,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
      * Saved Items Vars
      */
     val isSavedInitialized = MutableLiveData<Boolean>()
-    private val savedRepoResult = Transformations.map(isRigsInitialized) { repository.saved() }
+    private val savedRepoResult = map(isRigsInitialized) { repository.saved() }
     val saved = Transformations.switchMap(savedRepoResult) { it.pagedList }
     val savedNetworkState = Transformations.switchMap(savedRepoResult) { it.networkState }
     val savedRefreshState = Transformations.switchMap(savedRepoResult) { it.refreshState }

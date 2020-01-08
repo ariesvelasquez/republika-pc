@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
+import timber.log.Timber
 
 class FeedItemsAdapter(
     private val viewTypeParam: Int = FEED_VIEW_TYPE,
@@ -22,9 +23,13 @@ class FeedItemsAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
+//        Timber.e("isEmptyType " + getItem(position)!!.isEmptyItem)
+//        Timber.e("isLastItem " + getItem(position)!!.isLastItem)
+
         when (getItemViewType(position)) {
-            FEED_VIEW_TYPE -> (holder as FeedsItemViewHolder).bind(getItem(position)!!, position)
+            FEED_VIEW_TYPE -> { (holder as FeedsItemViewHolder).bind(getItem(position)!!, position) }
             RIG_ITEM_VIEW_TYPE -> (holder as ItemsOfRigViewHolder).bind(getItem(position)!!, position)
+            SELLER_ITEM_VIEW_TYPE -> (holder as TipidPCSellerItemsViewHolder).bind(getItem(position)!!, position)
             ERROR_VIEW_TYPE -> (holder as NetworkStateViewHolder).bindTo(
                 networkState)
         }
@@ -36,7 +41,13 @@ class FeedItemsAdapter(
         payloads: MutableList<Any>) {
         if (payloads.isNotEmpty()) {
             val item = getItem(position)
-            (holder as FeedsItemViewHolder).updateScore(item)
+            when (getItemViewType(position)) {
+//                FEED_VIEW_TYPE -> (holder as FeedsItemViewHolder).bind(getItem(position)!!, position)
+//                RIG_ITEM_VIEW_TYPE -> (holder as ItemsOfRigViewHolder).bind(getItem(position)!!, position)
+                SELLER_ITEM_VIEW_TYPE -> (holder as TipidPCSellerItemsViewHolder).updatePrice(item)
+                ERROR_VIEW_TYPE -> (holder as NetworkStateViewHolder).bindTo(
+                    networkState)
+            }
         } else {
             onBindViewHolder(holder, position)
         }
@@ -46,6 +57,7 @@ class FeedItemsAdapter(
         return when (viewType) {
             FEED_VIEW_TYPE -> FeedsItemViewHolder.create(parent, onClickCallback)
             RIG_ITEM_VIEW_TYPE -> ItemsOfRigViewHolder.create(parent, onClickCallback)
+            SELLER_ITEM_VIEW_TYPE -> TipidPCSellerItemsViewHolder.create(parent, onClickCallback)
             ERROR_VIEW_TYPE -> NetworkStateViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
@@ -95,6 +107,7 @@ class FeedItemsAdapter(
         const val ERROR_VIEW_TYPE = 0
         const val FEED_VIEW_TYPE = 1
         const val RIG_ITEM_VIEW_TYPE = 2
+        const val SELLER_ITEM_VIEW_TYPE = 3
 
         private val PAYLOAD_SCORE = Any()
         val POST_COMPARATOR = object : DiffUtil.ItemCallback<FeedItem>() {
@@ -102,7 +115,7 @@ class FeedItemsAdapter(
                 oldItem == newItem
 
             override fun areItemsTheSame(oldItem: FeedItem, newItem: FeedItem): Boolean =
-                oldItem.id == newItem.id
+                oldItem.id == newItem.id && oldItem.isFeed == newItem.isFeed
 
             override fun getChangePayload(oldItem: FeedItem, newItem: FeedItem): Any? {
                 return if (sameExceptScore(oldItem, newItem)) {

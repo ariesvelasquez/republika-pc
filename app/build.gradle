@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
-apply plugin: "io.fabric"
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 28
@@ -13,8 +13,8 @@ android {
         applicationId "com.ariesvelasquez.republikapc"
         minSdkVersion android_min_sdk_version
         targetSdkVersion android_target_sdk_version
-        versionCode 3
-        versionName "1.0.1"
+        versionCode 4
+        versionName "1.1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

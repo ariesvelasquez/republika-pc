@@ -30,6 +30,7 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
 
     val TAG = "SavedActionBottomSheetFragment"
     private lateinit var savedItemReference: Saved
+    private var enabledName = true
 
     private lateinit var adapter: RigItemsAdapter
 
@@ -55,6 +56,7 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
 
         arguments?.apply {
             savedItemReference = Gson().fromJson(getString(ARG_RAW_SAVED_ITEM), Saved::class.java)
+            enabledName = getBoolean(ARG_ENABLED_NAME, true)
         }
     }
 
@@ -78,16 +80,16 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun handleRigState() {
-        dashboardViewModel.rigs.observe(this, Observer<PagedList<Rig>> {
+        dashboardViewModel.rigs.observe( viewLifecycleOwner, Observer<PagedList<Rig>> {
             adapter.submitList(it)
         })
-        dashboardViewModel.rigNetworkState.observe(this, Observer {
+        dashboardViewModel.rigNetworkState.observe( viewLifecycleOwner, Observer {
             adapter.setNetworkState(it)
         })
     }
 
     private fun handleItemDeletedState() {
-        dashboardViewModel.deleteSavedItemNetworkState.observe(this, Observer {
+        dashboardViewModel.deleteSavedItemNetworkState.observe( viewLifecycleOwner, Observer {
             when (it) {
                 NetworkState.LOADING -> {
                     // Disable the Button after it was clicked
@@ -106,7 +108,7 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun handleUserStatus() {
         // Check for User Status
-        dashboardViewModel.isUserSignedIn.observe(this, Observer { isUserLoggedIn ->
+        dashboardViewModel.isUserSignedIn.observe( viewLifecycleOwner, Observer { isUserLoggedIn ->
             setOnClickEvents(isUserLoggedIn)
         })
     }
@@ -134,13 +136,23 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
         // Set Item Name
         rootView.textViewItemName.text = savedItemReference.name
         // Set Seller Name and Date
-        rootView.textViewSellerNameAndDate.text = savedItemReference.seller + " • " + savedItemReference.date
+        rootView.textViewSellerName.text = savedItemReference.seller
+        // Date
+        rootView.textViewItemDatePosted.text = " • " + savedItemReference.postDate
         // Price
         rootView.textViewPrice.text = savedItemReference.price.removePrefix("P")
 
         // Link On Click
         rootView.linearLayoutLink.setOnClickListener {
             listener?.onGoToLink(savedItemReference.linkId)
+        }
+
+        if (!enabledName) {
+            rootView.textViewSellerName.setTextColor(ContextCompat.getColor(context!!, R.color.colorGray))
+        } else {
+            rootView.textViewSellerName.setOnClickListener {
+                listener?.onGoToSellerItems(savedItemReference.seller)
+            }
         }
     }
 
@@ -165,7 +177,7 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun handleAddItemToRigCreationState() {
-        dashboardViewModel.addItemToRigNetworkState.observe(this, Observer {
+        dashboardViewModel.addItemToRigNetworkState.observe( viewLifecycleOwner, Observer {
             when (it) {
                 NetworkState.LOADING -> {
 
@@ -215,6 +227,7 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
     interface OnSavedActionInteractionFragmentListener {
         fun showSignUpBottomSheet()
         fun onGoToLink(linkId: String)
+        fun onGoToSellerItems(sellerName: String)
         fun onItemDelete(savedItem: Saved)
         fun onSavedItemAddedToRIg(rigItem: Rig, savedItemReference: Saved)
     }
@@ -224,9 +237,10 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
         const val TAG = "SavedActionBottomSheetFragment"
 
         private const val ARG_RAW_SAVED_ITEM = "rawSavedItem"
+        private const val ARG_ENABLED_NAME = "enableName"
 
         @JvmStatic
-        fun newInstance(rawSavedItem: String) =
+        fun newInstance(rawSavedItem: String, enabledName: Boolean = false) =
             SavedActionBottomSheetFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_RAW_SAVED_ITEM, rawSavedItem)

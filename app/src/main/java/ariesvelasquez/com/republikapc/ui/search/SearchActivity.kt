@@ -41,6 +41,9 @@ class SearchActivity : BaseDashboardActivity() {
         handleSearchState()
         handleRefreshSearchState()
 
+        handleAddItemToRigCreationState()
+        handleSaveItemState()
+
         initOnClicks()
     }
 
@@ -107,9 +110,7 @@ class SearchActivity : BaseDashboardActivity() {
     override fun handleAddItemToRigCreationState() {
         viewModel.addItemToRigNetworkState.observe(this, Observer {
             when (it) {
-                NetworkState.LOADING -> {
-                    progressBarLoader.progress = 10
-                }
+                NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
                     RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
                     finishedLoading()
@@ -127,9 +128,7 @@ class SearchActivity : BaseDashboardActivity() {
     override fun handleSaveItemState() {
         viewModel.saveItemNetworkState.observe(this, Observer {
             when (it) {
-                NetworkState.LOADING -> {
-                    progressBarLoader.progress = 10
-                }
+                NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
                     finishedLoading()
                     showSnackBar(getString(R.string.item_saved))
@@ -146,9 +145,7 @@ class SearchActivity : BaseDashboardActivity() {
         // Saved Item Deleted
         viewModel.deleteSavedItemNetworkState.observe(this, Observer {
             when (it) {
-                NetworkState.LOADING -> {
-                    progressBarLoader.progress = 10
-                }
+                NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
                     savedItemBottomSheet.dismiss()
                     finishedLoading()
@@ -162,6 +159,10 @@ class SearchActivity : BaseDashboardActivity() {
                 }
             }
         })
+    }
+
+    private fun startLoading() {
+        progressBarLoader.progress = 70
     }
 
     private fun finishedLoading() {

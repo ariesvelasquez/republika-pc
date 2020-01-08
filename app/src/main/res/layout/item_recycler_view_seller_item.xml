@@ -6,7 +6,7 @@
     android:id="@+id/constraintLayoutParent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/view_padding_2"
+    android:paddingBottom="@dimen/view_padding_20"
     android:paddingEnd="@dimen/view_padding_2"
     android:paddingStart="@dimen/view_padding_2"
     android:orientation="vertical">
@@ -29,30 +29,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/view_padding"
-        android:textColor="@color/text_main_dark"
+        android:textColor="@color/colorTipidPcOrange"
         style="@style/TextAppearance.RigTitle"
         android:textSize="@dimen/font_size_inputs"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/textViewSellerName"
         tools:text="Hopper UX: The Right Ways To Ask" />
-    
-    <TextView
-        android:id="@+id/textViewSellerName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/view_padding"
-        style="@style/TextAppearance.TileTertiary"
-        android:textColor="@color/text_helper_dark"
-        android:textSize="@dimen/font_size_caption_small"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        app:layout_constraintBottom_toTopOf="@id/textViewPrice"
-        tools:text="submitted by foo"/>
-    
     
     <ImageView
         android:id="@+id/imageViewPesoIcon"
@@ -72,12 +56,13 @@
         android:layout_height="wrap_content"
         style="@style/TextAppearance.TilePrimary"
         android:gravity="start"
-        android:layout_marginBottom="@dimen/view_padding"
+        android:layout_marginBottom="@dimen/view_half_padding"
         android:layout_marginStart="@dimen/view_half_padding"
+        android:layout_marginTop="@dimen/view_half_padding"
         android:textColor="@color/text_helper_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/imageViewPesoIcon"
-        app:layout_constraintTop_toBottomOf="@id/textViewSellerName"
+        app:layout_constraintTop_toBottomOf="@id/name"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:text="123.00"/>
 

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.rigs.Rig
@@ -69,8 +70,7 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
         chip1.chipStrokeWidth = chipWidth
         chip1.setChipStrokeColorResource(R.color.colorDarkGray)
         chip1.setChipBackgroundColorResource(R.color.colorWhite)
-        chip1.setTextAppearance(R.style.RigChipTextStyle)
-//        chip1.setTextColor(ContextCompat.getColor(context, R.color.text_helper_dark))
+        TextViewCompat.setTextAppearance(chip1, R.style.RigChipTextStyle)
 
         val chip2 = Chip(view.context)
         chip2.text = "XXXXXXXXX "
@@ -78,7 +78,7 @@ class RigItemViewHolder(val view: View, private val onClickCallback: (v: View, i
         chip2.chipStrokeWidth = chipWidth
         chip2.setChipStrokeColorResource(R.color.colorDarkGray)
         chip2.setChipBackgroundColorResource(R.color.colorWhite)
-        chip2.setTextAppearance(R.style.RigChipTextStyle)
+        TextViewCompat.setTextAppearance(chip2, R.style.RigChipTextStyle)
 
         chipGroup.removeAllViews()
         chipGroup.addView(chip1)

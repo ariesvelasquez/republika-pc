@@ -60,10 +60,15 @@ class SearchDataSource(
         try {
             val response = request.execute()
             val items = response.body()?.items ?: emptyList()
-            Timber.e("loadinitial search items " + items.size)
             retry = null
 //            networkState.postValue(NetworkState.LOADED)
             initialLoad.postValue(NetworkState.LOADED)
+
+            if (items.isEmpty()) {
+                // Add An Empty Type Array List
+                (items as ArrayList).add(FeedItem(isEmptyItem = true))
+            }
+
             callback.onResult(items)
         } catch (ioException: IOException) {
             retry = {

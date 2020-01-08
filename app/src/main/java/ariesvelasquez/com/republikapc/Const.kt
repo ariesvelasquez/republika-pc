@@ -17,6 +17,7 @@ object Const {
     const val OWNER_ID = "ownerId"
 
     const val FIREBASE_ERROR_UNAUTHORIZED = "PERMISSION_DENIED: Missing or insufficient permissions."
+    const val NO_CONNECTION_ERROR = "Unable to resolve host \"republika-pc-api.herokuapp.com\": No address associated with hostname"
 
     const val TIPID_PC_RAW_URL = "tipidpc.com"
     const val TIPID_PC_BASE_URL = "https://tipidpc.com/"

@@ -14,6 +14,8 @@ interface IDashboardRepository {
 
     fun feeds(): Listing<FeedItem>
 
+    fun sellerItems(sellerName: String) : Listing<FeedItem>
+
     fun rigs(): Listing<Rig>
 
     fun saved(): Listing<Saved>

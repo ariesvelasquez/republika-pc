@@ -10,6 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import java.util.concurrent.TimeUnit
 
 interface TipidPCApi {
 
@@ -21,11 +22,8 @@ interface TipidPCApi {
         @Path("item") item: String,
         @Path("page") page: Int) : Call<FeedItemsResource>
 
-    @GET("tipidpc/seller/{name}/{page}")
-    fun searchSellet(
-        @Path("name") name: String,
-        @Path("page") page: Int
-    ) : Call<FeedItemsResource>
+    @GET("tipidpc/user_items/{sellerName}")
+    fun getSellerItems(@Path("sellerName") name: String) : Call<FeedItemsResource>
 
     companion object {
 
@@ -36,6 +34,8 @@ interface TipidPCApi {
             .setLevel(HttpLoggingInterceptor.Level.BODY)
 
         private val client = OkHttpClient.Builder()
+            .readTimeout(1, TimeUnit.MINUTES)
+            .connectTimeout(1, TimeUnit.MINUTES)
             .addInterceptor(loggingInterceptor)
             .build()
 

@@ -24,8 +24,13 @@ data class FeedItem(
     var linkId: String = "",
     @SerializedName("date")
     var date: String = "",
+    @SerializedName("is_feed")
+    var isFeed: Boolean = true,
     @SerializedName("page")
-    var page: Int = -1
+    var page: Int = -1,
+
+    var isLastItem : Boolean = false,
+    var isEmptyItem : Boolean = false
 ) {
     var indexInResponse: Int = -1
 }

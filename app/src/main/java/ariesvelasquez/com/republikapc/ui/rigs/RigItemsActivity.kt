@@ -26,12 +26,11 @@ import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.firebase.auth.FirebaseUser
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_rig_items.*
+import kotlinx.android.synthetic.main.activity_rig_items.toolbar
 import kotlinx.android.synthetic.main.rig_items_total_bottom_sheet.*
-import kotlinx.android.synthetic.main.search_toolbar.*
+import kotlinx.android.synthetic.main.toolbar.*
+import kotlinx.android.synthetic.main.toolbar.view.*
 import timber.log.Timber
-import java.text.DecimalFormat
-import java.text.NumberFormat
-import java.util.*
 
 class RigItemsActivity : BaseActivity() {
 
@@ -60,6 +59,9 @@ class RigItemsActivity : BaseActivity() {
         rigItemReference =
             Gson().fromJson(intent.getStringExtra(RIG_ITEM_REFERENCE), Rig::class.java)
 
+        // Set Title
+        toolbar.textViewToolbarTitle.text = rigItemReference.name
+
         initOnClicks()
 
         setupRigList()
@@ -69,7 +71,6 @@ class RigItemsActivity : BaseActivity() {
 
     private fun initOnClicks() {
         backButton.setOnClickListener { onBackPressed() }
-
     }
 
     private fun setupRigList() {
@@ -134,16 +135,10 @@ class RigItemsActivity : BaseActivity() {
 
     private fun setItemDeleteNetworkState(it: NetworkState?) {
         when (it) {
-            NetworkState.LOADING -> {
-                progressBarLoader.progress = 10
-            }
+            NetworkState.LOADING -> { startLoading() }
             NetworkState.LOADED -> {
-                progressBarLoader.progress = 100
                 linearLayoutTotalBottomSheet.snack("Item deleted") {}
-                Handler().postDelayed({
-                    progressBarLoader.progress = 0
-                }, 1000)
-
+                finishedLoading()
                 RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
             }
             NetworkState.LOADING -> {}
@@ -167,6 +162,18 @@ class RigItemsActivity : BaseActivity() {
                 textViewTotal.text = "$numberFormattedTotal.00"
             }
         }
+    }
+
+    private fun startLoading() {
+        progressBarLoader.progress = 70
+    }
+
+    private fun finishedLoading() {
+        progressBarLoader.progress = 100
+
+        Handler().postDelayed({
+            progressBarLoader.progress = 0
+        }, 1000)
     }
 
     override fun onUserLoggedOut() {

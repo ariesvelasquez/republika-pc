@@ -17,10 +17,11 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round">
         
-        <activity android:name=".ui.webview.WebViewActivity"></activity>
+        <activity android:name=".ui.webview.WebViewActivity"/>
         <activity android:name=".ui.rigs.RigItemsActivity" />
         <activity android:name=".ui.auth.AuthActivity" />
         <activity android:name=".ui.search.SearchActivity" />
+        <activity android:name=".ui.selleritems.SellerItemsActivity" />
         <activity android:name=".ui.dashboard.DashboardActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

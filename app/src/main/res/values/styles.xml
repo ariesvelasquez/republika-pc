@@ -60,7 +60,11 @@
     
     <style name="TextAppearance.RigTitle" parent="@style/TextAppearance.MaterialComponents.Headline5">
         <item name="fontFamily">@font/roboto_mono_regular</item>
-        <item name="android:textSize">@dimen/font_size_24</item>
+    </style>
+    
+    <style name="TextAppearance.FeedItemDetailed" parent="@style/TextAppearance.MaterialComponents.Headline6">
+        <item name="fontFamily">@font/roboto_mono_regular</item>
+        <item name="android:letterSpacing">-0.04</item>
     </style>
     
     <style name="TextAppearance.HeadLine6" parent="@style/TextAppearance.MaterialComponents.Headline6">

@@ -13,10 +13,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="4dp">
+    
+        <ProgressBar
+            android:id="@+id/progressBarLoader"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:progressBackgroundTint="@color/colorSmoke"
+            android:progressTint="@color/colorBlue"
+            tools:progress="20"/>
         
         <!-- This is a centered name -->
         <TextView
             android:id="@+id/textViewToolbarTitle"
+            style="@style/TextAppearance.HeadLine6"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -24,12 +34,11 @@
             android:layout_marginStart="?attr/actionBarSize"
             android:layout_gravity="start|center"
             android:gravity="start|center"
-            android:visibility="visible"
             android:singleLine="true"
-            android:textAlignment="viewStart"
-            android:textColor="@color/text_helper_dark"
-            android:textColorHint="@color/colorLightGray"
-            style="@style/TextAppearance.TilePrimary"
+            android:paddingBottom="1dp"
+            android:ellipsize="end"
+            android:textStyle="bold"
+            android:textColor="@color/colorBlue"
             tools:text="toolbart"/>
         
         <!-- This is a custom left side button -->

@@ -47,6 +47,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.main_toolbar.*
+import timber.log.Timber
 
 class DashboardActivity : BaseDashboardActivity() {
 
@@ -65,6 +66,9 @@ class DashboardActivity : BaseDashboardActivity() {
 
         // Observe Rig Creation State
         handleRigState()
+
+        handleAddItemToRigCreationState()
+        handleSaveItemState()
 
         textViewToolbarTitle.setOnClickListener { launchActivity<SearchActivity>() }
 
@@ -107,9 +111,7 @@ class DashboardActivity : BaseDashboardActivity() {
 
         viewModel.deleteRigNetworkState.observe(this, Observer {
             when (it) {
-                NetworkState.LOADING -> {
-                    progressBarLoader.progress = 10
-                }
+                NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
                     rigDetailBottomSheet.dismiss()
                     RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
@@ -124,9 +126,7 @@ class DashboardActivity : BaseDashboardActivity() {
     override fun handleAddItemToRigCreationState() {
         viewModel.addItemToRigNetworkState.observe(this, Observer {
             when (it) {
-                NetworkState.LOADING -> {
-                    progressBarLoader.progress = 10
-                }
+                NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
                     RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
                     finishedLoading()
@@ -144,9 +144,7 @@ class DashboardActivity : BaseDashboardActivity() {
     override fun handleSaveItemState() {
         viewModel.saveItemNetworkState.observe(this, Observer {
             when (it) {
-                NetworkState.LOADING -> {
-                    progressBarLoader.progress = 10
-                }
+                NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
                     finishedLoading()
                     showSnackBar(getString(R.string.item_saved))
@@ -163,9 +161,7 @@ class DashboardActivity : BaseDashboardActivity() {
         // Saved Item Deleted
         viewModel.deleteSavedItemNetworkState.observe(this, Observer {
             when (it) {
-                NetworkState.LOADING -> {
-                    progressBarLoader.progress = 10
-                }
+                NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
                     savedItemBottomSheet.dismiss()
                     finishedLoading()
@@ -179,6 +175,10 @@ class DashboardActivity : BaseDashboardActivity() {
                 }
             }
         })
+    }
+
+    private fun startLoading() {
+        progressBarLoader.progress = 70
     }
 
     private fun finishedLoading() {

@@ -36,10 +36,12 @@ class SavedItemViewHolder(val view: View, private val onClickCallback: (v: View,
         // Set name
         titleView.text = item?.name
         sellerNameView.text = item?.seller
-        priceView.text = tools?.format(item?.price?.removePrefix("P")?.toDouble()) + ".00"
+        val itemPriceClean = item?.price?.removePrefix("HP")!!.removePrefix("P")
+
+        priceView.text = tools?.format(itemPriceClean.toDouble()) + ".00"
 
         parentView.setOnClickListener {
-            onClickCallback.invoke(it, item!!)
+            onClickCallback.invoke(it, item)
         }
     }
 

@@ -50,4 +50,10 @@
     <string name="and_special_thanks_to">and special thanks to...</string>
     <string name="sir_jesus_a_domingo_tipidpc_com">Sir Jesus A. Domingo / TipidPC.com</string>
     <string name="thank_you_sir_for_letting_me_use_tpc_data_to_my_app_salamat_po_sir">Thank you sir for letting me use tpc data to my app. Salamat po sir.</string>
+    <string name="link">link</string>
+    <string name="item_details">Item Details:</string>
+    <string name="add_to_rig">Add To Rig:</string>
+    <string name="save">save</string>
+    <string name="no_internet_connection_error">Your connection is not available. Check your data or wifi connection.</string>
+    <string name="no_items_found">No Items Found, Please try again.</string>
 </resources>

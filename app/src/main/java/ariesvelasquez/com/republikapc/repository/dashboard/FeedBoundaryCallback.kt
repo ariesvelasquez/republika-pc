@@ -20,7 +20,7 @@ import java.util.concurrent.Executor
  * The boundary callback might be called multiple times for the same direction so it does its own
  * rate limiting using the PagingRequestHelper class.
  */
-class DashboardBoundaryCallback (
+class FeedBoundaryCallback (
     private val webservice: TipidPCApi,
     private val handleResponse: (FeedItemsResource) -> Unit,
     private val ioExecutor: Executor

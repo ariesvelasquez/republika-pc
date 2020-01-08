@@ -11,6 +11,7 @@ import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 
 class FeedsItemViewHolder(view: View, private val onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit) : RecyclerView.ViewHolder(view) {
 
+    private val context = view.context
 
     private val mainView: ConstraintLayout = view.findViewById(R.id.constraintLayoutParent)
     private val title: TextView = view.findViewById(R.id.title)
@@ -31,6 +32,13 @@ class FeedsItemViewHolder(view: View, private val onClickCallback: (v: View, pos
 
     fun bind(item: FeedItem, position: Int) {
         this.item = item
+
+        if (item.isEmptyItem) {
+            title.text = context.getString(R.string.no_items_found)
+            price.visibility = View.GONE
+            return
+        }
+
         title.text = item.name ?: "loading"
         sellerName.text = item.seller
         price.text = item.price

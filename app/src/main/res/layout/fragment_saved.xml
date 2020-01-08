@@ -19,10 +19,9 @@
                 android:layout_weight="1"
                 android:background="@color/colorSmoke"
                 android:scrollbars="vertical"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
                 android:paddingTop="@dimen/view_half_padding"
                 android:paddingBottom="@dimen/view_half_padding"
+                android:fadeScrollbars="false"
                 android:clipToPadding="false"/>
         
         </LinearLayout>
