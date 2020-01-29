@@ -36,7 +36,10 @@ class SavedItemViewHolder(val view: View, private val onClickCallback: (v: View,
         // Set name
         titleView.text = item?.name
         sellerNameView.text = item?.seller
-        val itemPriceClean = item?.price?.removePrefix("HP")!!.removePrefix("P")
+        val itemPriceClean = item?.price?.
+            replace("PHP", "")!!.
+            replace("HP", "").
+            replace("P", "")
 
         priceView.text = tools?.format(itemPriceClean.toDouble()) + ".00"
 

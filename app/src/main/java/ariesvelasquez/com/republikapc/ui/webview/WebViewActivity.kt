@@ -28,6 +28,7 @@ class WebViewActivity : AppCompatActivity() {
 
         mUrl = intent.getStringExtra(WEB_VIEW_URL)
 
+        Timber.e("WebviewActivity Url " + mUrl)
 
         webView.getSettings().setJavaScriptEnabled(true)
         webView.settings.loadWithOverviewMode = true

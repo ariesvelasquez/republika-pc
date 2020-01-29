@@ -8,7 +8,7 @@
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/view_padding_20"
     android:paddingEnd="@dimen/view_padding_20"
-    android:paddingBottom="@dimen/view_padding_2"
+    android:paddingBottom="@dimen/view_padding_10"
     android:orientation="vertical">
     
     <TextView
@@ -43,7 +43,7 @@
         android:id="@+id/textViewSellerName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/view_padding"
+        android:layout_marginBottom="@dimen/view_half_padding"
         style="@style/TextAppearance.TileTertiary"
         android:textColor="@color/text_helper_dark"
         android:textSize="@dimen/font_size_caption_small"

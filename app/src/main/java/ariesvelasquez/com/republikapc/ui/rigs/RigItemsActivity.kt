@@ -3,6 +3,7 @@ package ariesvelasquez.com.republikapc.ui.rigs
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
@@ -139,7 +140,6 @@ class RigItemsActivity : BaseActivity() {
             NetworkState.LOADED -> {
                 linearLayoutTotalBottomSheet.snack("Item deleted") {}
                 finishedLoading()
-                RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
             }
             NetworkState.LOADING -> {}
             else -> {
@@ -165,15 +165,13 @@ class RigItemsActivity : BaseActivity() {
     }
 
     private fun startLoading() {
-        progressBarLoader.progress = 70
+        progressBarLoader.visibility = View.VISIBLE
     }
 
     private fun finishedLoading() {
-        progressBarLoader.progress = 100
-
         Handler().postDelayed({
-            progressBarLoader.progress = 0
-        }, 1000)
+            progressBarLoader.visibility = View.INVISIBLE
+        }, 500)
     }
 
     override fun onUserLoggedOut() {

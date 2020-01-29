@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import ariesvelasquez.com.republikapc.Const.FAILED_TO_CONNECT_ERROR
 import ariesvelasquez.com.republikapc.Const.FIREBASE_ERROR_UNAUTHORIZED
 import ariesvelasquez.com.republikapc.Const.NO_CONNECTION_ERROR
 import ariesvelasquez.com.republikapc.R
@@ -29,6 +30,7 @@ class NetworkStateViewHolder(private var view: View,
 
         val userSignedIn = (networkState?.msg != null && !networkState.msg.contains(FIREBASE_ERROR_UNAUTHORIZED))
         val noInternetConnection = (networkState?.msg != null && networkState.msg.contains(NO_CONNECTION_ERROR))
+        val failedToConnectException = (networkState?.msg != null && networkState.msg.contains(FAILED_TO_CONNECT_ERROR))
 
         progressBar.visibility = toVisibility(networkState?.status == RUNNING)
         errorMsg.visibility = toVisibility(networkState?.msg != null)
@@ -38,6 +40,7 @@ class NetworkStateViewHolder(private var view: View,
         // Override Message
         val errorMessage = when {
             !userSignedIn -> { view.context?.getString(R.string.sign_in_to_unlock_feature) }
+            failedToConnectException ||
             noInternetConnection -> { view.context?.getString(R.string.no_internet_connection_error) }
             else -> { networkState?.msg }
         }

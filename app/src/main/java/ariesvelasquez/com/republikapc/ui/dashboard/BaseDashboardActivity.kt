@@ -16,9 +16,12 @@ import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.console.Conso
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.createrig.RigCreatorBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.rigdetail.RigDetailBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.saved.SavedActionBottomSheetFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.seller.SellerBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.RepublikaPCFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.followed.FollowedFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.items.PartsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigsFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.saved.SavedFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
 import ariesvelasquez.com.republikapc.ui.selleritems.SellerItemsActivity
@@ -38,7 +41,9 @@ abstract class BaseDashboardActivity : BaseActivity(),
     PartsFragment.OnPartsFragmentInteractionListener,
     RigDetailBottomSheetFragment.OnRigDetailInteractionListener,
     SavedFragment.OnSavedFragmentInteractionListener,
-    SavedActionBottomSheetFragment.OnSavedActionInteractionFragmentListener {
+    SavedActionBottomSheetFragment.OnSavedActionInteractionFragmentListener,
+    SellerBottomSheetFragment.SellerBottomSheetFragmentListener,
+    FollowedFragment.OnFollowedFragmentInteractionListener {
 
     // Create Rig Bottom Sheet
     protected lateinit var createRigBottomSheet : RigCreatorBottomSheetFragment
@@ -92,6 +97,15 @@ abstract class BaseDashboardActivity : BaseActivity(),
         fragment.show(supportFragmentManager, fragment.TAG)
     }
 
+    override fun onTPCSellerClicked(sellerName: String) {
+        val sellerBottomSheet = SellerBottomSheetFragment.newInstance(sellerName)
+        sellerBottomSheet.show(supportFragmentManager, sellerBottomSheet.TAG)
+    }
+
+    override fun onSellerFollowed(feedItem: FeedItem) {
+
+    }
+
     override fun onRigMenuClicked(rig: Rig) {
         val rawRigRef = Gson().toJson(rig)
         rigDetailBottomSheet = RigDetailBottomSheetFragment.newInstance(rawRigRef)
@@ -141,6 +155,13 @@ abstract class BaseDashboardActivity : BaseActivity(),
 
     override fun onGoToLink(linkId: String) {
         val url = Const.TIPID_PC_VIEW_ITEM + linkId
+        launchActivity<WebViewActivity> {
+            putExtra(WebViewActivity.WEB_VIEW_URL, url)
+        }
+    }
+
+    override fun onGoSellerToLink(sellerName: String) {
+        val url = Const.TIPID_PC_VIEW_SELLER + sellerName
         launchActivity<WebViewActivity> {
             putExtra(WebViewActivity.WEB_VIEW_URL, url)
         }

@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.Transformations.map
 import androidx.lifecycle.ViewModel
+import ariesvelasquez.com.republikapc.RepublikaPC
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.model.saved.Saved
@@ -12,7 +13,6 @@ import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.repository.dashboard.IDashboardRepository
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.MetadataChanges
-import timber.log.Timber
 
 class DashboardViewModel(private val repository: IDashboardRepository) : ViewModel() {
 
@@ -84,6 +84,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     fun createRig(rigName: String) {
         createRigNetworkState.postValue(NetworkState.LOADING)
         repository.createRig(this.firebaseUserModel.value!!, rigName).addOnSuccessListener {
+            RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
             refreshRigs()
             createRigNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
@@ -109,6 +110,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         deleteRigNetworkState.postValue(NetworkState.LOADING)
 
         repository.deleteRig(this.firebaseUserModel.value!!, rigId).addOnSuccessListener {
+            RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
             refreshRigs()
             deleteRigNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
@@ -144,6 +146,8 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         addItemToRigNetworkState.postValue(NetworkState.LOADING)
         repository.addItemToRig(this.firebaseUserModel.value!!, rigItem, feedItem)
             .addOnSuccessListener {
+                RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
+                refreshRigItems()
                 addItemToRigNetworkState.postValue(NetworkState.LOADED)
             }.addOnFailureListener {
                 val error = NetworkState.error(it.message)
@@ -156,6 +160,8 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         addItemToRigNetworkState.postValue(NetworkState.LOADING)
         repository.addSavedItemToRig(this.firebaseUserModel.value!!, rigItem, savedItem)
             .addOnSuccessListener {
+                RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
+                refreshRigItems()
                 addItemToRigNetworkState.postValue(NetworkState.LOADED)
             }.addOnFailureListener {
                 val error = NetworkState.error(it.message)
@@ -166,6 +172,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     fun deleteRigItem(rigId: String, rigItemId: String) {
         deleteRigItemNetworkState.postValue(NetworkState.LOADING)
         repository.deleteRigItem(rigId, rigItemId).addOnSuccessListener {
+            RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
             refreshRigItems()
             deleteRigItemNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
@@ -184,19 +191,18 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
      * Saved Items Vars
      */
     val isSavedInitialized = MutableLiveData<Boolean>()
-    private val savedRepoResult = map(isRigsInitialized) { repository.saved() }
+    private val savedRepoResult = map(isSavedInitialized) { repository.saved() }
     val saved = Transformations.switchMap(savedRepoResult) { it.pagedList }
     val savedNetworkState = Transformations.switchMap(savedRepoResult) { it.networkState }
     val savedRefreshState = Transformations.switchMap(savedRepoResult) { it.refreshState }
     val saveItemNetworkState = MutableLiveData<NetworkState>()
     val deleteSavedItemNetworkState = MutableLiveData<NetworkState>()
 
-    // RIGS_COLLECTION
-    // Create Rig
     fun save(feedItem: FeedItem) {
         saveItemNetworkState.postValue(NetworkState.LOADING)
 
         repository.saveItem(this.firebaseUserModel.value!!, feedItem).addOnSuccessListener {
+            RepublikaPC.getGlobalFlags().shouldRefreshSaved = true
             refreshSaved()
             saveItemNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
@@ -222,6 +228,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
 
         repository.deleteSaved(this.firebaseUserModel.value!!, savedId).addOnSuccessListener {
+            RepublikaPC.getGlobalFlags().shouldRefreshSaved = true
             refreshSaved()
             deleteSavedItemNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
@@ -229,6 +236,72 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
             deleteSavedItemNetworkState.postValue(error)
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Followed Items Vars
+     */
+    val isFollowedInitialized = MutableLiveData<Boolean>()
+    private val followedRepoResult = map(isFollowedInitialized) { repository.followed() }
+    val followed = Transformations.switchMap(followedRepoResult) { it.pagedList }
+    val followedNetworkState = Transformations.switchMap(followedRepoResult) { it.networkState }
+    val followedRefreshState = Transformations.switchMap(followedRepoResult) { it.refreshState }
+    val followUnfollowSellerNetworkState = MutableLiveData<NetworkState>()
+
+    fun refreshFollowed() {
+        followedRepoResult.value?.refresh?.invoke()
+    }
+
+    fun showFollowed(): Boolean {
+        this.isFollowedInitialized.value = true
+        return true
+    }
+
+    fun cancelFollowed() {
+        this.isFollowedInitialized.value = false
+    }
+
+    val isUserFollowedSeller = MutableLiveData<Boolean>()
+    val checkUserFollowedState = MutableLiveData<NetworkState>()
+
+    fun checkIfUserFollowedSeller(sellerName: String) {
+        isUserFollowedSeller.value = false
+        checkUserFollowedState.postValue(NetworkState.LOADING)
+
+        repository.checkUserFollowedSeller(sellerName).get().addOnSuccessListener {snapshot ->
+            isUserFollowedSeller.value = snapshot.exists()
+            checkUserFollowedState.postValue(NetworkState.LOADED)
+        }.addOnFailureListener {
+            val error = NetworkState.error(it.message)
+            checkUserFollowedState.postValue(error)
+        }
+    }
+
+    fun followSeller(sellerName: String) {
+        followUnfollowSellerNetworkState.postValue(NetworkState.LOADING)
+        repository.followSeller(sellerName).addOnSuccessListener {
+            RepublikaPC.getGlobalFlags().shouldRefreshFollowed = true
+            refreshFollowed()
+            followUnfollowSellerNetworkState.postValue(NetworkState.LOADED)
+        }.addOnFailureListener {
+            val error = NetworkState.error(it.message)
+            followUnfollowSellerNetworkState.postValue(error)
+        }
+    }
+
+    fun unfollowSeller(sellerName: String) {
+        followUnfollowSellerNetworkState.postValue(NetworkState.LOADING)
+        repository.unfollowSeller(sellerName).addOnSuccessListener {
+            RepublikaPC.getGlobalFlags().shouldRefreshFollowed = true
+            refreshFollowed()
+            followUnfollowSellerNetworkState.postValue(NetworkState.LOADED)
+        }.addOnFailureListener {
+            val error = NetworkState.error(it.message)
+            followUnfollowSellerNetworkState.postValue(error)
+        }
+    }
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,6 +327,34 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
 
     fun retrySearch() {
         val listing = searchRepoResult.value
+        listing?.retry?.invoke()
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Search Seller Vars
+     */
+
+    private val searchSellerVal = MutableLiveData<String>()
+    private val searchSellerRepoResult = map(searchSellerVal) { repository.sellers(it) }
+    val searchedSellers = Transformations.switchMap(searchSellerRepoResult) { it.pagedList }
+    val searchedSellersNetworkState = Transformations.switchMap(searchSellerRepoResult) { it.networkState }
+    val searchedSellersRefreshNetworkState = Transformations.switchMap(searchSellerRepoResult) { it.refreshState }
+
+
+
+    fun refreshSearchedSellers() {
+        searchSellerRepoResult.value?.refresh?.invoke()
+    }
+
+    fun searchSellers(sellerName: String) : Boolean {
+        this.searchSellerVal.value = sellerName
+        return true
+    }
+
+    fun retrySearchedSellers() {
+        val listing = searchSellerRepoResult.value
         listing?.retry?.invoke()
     }
 

@@ -25,23 +25,17 @@
             <include
                 android:id="@+id/toolbar"
                 layout="@layout/main_toolbar"/>
-
-            <!--<androidx.appcompat.widget.Toolbar-->
-                <!--android:id="@+id/toolbar"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="?attr/actionBarSize"-->
-                <!--android:background="#ffffff"-->
-                <!--app:layout_scrollFlags="scroll|enterAlways|snap"-->
-                <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
     
             <ProgressBar
                 android:id="@+id/progressBarLoader"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:progressBackgroundTint="@color/colorSmoke"
-                android:progressTint="@color/colorBlue"
-                tools:progress="20"/>
+                android:layout_height="4dp"
+                android:visibility="invisible"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/colorBlue"
+                tools:progress="20"
+                tools:visibility="visible"/>
             
         </com.google.android.material.appbar.AppBarLayout>
 

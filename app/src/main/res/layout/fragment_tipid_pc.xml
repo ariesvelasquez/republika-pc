@@ -8,15 +8,38 @@
         android:id="@+id/refreshSwipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list"
+        
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorSmoke"
-            android:scrollbars="vertical"
-            android:paddingStart="@dimen/view_padding"/>
+            android:layout_height="match_parent">
+            
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonBackToTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorTransparentGray"
+                android:layout_marginBottom="@dimen/view_padding"
+                android:layout_marginEnd="@dimen/view_padding"
+                android:text="@string/back_to_top"
+                app:cornerRadius="@dimen/view_padding_30"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:visibility="visible"/>
     
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorSmoke"
+                android:scrollbars="vertical"
+                tools:listitem="@layout/feeds_recyclerview_item"
+                android:paddingStart="@dimen/view_padding"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    
+        
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     
 </LinearLayout>

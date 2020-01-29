@@ -22,7 +22,7 @@ class RigItemsDataSource(rigItemsRef: CollectionReference, rigItemId: String) :
 
     init {
         initialQuery = rigItemsRef.document(rigItemId)
-            .collection(RIGS_ITEM_COLLECTION).limit(mItemPerPage)
+            .collection(RIGS_ITEM_COLLECTION).orderBy("name").limit(mItemPerPage)
     }
 
     /**

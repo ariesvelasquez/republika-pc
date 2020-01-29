@@ -4,9 +4,12 @@ import androidx.annotation.MainThread
 import androidx.paging.PagedList
 import ariesvelasquez.com.republikapc.api.TipidPCApi
 import ariesvelasquez.com.republikapc.androidx.PagingRequestHelper
+import ariesvelasquez.com.republikapc.model.error.Error
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
+import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.utils.createStatusLiveData
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,7 +38,7 @@ class SellerItemsBoundaryCallback (
      */
     @MainThread
     override fun onZeroItemsLoaded() {
-
+        Timber.e("onZeroItemsLoaded")
         helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {
             webservice.getSellerItems(sellerName)
                 .enqueue(createWebserviceCallback(it))
@@ -48,8 +51,8 @@ class SellerItemsBoundaryCallback (
     @MainThread
     override fun onItemAtEndLoaded(itemAtEnd: FeedItem) {
 //        helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {
-            // Or notify user that all the items is loaded
-//            networkState.value = Net
+////            // Or notify user that all the items is loaded
+////            networkState.value = Net
 //            webservice.getSellerItems(sellerName)
 //                .enqueue(createWebserviceCallback(it))
 //        }
@@ -64,13 +67,18 @@ class SellerItemsBoundaryCallback (
         return object : Callback<FeedItemsResource> {
             override fun onFailure(call: Call<FeedItemsResource>, t: Throwable) {
                 it.recordFailure(t)
-                Timber.e("FeedBoundaryCallback > createWebserviceCallback > ${t.message}")
+                Timber.e("SellerItemsBoundaryCallback > createWebserviceCallback > ${t.message}")
             }
 
             override fun onResponse(
                 call: Call<FeedItemsResource>, response: Response<FeedItemsResource>
             ) {
-                insertItemsIntoDb(response, it)
+                if (response.isSuccessful) {
+                    insertItemsIntoDb(response, it)
+                } else {
+                    val errorResponse = Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
+                    it.recordFailure(Throwable(errorResponse.error))
+                }
             }
         }
     }

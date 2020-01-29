@@ -19,6 +19,7 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="sign_in">Sign In</string>
+    <string name="sign_in_to_follow">Sign in to follow seller</string>
     <string name="retry">Retry</string>
     <string name="term_and_condition_sign_in_agreement">By clicking "Sign Up With Google", you agree to our terms and that you have read our Privacy Policy</string>
     
@@ -52,8 +53,17 @@
     <string name="thank_you_sir_for_letting_me_use_tpc_data_to_my_app_salamat_po_sir">Thank you sir for letting me use tpc data to my app. Salamat po sir.</string>
     <string name="link">link</string>
     <string name="item_details">Item Details:</string>
+    <string name="tpc_seller">Tipid PC Seller/User:</string>
     <string name="add_to_rig">Add To Rig:</string>
     <string name="save">save</string>
     <string name="no_internet_connection_error">Your connection is not available. Check your data or wifi connection.</string>
-    <string name="no_items_found">No Items Found, Please try again.</string>
+    <string name="no_items_found">No items found.</string>
+    <string name="no_items_found_seller">No items found for this seller.</string>
+    <string name="no_sellers_found">No sellers found.</string>
+    <string name="loading">loading...</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="you_are_currently_signed_out_sign_in_to_follow_seller">You are currently signed out, Sign In to Follow seller</string>
+    <string name="loading_many_data_may_take_some_time">Loading many data may take some time...</string>
+    <string name="back_to_top">Back to top</string>
 </resources>

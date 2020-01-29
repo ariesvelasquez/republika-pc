@@ -14,9 +14,9 @@ import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.Executor
 
-class SearchDataSource(
+class SearchSellerDataSource(
     val tipidPCApi: TipidPCApi,
-    val searchVal: String,
+    val sellerName: String,
     val retryExecutor: Executor
 ) : ItemKeyedDataSource<String, FeedItem>() {
 
@@ -50,7 +50,7 @@ class SearchDataSource(
         // set network value to loading.
 //        networkState.postValue(NetworkState.LOADING)
 
-        val request = tipidPCApi.getSearhItem(searchVal, currentPage)
+        val request = tipidPCApi.getSellers(sellerName)
 
         // update network states.
         // we also provide an initial load state to the listeners so that the UI can know when the
@@ -66,6 +66,7 @@ class SearchDataSource(
                 val items = response.body()?.items ?: emptyList()
                 retry = null
                 initialLoad.postValue(NetworkState.LOADED)
+                networkState.postValue(NetworkState.LOADED)
 
                 if (items.isEmpty()) {
                     // Add An Empty Type Array List
@@ -78,7 +79,7 @@ class SearchDataSource(
                     loadInitial(params, callback)
                 }
                 val errorResponse = Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
-                val error = NetworkState.error(errorResponse.error ?: "unknown error")
+                val error = NetworkState.error(errorResponse.error)
                 networkState.postValue(error)
                 initialLoad.postValue(error)
             }
@@ -94,45 +95,47 @@ class SearchDataSource(
     }
 
     override fun loadAfter(params: LoadParams<String>, callback: LoadCallback<FeedItem>) {
-        // Increment the page
-        currentPage++
-        // set network value to loading.
-        networkState.postValue(NetworkState.LOADING)
-        // even though we are using async retrofit API here, we could also use sync
-        // it is just different to show that the callback can be called async.
-        tipidPCApi.getSearhItem(searchVal, currentPage).enqueue(
-            object : retrofit2.Callback<FeedItemsResource> {
-                override fun onFailure(call: Call<FeedItemsResource>, t: Throwable) {
-                    // keep a lambda for future retryFeeds
-                    retry = {
-                        loadAfter(params, callback)
-                    }
-                    // publish the error
-                    networkState.postValue(NetworkState.error(t.message ?: "unknown err"))
-                }
-
-                override fun onResponse(
-                    call: Call<FeedItemsResource>,
-                    response: Response<FeedItemsResource>
-                ) {
-
-                    if (response.isSuccessful) {
-                        val items = response.body()?.items ?: emptyList()
-                        Timber.e("loadAfter " + items.size)
-                        // clear retryFeeds since last request succeeded
-                        retry = null
-                        callback.onResult(items)
-                        networkState.postValue(NetworkState.LOADED)
-                    } else {
-                        retry = {
-                            loadAfter(params, callback)
-                        }
-                        val errorResponse = Gson().fromJson(response.errorBody()!!.string(), Error::class.java)
-                        val error = NetworkState.error(errorResponse.error ?: "unknown error")
-                        networkState.postValue(error)
-                    }
-                }
-            })
+        networkState.postValue(NetworkState.LOADED)
+        initialLoad.postValue(NetworkState.LOADED)
+//        // Increment the page
+//        currentPage++
+//        // set network value to loading.
+//        networkState.postValue(NetworkState.LOADING)
+//        // even though we are using async retrofit API here, we could also use sync
+//        // it is just different to show that the callback can be called async.
+//        tipidPCApi.getSellers(sellerName).enqueue(
+//            object : retrofit2.Callback<FeedItemsResource> {
+//                override fun onFailure(call: Call<FeedItemsResource>, t: Throwable) {
+//                    // keep a lambda for future retryFeeds
+//                    retry = {
+//                        loadAfter(params, callback)
+//                    }
+//                    // publish the error
+//                    networkState.postValue(NetworkState.error(t.message ?: "unknown err"))
+//                }
+//
+//                override fun onResponse(
+//                    call: Call<FeedItemsResource>,
+//                    response: Response<FeedItemsResource>
+//                ) {
+//
+//                    if (response.isSuccessful) {
+//                        val items = response.body()?.items ?: emptyList()
+//                        Timber.e("loadAfter " + items.size)
+//                        // clear retryFeeds since last request succeeded
+//                        retry = null
+//                        callback.onResult(items)
+//                        networkState.postValue(NetworkState.LOADED)
+//                    } else {
+//                        retry = {
+//                            loadAfter(params, callback)
+//                        }
+//                        networkState.postValue(
+//                            NetworkState.error("error code: ${response.code()}")
+//                        )
+//                    }
+//                }
+//            })
     }
 
     override fun loadBefore(params: LoadParams<String>, callback: LoadCallback<FeedItem>) {

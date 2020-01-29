@@ -1,9 +1,12 @@
-package ariesvelasquez.com.republikapc.repository.saved
+package ariesvelasquez.com.republikapc.repository.followed
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.ItemKeyedDataSource
-import ariesvelasquez.com.republikapc.Const.OWNER_ID
+import ariesvelasquez.com.republikapc.Const
+import ariesvelasquez.com.republikapc.Const.FIRST_LETTER
+import ariesvelasquez.com.republikapc.Const.FOLLOWED_TPC_SELLER_COLLECTION
 import ariesvelasquez.com.republikapc.Const.ITEM_PER_PAGE_20
+import ariesvelasquez.com.republikapc.Const.SELLER
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import com.google.firebase.auth.FirebaseAuth
@@ -13,7 +16,7 @@ import com.google.firebase.firestore.Query
 import timber.log.Timber
 import java.io.IOException
 
-class SavedDataSource(savedReference: CollectionReference) : ItemKeyedDataSource<String, Saved>() {
+class FollowedDataSource(followedReference: CollectionReference) : ItemKeyedDataSource<String, Saved>() {
 
     private var initialQuery: Query
     private var lastVisible: DocumentSnapshot? = null
@@ -23,9 +26,9 @@ class SavedDataSource(savedReference: CollectionReference) : ItemKeyedDataSource
     init {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
 
-        initialQuery = savedReference
-            .whereEqualTo(OWNER_ID, firebaseUser?.uid)
-            .orderBy("name")
+        initialQuery = followedReference
+            .whereEqualTo(Const.OWNER_ID, firebaseUser?.uid)
+            .orderBy(FIRST_LETTER)
             .limit(mItemPerPage)
     }
 
@@ -50,18 +53,19 @@ class SavedDataSource(savedReference: CollectionReference) : ItemKeyedDataSource
 
         try {
             initialQuery.get().addOnCompleteListener { task ->
-                val savedList = mutableListOf<Saved>()
+                val followedList = mutableListOf<Saved>()
                 if (task.isSuccessful) {
 
                     val querySnapshot = task.result
 
                     for (document in querySnapshot!!) {
                         val savedItem = document.toObject(Saved::class.java)
-                        savedList.add(savedItem)
+                        followedList.add(savedItem)
                     }
+                    Timber.e("followedList size " + followedList.size)
 
                     // Return the collected list from firestore
-                    callback.onResult(savedList)
+                    callback.onResult(followedList)
                     networkState.postValue(NetworkState.LOADED)
                     initialLoad.postValue(NetworkState.LOADED)
 
@@ -79,7 +83,7 @@ class SavedDataSource(savedReference: CollectionReference) : ItemKeyedDataSource
                 }
             }
         } catch (ioException: IOException) {
-            val error = NetworkState.error(ioException.message ?: "unknown error")
+            val error = NetworkState.error(ioException.message ?: "followed unknown error")
             networkState.postValue(error)
             initialLoad.postValue(error)
         }
@@ -95,20 +99,20 @@ class SavedDataSource(savedReference: CollectionReference) : ItemKeyedDataSource
             val nextQuery: Query = initialQuery.startAfter(lastVisible!!)
             try {
                 nextQuery.get().addOnCompleteListener { task ->
-                    val nextSavedList = mutableListOf<Saved>()
+                    val nextFollowedList = mutableListOf<Saved>()
                     if (task.isSuccessful) {
                         val querySnapshot = task.result
                         for (document in querySnapshot!!) {
                             val savedItem = document.toObject(Saved::class.java)
-                            nextSavedList.add(savedItem)
+                            nextFollowedList.add(savedItem)
                         }
-                        callback.onResult(nextSavedList)
+                        callback.onResult(nextFollowedList)
 
                         // set network value to loading.
                         networkState.postValue(NetworkState.LOADED)
                         initialLoad.postValue(NetworkState.LOADED)
 
-                        if (nextSavedList.size < mItemPerPage) {
+                        if (nextFollowedList.size < mItemPerPage) {
                             lastPageReached = true
                         } else {
                             lastVisible = querySnapshot.documents[querySnapshot.size() - 1]

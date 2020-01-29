@@ -152,13 +152,15 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         // Tpc User Items On Click
+        if (feedItemReference.date.isEmpty() || feedItemReference.date.equals("Invalid date format", true)) {
+            rootView.textViewItemDatePosted.visibility = View.GONE
+        }
 
         if (!enabledName) {
             rootView.textViewSellerName.setTextColor(ContextCompat.getColor(context!!, R.color.colorGray))
         } else {
             rootView.textViewSellerName.setOnClickListener {
-                Timber.e("Clicked TPC User " + feedItemReference.seller)
-                listener?.onGoToSellerItems(feedItemReference.seller)
+                listener?.onTPCSellerClicked(feedItemReference.seller)
             }
         }
     }
@@ -234,6 +236,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         fun showSignUpBottomSheet()
         fun onGoToLink(linkId: String)
         fun onGoToSellerItems(sellerName: String)
+        fun onTPCSellerClicked(sellerName: String)
         fun onItemSave(feedItem: FeedItem)
         fun onItemAddedToRig(rigItem: Rig, feedItemReference: FeedItem)
     }

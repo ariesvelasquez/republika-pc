@@ -2,6 +2,7 @@ package ariesvelasquez.com.republikapc.ui.selleritems
 
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -25,6 +26,7 @@ import kotlinx.android.synthetic.main.activity_seller_items.*
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.android.synthetic.main.toolbar.toolbar
 import kotlinx.android.synthetic.main.toolbar.view.*
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import timber.log.Timber
 
 class SellerItemsActivity : BaseDashboardActivity() {
@@ -32,6 +34,8 @@ class SellerItemsActivity : BaseDashboardActivity() {
     private lateinit var sellerItemsAdapter: FeedItemsAdapter
 
     private lateinit var mSellerName: String
+    private var mListSize = 0
+    private var mItemNetworkState = NetworkState.LOADING
 
     private val dashboardViewModel: DashboardViewModel by viewModels {
         object : ViewModelProvider.Factory {
@@ -85,6 +89,9 @@ class SellerItemsActivity : BaseDashboardActivity() {
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
 
+        FastScrollerBuilder(recyclerViewSellerItemList)
+            .build()
+
         recyclerViewSellerItemList.layoutManager = linearLayoutManager
         recyclerViewSellerItemList.adapter = sellerItemsAdapter
 
@@ -112,14 +119,12 @@ class SellerItemsActivity : BaseDashboardActivity() {
     }
 
     private fun startLoading() {
-        progressBarLoader.progress = 70
+        progressBarLoader.visibility = View.VISIBLE
     }
 
     private fun finishedLoading() {
-        progressBarLoader.progress = 100
-
         Handler().postDelayed({
-            progressBarLoader.progress = 0
+            progressBarLoader.visibility = View.GONE
         }, 1000)
     }
 
@@ -128,7 +133,6 @@ class SellerItemsActivity : BaseDashboardActivity() {
             when (it) {
                 NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
-                    RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
                     finishedLoading()
                     showSnackBar(getString(R.string.added_to_rig_success))
                 }

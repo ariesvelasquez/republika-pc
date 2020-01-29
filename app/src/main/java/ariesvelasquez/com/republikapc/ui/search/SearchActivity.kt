@@ -2,16 +2,19 @@ package ariesvelasquez.com.republikapc.ui.search
 
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.RepublikaPC
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.BaseDashboardActivity
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.FeedItemsAdapter
@@ -24,7 +27,10 @@ import timber.log.Timber
 
 class SearchActivity : BaseDashboardActivity() {
 
-    private lateinit var searchAdapter: FeedItemsAdapter
+    private lateinit var searchItemsAdapter: FeedItemsAdapter
+    private lateinit var searchSellerAdapter: FeedItemsAdapter
+
+    private var showSeller = true
 
     private var mIsRigInitialized = false
 
@@ -37,9 +43,11 @@ class SearchActivity : BaseDashboardActivity() {
 
         handleRigState()
 
-        initAdapter()
-        handleSearchState()
-        handleRefreshSearchState()
+        initItemsAdapter()
+        handleSearchItemsState()
+
+        initSellersAdapter()
+        handleSearchSellersState()
 
         handleAddItemToRigCreationState()
         handleSaveItemState()
@@ -47,39 +55,89 @@ class SearchActivity : BaseDashboardActivity() {
         initOnClicks()
     }
 
+
     private fun handleRigState() {
         // init rigs
         viewModel.showRigs()
     }
 
-    private fun handleSearchState() {
+    private fun handleSearchItemsState() {
         viewModel.searchNetworkState.observe(this, Observer {
-            searchAdapter.setNetworkState(it)
+            searchItemsAdapter.setNetworkState(it)
         })
-    }
 
-    private fun handleRefreshSearchState() {
         viewModel.searchRefreshNetworkState.observe(this, Observer {
             refreshSwipe.isRefreshing = it == NetworkState.LOADING
         })
-        refreshSwipe.setOnRefreshListener {
-            viewModel.refreshSearch()
-        }
     }
 
-    private fun initAdapter() {
-        searchAdapter = FeedItemsAdapter(
+    private fun handleSearchSellersState() {
+        viewModel.searchedSellersNetworkState.observe(this, Observer {
+            searchSellerAdapter.setNetworkState(it)
+            if (it == NetworkState.LOADING) {
+                linearLayoutSellers.visibility = View.GONE
+            } else {
+                linearLayoutSellers.visibility = View.VISIBLE
+            }
+        })
+
+        viewModel.searchedSellersRefreshNetworkState.observe(this, Observer {
+            refreshSwipe.isRefreshing = it == NetworkState.LOADING
+            if (it == NetworkState.LOADING) {
+                linearLayoutSellers.visibility = View.GONE
+            } else {
+                linearLayoutSellers.visibility = View.VISIBLE
+            }
+        })
+    }
+
+    private fun initItemsAdapter() {
+        searchItemsAdapter = FeedItemsAdapter(
             FeedItemsAdapter.FEED_VIEW_TYPE,
             { viewModel.retrySearch() }) { v, pos, feedItem ->
 
             onTPCItemClicked(feedItem)
-
-            Timber.e("Clicked Feed Item From Search " + feedItem.name)
         }
         recyclerViewSearch.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        recyclerViewSearch.adapter = searchAdapter
+        recyclerViewSearch.adapter = searchItemsAdapter
+
+        // Listen for Scroll
+        recyclerViewSearch.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (searchItemsAdapter.currentRecycledItem > 20) {
+                    buttonBackToTop.visibility = View.VISIBLE
+                } else {
+                    buttonBackToTop.visibility = View.GONE
+                }
+            }
+        })
+
         viewModel.searchItems.observe(this, Observer<PagedList<FeedItem>> {
-            searchAdapter.submitList(it)
+            textViewItemsLabel.visibility = View.VISIBLE
+            searchItemsAdapter.submitList(it)
+        })
+    }
+
+    private fun initSellersAdapter() {
+        searchSellerAdapter = FeedItemsAdapter(
+            FeedItemsAdapter.SELLER_VIEW_TYPE,
+            { viewModel.retrySearchedSellers() }) { v, pos, feedItem ->
+
+//            onTPCItemClicked(feedItem)
+
+            onTPCSellerClicked(feedItem.seller)
+
+            Timber.e("Clicked TPC Seller From Search " + feedItem.name)
+        }
+
+        recyclerViewSeller.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
+        recyclerViewSeller.adapter = searchSellerAdapter
+
+        viewModel.searchedSellers.observe(this, Observer<PagedList<FeedItem>> {
+            textViewSellerLabel.visibility = View.VISIBLE
+            searchSellerAdapter.submitList(it)
         })
     }
 
@@ -94,6 +152,14 @@ class SearchActivity : BaseDashboardActivity() {
         editTextSearch.onQuerySubmit {
             // Handle Submit change
             if (it.isNotEmpty()) {
+
+                // Trigger Search TPC User API
+                if (viewModel.searchSellers(it)) {
+                    recyclerViewSearch.scrollToPosition(0)
+                    (recyclerViewSeller.adapter as? FeedItemsAdapter)?.submitList(null)
+                }
+
+                // Trigger Search TPC For Sale Items API
                 if (viewModel.searchItems(it)) {
                     recyclerViewSearch.scrollToPosition(0)
                     (recyclerViewSearch.adapter as? FeedItemsAdapter)?.submitList(null)
@@ -103,8 +169,43 @@ class SearchActivity : BaseDashboardActivity() {
         }
     }
 
+    private fun hideLabels() {
+        textViewSellerLabel.visibility = View.GONE
+        textViewItemsLabel.visibility = View.GONE
+    }
+
     private fun initOnClicks() {
+        refreshSwipe.setOnRefreshListener {
+            viewModel.refreshSearch()
+            viewModel.refreshSearchedSellers()
+        }
+
         backButton.setOnClickListener { onBackPressed() }
+
+        linearLayoutSellers.setOnClickListener { minimizeMaximizeSellerList() }
+        buttonShowHideSellers.setOnClickListener { minimizeMaximizeSellerList() }
+        textViewSellerLabel.setOnClickListener { minimizeMaximizeSellerList() }
+
+        buttonBackToTop.setOnClickListener {
+            recyclerViewSearch.layoutManager!!.smoothScrollToPosition(recyclerViewSearch, null, 0)
+        }
+    }
+
+    private fun minimizeMaximizeSellerList() {
+        showSeller = !showSeller
+
+        when (showSeller) {
+            true -> {
+                // Maximize
+                buttonShowHideSellers.setImageDrawable(getDrawable(R.drawable.ic_window_minimize))
+                recyclerViewSeller.visibility = View.VISIBLE
+            }
+            else -> {
+                // Minimize
+                buttonShowHideSellers.setImageDrawable(getDrawable(R.drawable.ic_window_maximize))
+                recyclerViewSeller.visibility = View.GONE
+            }
+        }
     }
 
     override fun handleAddItemToRigCreationState() {
@@ -112,7 +213,6 @@ class SearchActivity : BaseDashboardActivity() {
             when (it) {
                 NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
-                    RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
                     finishedLoading()
                     showSnackBar(getString(R.string.added_to_rig_success))
                 }
@@ -162,14 +262,13 @@ class SearchActivity : BaseDashboardActivity() {
     }
 
     private fun startLoading() {
-        progressBarLoader.progress = 70
+        progressBarLoader.visibility = View.VISIBLE
     }
 
     private fun finishedLoading() {
-        progressBarLoader.progress = 100
 
         Handler().postDelayed({
-            progressBarLoader.progress = 0
+            progressBarLoader.visibility = View.GONE
         }, 1000)
     }
 

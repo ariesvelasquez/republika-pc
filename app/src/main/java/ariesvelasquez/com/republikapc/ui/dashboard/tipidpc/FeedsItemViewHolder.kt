@@ -36,14 +36,18 @@ class FeedsItemViewHolder(view: View, private val onClickCallback: (v: View, pos
         if (item.isEmptyItem) {
             title.text = context.getString(R.string.no_items_found)
             price.visibility = View.GONE
+            sellerName.text = ""
+            mainView.isEnabled = false
             return
         }
 
         title.text = item.name ?: "loading"
         sellerName.text = item.seller
         price.text = item.price
+        price.visibility = View.VISIBLE
         page.text = item.page.toString()
 
+        mainView.isEnabled = true
         mainView.setOnClickListener {
             onClickCallback.invoke(it, position, item)
         }

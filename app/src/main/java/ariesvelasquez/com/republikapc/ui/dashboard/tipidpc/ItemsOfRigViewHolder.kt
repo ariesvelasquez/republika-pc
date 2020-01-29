@@ -37,7 +37,13 @@ class ItemsOfRigViewHolder(view: View, private val onClickCallback: (v: View, po
         this.item = item
         name.text = item.name ?: "loading"
         sellerName.text = item.seller
-        price.text = tools?.format(item.price.toDouble()) + ".00"
+
+        val itemPriceClean = item.price.
+            replace("PHP", "").
+            replace("HP", "").
+            replace("P", "")
+
+        price.text = tools?.format(itemPriceClean.toDouble()) + ".00"
         page.text = item.page.toString()
 
         mainView.setOnClickListener {

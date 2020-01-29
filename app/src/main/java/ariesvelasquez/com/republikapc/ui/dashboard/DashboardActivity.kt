@@ -3,10 +3,8 @@ package ariesvelasquez.com.republikapc.ui.dashboard
 import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
-import android.view.Gravity
+import android.view.View
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -14,40 +12,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
-import ariesvelasquez.com.republikapc.Const.TIPID_PC_VIEW_ITEM
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.RepublikaPC
-import ariesvelasquez.com.republikapc.model.feeds.FeedItem
-import ariesvelasquez.com.republikapc.model.rigs.Rig
-import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
-import ariesvelasquez.com.republikapc.ui.BaseActivity
-import ariesvelasquez.com.republikapc.ui.auth.AuthActivity
-import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.addtorig.AddToRigBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.console.ConsoleBottomSheetFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.createrig.RigCreatorBottomSheetFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.rigdetail.RigDetailBottomSheetFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.saved.SavedActionBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.RepublikaPCFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.rpc.items.PartsFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigsFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.TipidPCFragment
 import ariesvelasquez.com.republikapc.ui.search.SearchActivity
-import ariesvelasquez.com.republikapc.ui.webview.WebViewActivity
-import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
 import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
-import com.google.firebase.auth.FirebaseUser
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.main_toolbar.*
-import timber.log.Timber
 
 class DashboardActivity : BaseDashboardActivity() {
 
@@ -95,6 +72,16 @@ class DashboardActivity : BaseDashboardActivity() {
             RepublikaPC.getGlobalFlags().shouldRefreshRigs = false
             viewModel.refreshRigs()
         }
+
+        if (mCurrentMenuFragment == R.id.navigation_rigs && RepublikaPC.getGlobalFlags().shouldRefreshFollowed) {
+            RepublikaPC.getGlobalFlags().shouldRefreshFollowed = false
+            viewModel.refreshFollowed()
+        }
+
+        if (mCurrentMenuFragment == R.id.navigation_rigs && RepublikaPC.getGlobalFlags().shouldRefreshSaved) {
+            RepublikaPC.getGlobalFlags().shouldRefreshSaved = false
+            viewModel.refreshSaved()
+        }
     }
 
     private fun handleRigState() {
@@ -114,7 +101,6 @@ class DashboardActivity : BaseDashboardActivity() {
                 NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
                     rigDetailBottomSheet.dismiss()
-                    RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
                     finishedLoading()
                     showSnackBar(getString(R.string.rig_deleted))
                 }
@@ -128,7 +114,6 @@ class DashboardActivity : BaseDashboardActivity() {
             when (it) {
                 NetworkState.LOADING -> { startLoading() }
                 NetworkState.LOADED -> {
-                    RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
                     finishedLoading()
                     showSnackBar(getString(R.string.added_to_rig_success))
                 }
@@ -178,14 +163,13 @@ class DashboardActivity : BaseDashboardActivity() {
     }
 
     private fun startLoading() {
-        progressBarLoader.progress = 70
+        progressBarLoader.visibility = View.VISIBLE
     }
 
     private fun finishedLoading() {
-        progressBarLoader.progress = 100
 
         Handler().postDelayed({
-            progressBarLoader.progress = 0
+            progressBarLoader.visibility = View.GONE
         }, 1000)
     }
 

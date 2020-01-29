@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.ui.dashboard
+package ariesvelasquez.com.republikapc.ui.dashboard.rpc.saved
 
 import android.content.Context
 import android.os.Bundle
@@ -8,11 +8,10 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
-import ariesvelasquez.com.republikapc.ui.dashboard.rpc.saved.SavedItemsAdapter
+import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
 import kotlinx.android.synthetic.main.fragment_saved.view.*
 
 class SavedFragment : DashboardFragment() {

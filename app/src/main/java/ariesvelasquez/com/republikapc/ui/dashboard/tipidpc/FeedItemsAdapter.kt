@@ -7,7 +7,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
+import me.zhanghai.android.fastscroll.PopupTextProvider
 import timber.log.Timber
+import androidx.annotation.NonNull
+import ariesvelasquez.com.republikapc.GlobalFlags
+import java.util.*
+
 
 class FeedItemsAdapter(
     private val viewTypeParam: Int = FEED_VIEW_TYPE,
@@ -18,18 +23,17 @@ class FeedItemsAdapter(
 
     private var networkState: NetworkState? = null
 
-//    private var varitems = mutableListOf<FeedItem>()
-    private var rigItemsTotal = 0
+    var currentRecycledItem: Int = 0
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-//        Timber.e("isEmptyType " + getItem(position)!!.isEmptyItem)
-//        Timber.e("isLastItem " + getItem(position)!!.isLastItem)
+        currentRecycledItem = position
 
         when (getItemViewType(position)) {
             FEED_VIEW_TYPE -> { (holder as FeedsItemViewHolder).bind(getItem(position)!!, position) }
             RIG_ITEM_VIEW_TYPE -> (holder as ItemsOfRigViewHolder).bind(getItem(position)!!, position)
             SELLER_ITEM_VIEW_TYPE -> (holder as TipidPCSellerItemsViewHolder).bind(getItem(position)!!, position)
+            SELLER_VIEW_TYPE -> (holder as TipidPCSellerViewHolder).bind(getItem(position)!!, position)
             ERROR_VIEW_TYPE -> (holder as NetworkStateViewHolder).bindTo(
                 networkState)
         }
@@ -58,6 +62,7 @@ class FeedItemsAdapter(
             FEED_VIEW_TYPE -> FeedsItemViewHolder.create(parent, onClickCallback)
             RIG_ITEM_VIEW_TYPE -> ItemsOfRigViewHolder.create(parent, onClickCallback)
             SELLER_ITEM_VIEW_TYPE -> TipidPCSellerItemsViewHolder.create(parent, onClickCallback)
+            SELLER_VIEW_TYPE -> TipidPCSellerViewHolder.create(parent, onClickCallback)
             ERROR_VIEW_TYPE -> NetworkStateViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
@@ -96,7 +101,13 @@ class FeedItemsAdapter(
     fun getItemTotal() : Double {
         var total = 0.00
         currentList?.forEach {
-            val toBeAdded = it.price.removePrefix("P").toDouble()
+            val toBeAdded = it.price
+                .replace("PHP", "")
+                .replace("HP", "")
+                .replace("P", "")
+                .toDouble()
+
+
             total = total.plus(toBeAdded)
         }
         return total
@@ -108,6 +119,7 @@ class FeedItemsAdapter(
         const val FEED_VIEW_TYPE = 1
         const val RIG_ITEM_VIEW_TYPE = 2
         const val SELLER_ITEM_VIEW_TYPE = 3
+        const val SELLER_VIEW_TYPE = 4
 
         private val PAYLOAD_SCORE = Any()
         val POST_COMPARATOR = object : DiffUtil.ItemCallback<FeedItem>() {

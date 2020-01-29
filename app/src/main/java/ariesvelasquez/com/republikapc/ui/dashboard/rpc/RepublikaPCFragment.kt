@@ -12,11 +12,11 @@ import androidx.viewpager.widget.ViewPager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.RepublikaPC
 import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.SavedFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.followed.FollowedFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.saved.SavedFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.items.PartsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigsFragment
 import kotlinx.android.synthetic.main.fragment_republika_pc.view.*
-import timber.log.Timber
 
 class RepublikaPCFragment : DashboardFragment() {
 
@@ -63,6 +63,20 @@ class RepublikaPCFragment : DashboardFragment() {
                         dashboardViewModel.refreshRigs()
                     }
                 }
+
+                if (position == 1) {
+                    if (RepublikaPC.getGlobalFlags().shouldRefreshSaved) {
+                        RepublikaPC.getGlobalFlags().shouldRefreshSaved = false
+                        dashboardViewModel.refreshSaved()
+                    }
+                }
+
+                if (position == 2) {
+                    if (RepublikaPC.getGlobalFlags().shouldRefreshFollowed) {
+                        RepublikaPC.getGlobalFlags().shouldRefreshFollowed = false
+                        dashboardViewModel.refreshFollowed()
+                    }
+                }
             }
         })
 
@@ -74,7 +88,6 @@ class RepublikaPCFragment : DashboardFragment() {
 //                // Check if this is the page you want.
 //            }
 //        });
-
 
         rootView.tabLayoutRpc.setupWithViewPager(rootView.viewPagerRpc)
     }
@@ -108,18 +121,20 @@ class RepublikaPCFragment : DashboardFragment() {
             return when (position) {
                 0 -> RigsFragment.newInstance()
                 1 -> SavedFragment.newInstance()
+                2 -> FollowedFragment.newInstance()
                 else -> PartsFragment.newInstance()
             }
         }
 
         override fun getCount(): Int {
-            return 3
+            return 4
         }
 
         override fun getPageTitle(position: Int): CharSequence? {
             return when (position) {
                 0 -> "Rigs"
                 1 -> "Saved"
+                2 -> "Followed"
                 else ->  "Parts"
             }
         }

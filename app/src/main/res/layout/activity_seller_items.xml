@@ -39,16 +39,41 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
-        
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewSellerItemList"
+            
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/colorSmoke"
-                android:fadeScrollbars="false"
-                android:fastScrollEnabled="true"
-                android:fastScrollAlwaysVisible="true"
-                android:scrollbars="vertical"/>
+                android:layout_height="match_parent">
+                
+                <TextView
+                    style="@style/TextAppearance.TileTertiary"
+                    android:id="@+id/textViewEmptyNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:text="@string/loading_many_data_may_take_some_time"/>
+                
+                
+    
+<!--                <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView-->
+<!--                    android:id="@+id/recyclerViewSellerItemList"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    app:fastScrollPopupBgColor="@color/colorAccent"-->
+<!--                    app:fastScrollPopupTextColor="@android:color/primary_text_dark"-->
+<!--                    app:fastScrollThumbColor="@color/colorAccent" />-->
+    
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewSellerItemList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorSmoke"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                
+            </androidx.constraintlayout.widget.ConstraintLayout>
             
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         

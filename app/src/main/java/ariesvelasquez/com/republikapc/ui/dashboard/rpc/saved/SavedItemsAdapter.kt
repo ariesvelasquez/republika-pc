@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
+import ariesvelasquez.com.republikapc.ui.dashboard.rpc.followed.FollowedItemViewHolder
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.NetworkStateViewHolder
 
 class SavedItemsAdapter(
@@ -20,6 +21,7 @@ class SavedItemsAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             SAVED_ITEMS_VIEW_TYPE -> (holder as SavedItemViewHolder).bind(getItem(position))
+            FOLLOWED_ITEMS_VIEW_TYPE -> (holder as FollowedItemViewHolder).bind(getItem(position))
             ERROR_VIEW_TYPE -> (holder as NetworkStateViewHolder).bindTo(
                 networkState
             )
@@ -42,6 +44,7 @@ class SavedItemsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             SAVED_ITEMS_VIEW_TYPE -> SavedItemViewHolder.create(parent, onClickCallback)
+            FOLLOWED_ITEMS_VIEW_TYPE -> FollowedItemViewHolder.create(parent, onClickCallback)
             ERROR_VIEW_TYPE -> NetworkStateViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
@@ -81,6 +84,7 @@ class SavedItemsAdapter(
 
         const val ERROR_VIEW_TYPE = 0
         const val SAVED_ITEMS_VIEW_TYPE = 1
+        const val FOLLOWED_ITEMS_VIEW_TYPE = 2
 
         private val PAYLOAD_SCORE = Any()
 

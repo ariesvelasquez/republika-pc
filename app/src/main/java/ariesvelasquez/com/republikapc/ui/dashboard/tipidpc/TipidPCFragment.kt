@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
@@ -41,7 +42,15 @@ class TipidPCFragment : DashboardFragment() {
 
         dashboardViewModel.showFeedItems()
 
+        initOnClicks()
+
         return rootView
+    }
+
+    private fun initOnClicks() {
+        rootView.buttonBackToTop.setOnClickListener {
+            rootView.list.layoutManager!!.smoothScrollToPosition(rootView.list, null, 0)
+        }
     }
 
     override fun onResume() {
@@ -58,9 +67,21 @@ class TipidPCFragment : DashboardFragment() {
             listener?.onTPCItemClicked(feedItem)
         }
 
-
         rootView.list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rootView.list.adapter = adapter
+
+        // Listen for Scroll
+        rootView.list.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (adapter.currentRecycledItem > 20) {
+                    rootView.buttonBackToTop.visibility = View.VISIBLE
+                } else {
+                    rootView.buttonBackToTop.visibility = View.GONE
+                }
+            }
+        })
 
         // Init Items
         dashboardViewModel.feedItems.observe( viewLifecycleOwner, Observer<PagedList<FeedItem>> {
@@ -72,10 +93,6 @@ class TipidPCFragment : DashboardFragment() {
         })
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-//        outState.putString(KEY_SELLER, model.currentSeller())
-    }
 
     private fun initSwipeToRefresh() {
         dashboardViewModel.feedsRefreshState.observe( viewLifecycleOwner, Observer {

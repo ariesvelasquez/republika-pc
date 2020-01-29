@@ -13,6 +13,7 @@
     
     <dimen name="view_padding_10">10dp</dimen>
     <dimen name="view_padding_20">20dp</dimen>
+    <dimen name="view_padding_30">30dp</dimen>
     
     <!--Default font size, per the Android Design Guidelines for Roboto font-->
     <dimen name="font_size_page_title">20sp</dimen>

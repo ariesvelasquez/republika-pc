@@ -7,6 +7,7 @@ import ariesvelasquez.com.republikapc.repository.Listing
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.QuerySnapshot
 
 interface IDashboardRepository {
 
@@ -16,9 +17,13 @@ interface IDashboardRepository {
 
     fun sellerItems(sellerName: String) : Listing<FeedItem>
 
+    fun sellers(sellerName: String) : Listing<FeedItem>
+
     fun rigs(): Listing<Rig>
 
     fun saved(): Listing<Saved>
+
+    fun followed(): Listing<Saved>
 
     fun saveItem(firebaseUser: FirebaseUser, feedItem: FeedItem): Task<Void>
 
@@ -45,4 +50,10 @@ interface IDashboardRepository {
     ) : Task<Void>
 
     fun deleteRigItem(rigId: String, rigItemId: String): Task<Void>
+
+    fun checkUserFollowedSeller(sellerName: String) : DocumentReference
+
+    fun followSeller(sellerName: String) : Task<Void>
+
+    fun unfollowSeller(sellerName: String) : Task<Void>
 }

@@ -25,6 +25,9 @@ interface TipidPCApi {
     @GET("tipidpc/user_items/{sellerName}")
     fun getSellerItems(@Path("sellerName") name: String) : Call<FeedItemsResource>
 
+    @GET("tipidpc/user_search/{sellerName}")
+    fun getSellers(@Path("sellerName") name: String) : Call<FeedItemsResource>
+
     companion object {
 
         private const val API_BASE_URL = Const.BASE_URL

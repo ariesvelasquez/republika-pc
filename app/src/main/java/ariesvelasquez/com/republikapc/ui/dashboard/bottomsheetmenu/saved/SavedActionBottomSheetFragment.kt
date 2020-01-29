@@ -24,6 +24,7 @@ import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_saved_action_bottom_sheet.view.*
+import kotlinx.android.synthetic.main.nav_header.*
 
 
 class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
@@ -137,14 +138,20 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
         rootView.textViewItemName.text = savedItemReference.name
         // Set Seller Name and Date
         rootView.textViewSellerName.text = savedItemReference.seller
+
         // Date
         rootView.textViewItemDatePosted.text = " • " + savedItemReference.postDate
+
         // Price
-        rootView.textViewPrice.text = savedItemReference.price.removePrefix("P")
+        rootView.textViewPrice.text = savedItemReference.price.removePrefix("P").removePrefix("PHP")
 
         // Link On Click
         rootView.linearLayoutLink.setOnClickListener {
             listener?.onGoToLink(savedItemReference.linkId)
+        }
+
+        if (savedItemReference.postDate.isEmpty()) {
+            rootView.textViewItemDatePosted.visibility = View.GONE
         }
 
         if (!enabledName) {
