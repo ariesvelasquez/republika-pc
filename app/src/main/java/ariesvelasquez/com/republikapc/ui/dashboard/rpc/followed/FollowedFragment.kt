@@ -79,7 +79,7 @@ class FollowedFragment : DashboardFragment() {
     private fun initAdapter() {
         adapter = SavedItemsAdapter (
             SavedItemsAdapter.FOLLOWED_ITEMS_VIEW_TYPE,
-            { dashboardViewModel.refreshFollowed() }) { v, item ->
+            { dashboardViewModel.refreshFollowed() }) { v, pos, item ->
 
             listener?.onTPCSellerClicked(item.seller)
         }

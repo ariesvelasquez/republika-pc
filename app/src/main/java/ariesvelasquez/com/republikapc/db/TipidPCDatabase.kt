@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.model.saved.Saved
 
 @Database(
-    entities = [FeedItem::class],
-    version = 1,
+    entities = [FeedItem::class, Saved::class],
+    version = 2,
     exportSchema = false
 )
 abstract class TipidPCDatabase : RoomDatabase() {

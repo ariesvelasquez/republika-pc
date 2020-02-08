@@ -9,37 +9,41 @@ import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.followed.FollowedItemViewHolder
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.NetworkStateViewHolder
+import timber.log.Timber
 
 class SavedItemsAdapter(
     private val viewTypeParam: Int = SAVED_ITEMS_VIEW_TYPE,
     private val retryCallback: () -> Unit,
-    private val onClickCallback: (v: View, item: Saved) -> Unit
+    private val onClickCallback: (v: View, position: Int, item: Saved) -> Unit
 ) : PagedListAdapter<Saved, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
-            SAVED_ITEMS_VIEW_TYPE -> (holder as SavedItemViewHolder).bind(getItem(position))
-            FOLLOWED_ITEMS_VIEW_TYPE -> (holder as FollowedItemViewHolder).bind(getItem(position))
+            SAVED_ITEMS_VIEW_TYPE -> (holder as SavedItemViewHolder).bind(getItem(position), position)
+            FOLLOWED_ITEMS_VIEW_TYPE -> (holder as FollowedItemViewHolder).bind(getItem(position), position)
             ERROR_VIEW_TYPE -> (holder as NetworkStateViewHolder).bindTo(
                 networkState
             )
         }
     }
 
-//    override fun onBindViewHolder(
-//        holder: RecyclerView.ViewHolder,
-//        position: Int,
-//        payloads: MutableList<Any>
-//    ) {
-//        if (payloads.isNotEmpty()) {
-//            val item = getItem(position)
-//            (holder as RigItemViewHolder).updateScore(item)
-//        } else {
-//            onBindViewHolder(holder, position)
-//        }
-//    }
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isNotEmpty()) {
+            val item = getItem(position)
+            when (getItemViewType(position)) {
+                SAVED_ITEMS_VIEW_TYPE -> (holder as SavedItemViewHolder).updateName(item)
+//                FOLLOWED_ITEMS_VIEW_TYPE -> (holder as FollowedItemViewHolder).bind(item)
+            }
+        } else {
+            onBindViewHolder(holder, position)
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -93,7 +97,7 @@ class SavedItemsAdapter(
                 old == aNew
 
             override fun areItemsTheSame(old: Saved, aNew: Saved): Boolean =
-                old.name == aNew.name
+                old.docId == aNew.docId
 
             override fun getChangePayload(old: Saved, aNew: Saved): Any? {
                 return if (sameExceptScore(old, aNew)) {

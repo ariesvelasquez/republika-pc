@@ -1,17 +1,15 @@
 package ariesvelasquez.com.republikapc.db
 
 import androidx.paging.DataSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.model.saved.Saved
 
 @Dao
 interface TipidPCDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(items: List<FeedItem>)
+    fun insertFeeds(items: List<FeedItem>)
 
     /*
      * Fetch all items from feed_items
@@ -36,4 +34,26 @@ interface TipidPCDao {
 
     @Query("DELETE FROM feed_items WHERE isFeed = 0 AND seller = :sellerName")
     fun deleteOldSellerItems(sellerName: String)
+
+
+    /*
+     * Saved
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertSaved(items: List<Saved>)
+
+    /*
+     * Fetch all items from feed_items
+     */
+    @Query("SELECT * FROM saved_items ORDER BY firstLetterIndex ASC")
+    fun savedItems(): DataSource.Factory<Int, Saved>
+
+    @Query("DELETE FROM saved_items")
+    fun nukeSavedItems()
+
+    @Query("DELETE FROM saved_items WHERE docId = :docId")
+    fun removeItem(docId: String)
+
+    @Insert
+    fun inserItem(saved: Saved)
 }

@@ -1,9 +1,12 @@
 package ariesvelasquez.com.republikapc.repository.dashboard
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.Listing
+import ariesvelasquez.com.republikapc.repository.NetworkState
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
@@ -56,4 +59,6 @@ interface IDashboardRepository {
     fun followSeller(sellerName: String) : Task<Void>
 
     fun unfollowSeller(sellerName: String) : Task<Void>
+
+    fun nukeLoggedInUserData() : MutableLiveData<NetworkState>
 }

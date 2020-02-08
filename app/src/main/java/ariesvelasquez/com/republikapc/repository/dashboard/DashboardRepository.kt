@@ -1,14 +1,23 @@
 package ariesvelasquez.com.republikapc.repository.dashboard
 
+import android.annotation.SuppressLint
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.Config
 import androidx.paging.toLiveData
+import ariesvelasquez.com.republikapc.Const
+import ariesvelasquez.com.republikapc.Const.DOC_ID
 import ariesvelasquez.com.republikapc.Const.FIRST_LETTER
 import ariesvelasquez.com.republikapc.Const.FOLLOWED_TPC_SELLER_COLLECTION
+import ariesvelasquez.com.republikapc.Const.ITEM_PER_PAGE_20
+import ariesvelasquez.com.republikapc.Const.LINK_ID
+import ariesvelasquez.com.republikapc.Const.NAME
 import ariesvelasquez.com.republikapc.Const.OWNER_ID
+import ariesvelasquez.com.republikapc.Const.POST_DATE
+import ariesvelasquez.com.republikapc.Const.PRICE
 import ariesvelasquez.com.republikapc.Const.RIGS_COLLECTION
 import ariesvelasquez.com.republikapc.Const.RIGS_ITEM_COLLECTION
 import ariesvelasquez.com.republikapc.Const.SAVED_COLLECTION
@@ -26,10 +35,8 @@ import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.repository.followed.FollowedDataSourceFactory
 import ariesvelasquez.com.republikapc.repository.rigs.RigDataSourceFactory
 import ariesvelasquez.com.republikapc.repository.rigs.RigItemsDataSourceFactory
-import ariesvelasquez.com.republikapc.repository.saved.SavedDataSourceFactory
 import ariesvelasquez.com.republikapc.repository.search.SearchSellerSourceFactory
 import ariesvelasquez.com.republikapc.repository.search.SearchSourceFactory
-import ariesvelasquez.com.republikapc.utils.translateBack
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -39,6 +46,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
+import java.io.IOException
+import java.util.concurrent.Callable
 import java.util.concurrent.Executor
 
 class DashboardRepository(
@@ -78,7 +87,7 @@ class DashboardRepository(
                     }!!
 //                }
 
-                db.items().insert(itemsWithIndex).run {
+                db.items().insertFeeds(itemsWithIndex).run {
                     Timber.e("Inserted new item with page %s", itemsWithIndex.size)
                 }
             }
@@ -87,7 +96,7 @@ class DashboardRepository(
 
     /**
      * When refreshFeeds is called, we simply run a fresh network request and when it arrives, clear
-     * the database table and insert all new items in a transaction.
+     * the database table and insertFeeds all new items in a transaction.
      * <p>
      * Since the PagedList already uses a database bound data source, it will automatically be
      * updated after the database transaction is finished.
@@ -210,7 +219,7 @@ class DashboardRepository(
 
     /**
      * When refreshFeeds is called, we simply run a fresh network request and when it arrives, clear
-     * the database table and insert all new items in a transaction.
+     * the database table and insertFeeds all new items in a transaction.
      * <p>
      * Since the PagedList already uses a database bound data source, it will automatically be
      * updated after the database transaction is finished.
@@ -282,37 +291,112 @@ class DashboardRepository(
         )
     }
 
-    override fun saved(): Listing<Saved> {
-        val sourceFactory = SavedDataSourceFactory(firestore.collection(SAVED_COLLECTION))
+    /**
+     * When refreshSaved is called, we simply run a fresh network request and when it arrives, clear
+     * the database table and insertFeeds all new items in a transaction.
+     * <p>
+     * Since the PagedList already uses a database bound data source, it will automatically be
+     * updated after the database transaction is finished.
+     */
+    @MainThread
+    private fun refreshSaved(): LiveData<NetworkState> {
+        val networkState = MutableLiveData<NetworkState>()
+        networkState.value = NetworkState.LOADING
 
-        // We use toLiveData Kotlin ext. function here, you could also use LivePagedListBuilder
-        val livePagedList = sourceFactory.toLiveData(
-            // we use Config Kotlin ext. function here, could also use PagedList.Config.Builder
-            config = Config(
-                pageSize = 10,
-                enablePlaceholders = false,
-                initialLoadSizeHint = 10 * 2
-            )
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        val savedReference = firestore.collection(SAVED_COLLECTION)
+
+        val initialQuery = savedReference
+            .whereEqualTo(OWNER_ID, firebaseUser?.uid)
+            .orderBy("name")
+            .limit(ITEM_PER_PAGE_20)
+
+        try {
+            initialQuery.get().addOnCompleteListener { task ->
+                val savedList = mutableListOf<Saved>()
+                if (task.isSuccessful) {
+
+                    val querySnapshot = task.result
+
+                    for (document in querySnapshot!!) {
+                        val savedItem = document.toObject(Saved::class.java)
+                        savedList.add(savedItem)
+                    }
+
+                    ioExecutor.execute {
+                        db.runInTransaction {
+                            db.items().nukeSavedItems()
+                            insertSavedIntoDb(savedList)
+                        }
+                        // since we are in bg thread now, post the result.
+                        networkState.postValue(NetworkState.LOADED)
+                    }
+                } else {
+                    networkState.value = NetworkState.error(task.exception?.message)
+            }
+            }
+        } catch (ioException: IOException) {
+            networkState.value = NetworkState.error(ioException.message)
+       }
+
+        return networkState
+    }
+
+    /**
+     * Inserts the response into the database while also assigning position indices to items.
+     */
+    @SuppressLint("DefaultLocale")
+    private fun insertSavedIntoDb(list: List<Saved>) {
+        db.runInTransaction {
+
+            val itemWithFirstLetterIndex = list.mapIndexed { index, savedItem ->
+                savedItem.firstLetterIndex = savedItem.name.first().toUpperCase().toString()
+                savedItem
+            }
+
+            db.items().insertSaved(itemWithFirstLetterIndex).run {
+                Timber.e("Inserted new saved items %s", list.size)
+            }
+        }
+    }
+
+    override fun saved(): Listing<Saved> {
+        // create a boundary callback which will observe when the user reaches to the edges of
+        // the list and update the database with extra data.
+        val boundaryCallback = SavedBoundaryCallback(
+            savedReference = firestore.collection(SAVED_COLLECTION),
+            handleResponse = this::insertSavedIntoDb,
+            ioExecutor = ioExecutor
+        )
+        // we are using a mutable live data to trigger refreshSaved requests which eventually calls
+        // refreshSaved method and gets a new live data. Each refreshSaved request by the user becomes a newly
+        // dispatched data in refreshTrigger
+        val refreshTrigger = MutableLiveData<Unit>()
+        val refreshState = Transformations.switchMap(refreshTrigger) {
+            refreshSaved()
+        }
+
+        // We use toLiveData Kotlin extension function here, you could also use LivePagedListBuilder
+        val livePagedList = db.items().savedItems().toLiveData(
+            pageSize = 10,
+            boundaryCallback = boundaryCallback
         )
 
-        val refreshState = Transformations.switchMap(sourceFactory.sourceLiveData) {
-            it.initialLoad
-        }
         return Listing(
             pagedList = livePagedList,
-            networkState = Transformations.switchMap(sourceFactory.sourceLiveData) {
-                it.networkState
-            },
+            networkState = boundaryCallback.networkState,
             retry = {
-                //                sourceFactory.sourceLiveData.value?.retryAllFailed()
+                boundaryCallback.helper.retryAllFailed()
             },
             refresh = {
-                sourceFactory.sourceLiveData.value?.invalidate()
+                refreshTrigger.value = null
             },
-            refreshState = refreshState
+            refreshState = refreshState,
+            isEmpty = null
         )
     }
 
+    @SuppressLint("DefaultLocale")
     override fun saveItem(firebaseUser: FirebaseUser, feedItem: FeedItem): Task<Void> {
 
         val batchWrite: WriteBatch = firestore.batch()
@@ -321,15 +405,39 @@ class DashboardRepository(
         val savedRef = firestore.collection(SAVED_COLLECTION).document()
 
         val saveItemMap = hashMapOf<String, Any?>()
-        saveItemMap["docId"] = savedRef.id
+        saveItemMap[DOC_ID] = savedRef.id
         saveItemMap[OWNER_ID] = firebaseUser.uid
-        saveItemMap["name"] = feedItem.name
+        saveItemMap[NAME] = feedItem.name
         saveItemMap[SELLER] = feedItem.seller
-        saveItemMap["price"] = feedItem.price.replace("PHP", "").replace("P", "")
-        saveItemMap["postDate"] = feedItem.date
-        saveItemMap["linkId"] = feedItem.linkId
+        saveItemMap[PRICE] = feedItem.price.replace("PHP", "").replace("P", "")
+        saveItemMap[POST_DATE] = feedItem.date
+        saveItemMap[LINK_ID] = feedItem.linkId
 
         batchWrite.set(savedRef, saveItemMap)
+
+        // Remove From Room
+        ioExecutor.execute {
+            db.runInTransaction {
+                db.items().inserItem(Saved().mapToObject(saveItemMap).apply {
+                    firstLetterIndex = this.name.first().toUpperCase().toString()
+                })
+            }
+        }
+
+        return batchWrite.commit()
+    }
+
+    override fun deleteSaved(firebaseUser: FirebaseUser, savedId: String): Task<Void> {
+        val batchWrite: WriteBatch = firestore.batch()
+        val savedRef = firestore.collection(SAVED_COLLECTION).document(savedId)
+        batchWrite.delete(savedRef)
+
+        // Remove From Room
+        ioExecutor.execute {
+            db.runInTransaction {
+                db.items().removeItem(savedId)
+            }
+        }
 
         return batchWrite.commit()
     }
@@ -405,9 +513,9 @@ class DashboardRepository(
         val rigRef = firestore.collection(RIGS_COLLECTION).document()
 
         val newRigMap = hashMapOf<String, Any?>()
-        newRigMap["name"] = rigName
+        newRigMap[NAME] = rigName
         newRigMap["id"] = rigRef.id
-        newRigMap["ownerId"] = firebaseUser.uid
+        newRigMap[OWNER_ID] = firebaseUser.uid
         newRigMap["ownerName"] = firebaseUser.displayName
         newRigMap["ownerThumb"] = firebaseUser.photoUrl.toString()
         newRigMap["date"] = FieldValue.serverTimestamp()
@@ -486,14 +594,6 @@ class DashboardRepository(
         batchWrite.delete(rigRef)
         batchWrite.delete(rigItemsRef)
         batchWrite.update(userRigCountRef, "rigCount", FieldValue.increment(-1))
-
-        return batchWrite.commit()
-    }
-
-    override fun deleteSaved(firebaseUser: FirebaseUser, savedId: String): Task<Void> {
-        val batchWrite: WriteBatch = firestore.batch()
-        val savedRef = firestore.collection(SAVED_COLLECTION).document(savedId)
-        batchWrite.delete(savedRef)
 
         return batchWrite.commit()
     }
@@ -620,6 +720,22 @@ class DashboardRepository(
         val followedTpcSellerRef = firestore.collection(FOLLOWED_TPC_SELLER_COLLECTION).document(combinedUID)
 
         return followedTpcSellerRef.delete()
+    }
+
+    override fun nukeLoggedInUserData() : MutableLiveData<NetworkState> {
+        Timber.e("nukeLoggedInUserData")
+        val networkState = MutableLiveData<NetworkState>()
+
+        networkState.value = NetworkState.LOADING
+
+        ioExecutor.execute {
+            db.runInTransaction( Callable {
+                db.items().nukeSavedItems()
+            })
+            networkState.postValue(NetworkState.LOADED)
+        }
+
+        return networkState
     }
 }
 

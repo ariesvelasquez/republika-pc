@@ -1,6 +1,7 @@
 package ariesvelasquez.com.republikapc.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 
 /**
@@ -17,5 +18,9 @@ data class Listing<T>(
     // refreshes the whole data and fetches it from scratch.
     val refresh: () -> Unit,
     // retries any failed requests.
-    val retry: () -> Unit
+    val retry: () -> Unit,
+
+    // Copy of every set of list data coming from data source, This is to get the data from
+    // an async fetch.
+    val isEmpty: LiveData<Boolean>? = null
 )

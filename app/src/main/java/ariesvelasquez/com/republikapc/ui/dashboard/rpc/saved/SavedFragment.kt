@@ -12,12 +12,17 @@ import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
+import ariesvelasquez.com.republikapc.ui.search.SearchActivity
+import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
 import kotlinx.android.synthetic.main.fragment_saved.view.*
 
 class SavedFragment : DashboardFragment() {
 
     private lateinit var rootView: View
     private lateinit var adapter: SavedItemsAdapter
+
+    private var hasList = false
+    private var hasLoadedInitialList = false
 
     private var listener: OnSavedFragmentInteractionListener? = null
 
@@ -38,10 +43,24 @@ class SavedFragment : DashboardFragment() {
 
         initSwipeToRefresh()
         initAdapter()
-
         initSavedList()
+        initOnClicks()
 
         return rootView
+    }
+
+    private fun initOnClicks() {
+        rootView.buttonSignIn.setOnClickListener {
+            listener?.showSignUpBottomSheet()
+        }
+
+        rootView.buttonSearch.setOnClickListener {
+            context!!.launchActivity<SearchActivity> {}
+        }
+
+        rootView.buttonGoToFeeds.setOnClickListener {
+            listener?.onNavigateToTPCFeeds()
+        }
     }
 
     override fun onDetach() {
@@ -51,6 +70,7 @@ class SavedFragment : DashboardFragment() {
 
     override fun onResume() {
         super.onResume()
+
         if (mIsUserLoggedIn and !mIsSavedInitialized) {
             dashboardViewModel.showSaved()
         }
@@ -77,7 +97,7 @@ class SavedFragment : DashboardFragment() {
     private fun initAdapter() {
         adapter = SavedItemsAdapter (
             SavedItemsAdapter.SAVED_ITEMS_VIEW_TYPE,
-            { dashboardViewModel.refreshSaved() }) { v, item ->
+            { dashboardViewModel.refreshSaved() }) { v, pos, item ->
 
             listener?.onSavedItemClicked(item)
         }
@@ -91,10 +111,50 @@ class SavedFragment : DashboardFragment() {
     private fun initSavedList() {
         dashboardViewModel.saved.observe( viewLifecycleOwner, Observer<PagedList<Saved>> {
             adapter.submitList(it)
+            handleListUI(it.snapshot())
+//            showHidePlaceholder(show = it.snapshot().isNotEmpty())
         })
         dashboardViewModel.savedNetworkState.observe( viewLifecycleOwner, Observer {
             adapter.setNetworkState(it)
         })
+    }
+
+    private fun handleListUI(it: MutableList<Saved>) {
+
+        if (!mIsUserLoggedIn) {
+            rootView.linearLayoutPlaceHolder.visibility = View.GONE
+            rootView.savedList.visibility = View.GONE
+            rootView.linearLayoutSignIn.visibility = View.VISIBLE
+            return
+        } else {
+            rootView.linearLayoutSignIn.visibility = View.GONE
+        }
+
+        if (!hasList && it.isNotEmpty()) {
+            // When the list is not empty, and recyclerView is still gone
+            this.hasList = true
+            showHidePlaceholder(show = false)
+        } else if (it.isEmpty() && hasList) {
+            // When the list is empty, and recyclerView is still visible
+            this.hasList = false
+            showHidePlaceholder(show = true)
+        } else if (hasList && it.isNotEmpty()) {
+            // When the list is not empty, and recyclerView is still visible
+            showHidePlaceholder(show = false)
+        } else {
+            // List is Empty, hasList is false
+            showHidePlaceholder(true)
+        }
+    }
+
+    private fun showHidePlaceholder(show: Boolean) {
+        if (show) {
+            rootView.savedList.visibility = View.GONE
+            rootView.linearLayoutPlaceHolder.visibility = View.VISIBLE
+        } else {
+            rootView.savedList.visibility = View.VISIBLE
+            rootView.linearLayoutPlaceHolder.visibility = View.GONE
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -119,6 +179,8 @@ class SavedFragment : DashboardFragment() {
      */
     interface OnSavedFragmentInteractionListener {
         fun onSavedItemClicked(saved: Saved)
+        fun showSignUpBottomSheet()
+        fun onNavigateToTPCFeeds()
     }
 
     companion object {

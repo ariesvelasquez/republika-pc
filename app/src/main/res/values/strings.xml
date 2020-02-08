@@ -38,7 +38,7 @@
     <string name="save_new_name">Save new name (Not yet available.)</string>
     <string name="want_to_delete_this_rig">Do you want to delete this rig?</string>
     <string name="dlit">dlit</string>
-    <string name="sign_in_to_unlock_feature">Please sign in to unlock feature, press the bag icon</string>
+    <string name="sign_in_to_unlock_feature">Please sign in to enjoy this feature</string>
     <string name="signing_up">Signing up</string>
     <string name="creating_user_please_wait">Loading user data... please wait...</string>
     
@@ -66,4 +66,7 @@
     <string name="you_are_currently_signed_out_sign_in_to_follow_seller">You are currently signed out, Sign In to Follow seller</string>
     <string name="loading_many_data_may_take_some_time">Loading many data may take some time...</string>
     <string name="back_to_top">Back to top</string>
+    <string name="you_have_not_save_any_items_yet">You have no saved items.</string>
+    <string name="search_items">Search items</string>
+    <string name="check_for_sale_items">Check for sale items</string>
 </resources>

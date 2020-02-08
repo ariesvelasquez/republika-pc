@@ -120,6 +120,10 @@ abstract class BaseDashboardActivity : BaseActivity(),
 
     }
 
+    override fun onNavigateToTPCFeeds() {
+
+    }
+
     override fun showSignUpBottomSheet() {
         val bottomSheetFragment = ConsoleBottomSheetFragment.newInstance()
         bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.TAG)
@@ -173,6 +177,7 @@ abstract class BaseDashboardActivity : BaseActivity(),
     }
 
     override fun onLogoutInvoked() {
+        viewModel.nukeLoggedInUserData()
         mFirebaseAuth.signOut()
         mGoogleClient.signOut()
         Toast.makeText(this, "User has been signed out", Toast.LENGTH_SHORT).show()

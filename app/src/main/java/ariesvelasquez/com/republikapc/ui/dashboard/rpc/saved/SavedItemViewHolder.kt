@@ -11,7 +11,7 @@ import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.utils.Tools
 
-class SavedItemViewHolder(val view: View, private val onClickCallback: (v: View, item: Saved) -> Unit) : RecyclerView.ViewHolder(view) {
+class SavedItemViewHolder(val view: View, private val onClickCallback: (v: View, position: Int, item: Saved) -> Unit) : RecyclerView.ViewHolder(view) {
 
     private var item : Saved? = null
 
@@ -24,7 +24,7 @@ class SavedItemViewHolder(val view: View, private val onClickCallback: (v: View,
     }
 
     @SuppressLint("SetTextI18n")
-    fun bind(item: Saved?) {
+    fun bind(item: Saved?, position: Int) {
         this.item = item
 
         // Init Views
@@ -32,6 +32,11 @@ class SavedItemViewHolder(val view: View, private val onClickCallback: (v: View,
         val titleView = view.findViewById<TextView>(R.id.name)
         val sellerNameView = view.findViewById<TextView>(R.id.textViewSellerName)
         val priceView = view.findViewById<TextView>(R.id.textViewPrice)
+
+//        parentView.visibility = when (item?.isVisible) {
+//            true -> View.VISIBLE
+//            else -> View.GONE
+//        }
 
         // Set name
         titleView.text = item?.name
@@ -44,12 +49,18 @@ class SavedItemViewHolder(val view: View, private val onClickCallback: (v: View,
         priceView.text = tools?.format(itemPriceClean.toDouble()) + ".00"
 
         parentView.setOnClickListener {
-            onClickCallback.invoke(it, item)
+            onClickCallback.invoke(it, position, item)
         }
     }
 
+    fun updateName(newItem: Saved?) {
+        this.item = newItem
+        val titleView = view.findViewById<TextView>(R.id.name)
+        titleView.text = item?.name
+    }
+
     companion object {
-        fun create(parent: ViewGroup, callback: (v: View, item: Saved) -> Unit): SavedItemViewHolder {
+        fun create(parent: ViewGroup, callback: (v: View, position: Int, item: Saved) -> Unit): SavedItemViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_recycler_view_saved, parent, false)
             return SavedItemViewHolder(view, callback)

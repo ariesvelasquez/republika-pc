@@ -1,5 +1,6 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.Transformations.map
@@ -193,6 +194,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     val isSavedInitialized = MutableLiveData<Boolean>()
     private val savedRepoResult = map(isSavedInitialized) { repository.saved() }
     val saved = Transformations.switchMap(savedRepoResult) { it.pagedList }
+    val isSavedListEmpty = Transformations.switchMap(savedRepoResult) {it.isEmpty}
     val savedNetworkState = Transformations.switchMap(savedRepoResult) { it.networkState }
     val savedRefreshState = Transformations.switchMap(savedRepoResult) { it.refreshState }
     val saveItemNetworkState = MutableLiveData<NetworkState>()
@@ -202,8 +204,8 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         saveItemNetworkState.postValue(NetworkState.LOADING)
 
         repository.saveItem(this.firebaseUserModel.value!!, feedItem).addOnSuccessListener {
-            RepublikaPC.getGlobalFlags().shouldRefreshSaved = true
-            refreshSaved()
+//            RepublikaPC.getGlobalFlags().shouldRefreshSaved = true
+//            refreshSaved()
             saveItemNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
             val error = NetworkState.error(it.message)
@@ -228,8 +230,8 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
 
         repository.deleteSaved(this.firebaseUserModel.value!!, savedId).addOnSuccessListener {
-            RepublikaPC.getGlobalFlags().shouldRefreshSaved = true
-            refreshSaved()
+//            RepublikaPC.getGlobalFlags().shouldRefreshSaved = true
+//            refreshSaved()
             deleteSavedItemNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
             val error = NetworkState.error(it.message)
@@ -399,5 +401,9 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
 //                Timber.e("User not found in firestore db")
             }
         }
+    }
+
+    fun nukeLoggedInUserData() : LiveData<NetworkState> {
+        return repository.nukeLoggedInUserData()
     }
 }

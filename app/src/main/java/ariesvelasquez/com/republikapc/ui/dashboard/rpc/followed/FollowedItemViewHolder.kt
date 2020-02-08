@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.saved.Saved
 
-class FollowedItemViewHolder(val view: View, private val onClickCallback: (v: View, item: Saved) -> Unit) : RecyclerView.ViewHolder(view) {
+class FollowedItemViewHolder(val view: View, private val onClickCallback: (v: View, position: Int, item: Saved) -> Unit) : RecyclerView.ViewHolder(view) {
 
     private var item : Saved? = null
 
@@ -21,7 +21,7 @@ class FollowedItemViewHolder(val view: View, private val onClickCallback: (v: Vi
     }
 
     @SuppressLint("SetTextI18n")
-    fun bind(item: Saved?) {
+    fun bind(item: Saved?, position: Int) {
         this.item = item
 
         // Init Views
@@ -32,12 +32,12 @@ class FollowedItemViewHolder(val view: View, private val onClickCallback: (v: Vi
         titleView.text = item?.seller
 
         parentView.setOnClickListener {
-            onClickCallback.invoke(it, item!!)
+            onClickCallback.invoke(it, position, item!!)
         }
     }
 
     companion object {
-        fun create(parent: ViewGroup, callback: (v: View, item: Saved) -> Unit): FollowedItemViewHolder {
+        fun create(parent: ViewGroup, callback: (v: View, position: Int, item: Saved) -> Unit): FollowedItemViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_recycler_view_followed, parent, false)
             return FollowedItemViewHolder(view, callback)

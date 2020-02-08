@@ -25,6 +25,7 @@ import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.main_toolbar.*
+import timber.log.Timber
 
 class DashboardActivity : BaseDashboardActivity() {
 
@@ -47,6 +48,8 @@ class DashboardActivity : BaseDashboardActivity() {
         handleAddItemToRigCreationState()
         handleSaveItemState()
 
+        handleNukeSignedInUserData()
+
         textViewToolbarTitle.setOnClickListener { launchActivity<SearchActivity>() }
 
         viewPager = findViewById(R.id.view_pager)
@@ -63,6 +66,18 @@ class DashboardActivity : BaseDashboardActivity() {
         initTitle()
 
         bindNavigationDrawer()
+    }
+
+    private fun handleNukeSignedInUserData() {
+        viewModel.nukeLoggedInUserData().observe( this, Observer {
+            when (it) {
+                NetworkState.LOADING -> Timber.e("Nuke LOADING")
+                NetworkState.LOADED -> Timber.e("Nuke LOADED")
+                else -> {
+                    Timber.e("Nuke Error")
+                }
+            }
+        })
     }
 
     override fun onResume() {
@@ -192,6 +207,8 @@ class DashboardActivity : BaseDashboardActivity() {
 
     private fun initTitle() {
         toolbar.post { toolbar.title = bottomNavigationView.menu.getItem(0).title }
+
+        bottomNavigationView
     }
 
     // Bottom Navigation Setup
@@ -230,6 +247,10 @@ class DashboardActivity : BaseDashboardActivity() {
         override fun getCount(): Int {
             return 2
         }
+    }
+
+    override fun onNavigateToTPCFeeds() {
+        bottomNavigationView.selectedItemId = R.id.navigation_tipid_pc
     }
 
     /**

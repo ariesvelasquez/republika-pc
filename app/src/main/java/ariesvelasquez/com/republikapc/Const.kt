@@ -16,7 +16,12 @@ object Const {
 
     // Firestore Fields
     const val OWNER_ID = "ownerId"
+    const val DOC_ID = "docId"
+    const val NAME = "name"
     const val SELLER = "seller"
+    const val PRICE = "price"
+    const val POST_DATE = "postDate"
+    const val LINK_ID = "linkId"
     const val FIRST_LETTER = "firstLetter"
     const val TPC_SELLER_USERNAME = "tpcSellerUsername"
 
