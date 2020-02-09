@@ -3,12 +3,10 @@ package ariesvelasquez.com.republikapc.repository.dashboard
 import android.annotation.SuppressLint
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.Config
 import androidx.paging.toLiveData
-import ariesvelasquez.com.republikapc.Const
 import ariesvelasquez.com.republikapc.Const.DOC_ID
 import ariesvelasquez.com.republikapc.Const.FIRST_LETTER
 import ariesvelasquez.com.republikapc.Const.FOLLOWED_TPC_SELLER_COLLECTION
@@ -24,17 +22,21 @@ import ariesvelasquez.com.republikapc.Const.SAVED_COLLECTION
 import ariesvelasquez.com.republikapc.Const.SELLER
 import ariesvelasquez.com.republikapc.Const.USERS_COLLECTION
 import ariesvelasquez.com.republikapc.api.TipidPCApi
-import ariesvelasquez.com.republikapc.db.TipidPCDatabase
+import ariesvelasquez.com.republikapc.db.RepublikaPCDatabase
 import ariesvelasquez.com.republikapc.model.error.Error
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
+import ariesvelasquez.com.republikapc.model.rigparts.RigPart
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.Listing
 import ariesvelasquez.com.republikapc.repository.NetworkState
+import ariesvelasquez.com.republikapc.repository.dashboard.feeds.FeedBoundaryCallback
+import ariesvelasquez.com.republikapc.repository.dashboard.rigitems.RigItemsBoundaryCallback
 import ariesvelasquez.com.republikapc.repository.followed.FollowedDataSourceFactory
 import ariesvelasquez.com.republikapc.repository.rigs.RigDataSourceFactory
-import ariesvelasquez.com.republikapc.repository.rigs.RigItemsDataSourceFactory
+import ariesvelasquez.com.republikapc.repository.dashboard.saved.SavedBoundaryCallback
+import ariesvelasquez.com.republikapc.repository.dashboard.selleritems.SellerItemsBoundaryCallback
 import ariesvelasquez.com.republikapc.repository.search.SearchSellerSourceFactory
 import ariesvelasquez.com.republikapc.repository.search.SearchSourceFactory
 import com.google.android.gms.tasks.Task
@@ -47,11 +49,12 @@ import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
 import java.io.IOException
+import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.Executor
 
 class DashboardRepository(
-    val db: TipidPCDatabase,
+    val db: RepublikaPCDatabase,
     private val firestore: FirebaseFirestore,
     private val tipidPCApi: TipidPCApi,
     private val ioExecutor: Executor
@@ -82,6 +85,7 @@ class DashboardRepository(
 //                    (itemsWithIndex as ArrayList).add(FeedItem(isEmptyItem = true))
 //                } else {
                     itemsWithIndex = posts?.mapIndexed { index, child ->
+                        child.lastRefresh = Date().toString()
                         child.indexInResponse = child.page
                         child
                     }!!
@@ -144,11 +148,12 @@ class DashboardRepository(
 
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
-        val boundaryCallback = FeedBoundaryCallback(
-            webservice = tipidPCApi,
-            handleResponse = this::insertResultIntoDb,
-            ioExecutor = ioExecutor
-        )
+        val boundaryCallback =
+            FeedBoundaryCallback(
+                webservice = tipidPCApi,
+                handleResponse = this::insertResultIntoDb,
+                ioExecutor = ioExecutor
+            )
         // we are using a mutable live data to trigger refreshFeeds requests which eventually calls
         // refreshFeeds method and gets a new live data. Each refreshFeeds request by the user becomes a newly
         // dispatched data in refreshTrigger
@@ -292,57 +297,6 @@ class DashboardRepository(
     }
 
     /**
-     * When refreshSaved is called, we simply run a fresh network request and when it arrives, clear
-     * the database table and insertFeeds all new items in a transaction.
-     * <p>
-     * Since the PagedList already uses a database bound data source, it will automatically be
-     * updated after the database transaction is finished.
-     */
-    @MainThread
-    private fun refreshSaved(): LiveData<NetworkState> {
-        val networkState = MutableLiveData<NetworkState>()
-        networkState.value = NetworkState.LOADING
-
-        val firebaseUser = FirebaseAuth.getInstance().currentUser
-        val savedReference = firestore.collection(SAVED_COLLECTION)
-
-        val initialQuery = savedReference
-            .whereEqualTo(OWNER_ID, firebaseUser?.uid)
-            .orderBy("name")
-            .limit(ITEM_PER_PAGE_20)
-
-        try {
-            initialQuery.get().addOnCompleteListener { task ->
-                val savedList = mutableListOf<Saved>()
-                if (task.isSuccessful) {
-
-                    val querySnapshot = task.result
-
-                    for (document in querySnapshot!!) {
-                        val savedItem = document.toObject(Saved::class.java)
-                        savedList.add(savedItem)
-                    }
-
-                    ioExecutor.execute {
-                        db.runInTransaction {
-                            db.items().nukeSavedItems()
-                            insertSavedIntoDb(savedList)
-                        }
-                        // since we are in bg thread now, post the result.
-                        networkState.postValue(NetworkState.LOADED)
-                    }
-                } else {
-                    networkState.value = NetworkState.error(task.exception?.message)
-            }
-            }
-        } catch (ioException: IOException) {
-            networkState.value = NetworkState.error(ioException.message)
-       }
-
-        return networkState
-    }
-
-    /**
      * Inserts the response into the database while also assigning position indices to items.
      */
     @SuppressLint("DefaultLocale")
@@ -363,18 +317,12 @@ class DashboardRepository(
     override fun saved(): Listing<Saved> {
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
-        val boundaryCallback = SavedBoundaryCallback(
-            savedReference = firestore.collection(SAVED_COLLECTION),
-            handleResponse = this::insertSavedIntoDb,
-            ioExecutor = ioExecutor
-        )
-        // we are using a mutable live data to trigger refreshSaved requests which eventually calls
-        // refreshSaved method and gets a new live data. Each refreshSaved request by the user becomes a newly
-        // dispatched data in refreshTrigger
-        val refreshTrigger = MutableLiveData<Unit>()
-        val refreshState = Transformations.switchMap(refreshTrigger) {
-            refreshSaved()
-        }
+        val boundaryCallback =
+            SavedBoundaryCallback(
+                savedReference = firestore.collection(SAVED_COLLECTION),
+                handleResponse = this::insertSavedIntoDb,
+                ioExecutor = ioExecutor
+            )
 
         // We use toLiveData Kotlin extension function here, you could also use LivePagedListBuilder
         val livePagedList = db.items().savedItems().toLiveData(
@@ -388,11 +336,8 @@ class DashboardRepository(
             retry = {
                 boundaryCallback.helper.retryAllFailed()
             },
-            refresh = {
-                refreshTrigger.value = null
-            },
-            refreshState = refreshState,
-            isEmpty = null
+            refresh = {},
+            refreshState = MutableLiveData()
         )
     }
 
@@ -418,7 +363,7 @@ class DashboardRepository(
         // Remove From Room
         ioExecutor.execute {
             db.runInTransaction {
-                db.items().inserItem(Saved().mapToObject(saveItemMap).apply {
+                db.items().insertSavedItem(Saved().mapToObject(saveItemMap).apply {
                     firstLetterIndex = this.name.first().toUpperCase().toString()
                 })
             }
@@ -474,35 +419,43 @@ class DashboardRepository(
         )
     }
 
-    override fun rigItems(rigId: String): Listing<FeedItem> {
-        val sourceFactory =
-            RigItemsDataSourceFactory(firestore.collection(RIGS_ITEM_COLLECTION), rigId)
+    /**
+     * Inserts the response into the database while also assigning position indices to items.
+     */
+    private fun insertIntooRigPartsDb(list: List<RigPart>) {
+        db.runInTransaction {
+            db.items().insertRigParts(list).run {
+                Timber.e("Inserted new rig parts %s", list.size)
+            }
+        }
+    }
 
-        // We use toLiveData Kotlin ext. function here, you could also use LivePagedListBuilder
-        val livePagedList = sourceFactory.toLiveData(
-            // we use Config Kotlin ext. function here, could also use PagedList.Config.Builder
-            config = Config(
-                pageSize = 10,
-                enablePlaceholders = false,
-                initialLoadSizeHint = 10 * 2
+    override fun rigParts(rigId: String): Listing<RigPart> {
+
+        // create a boundary callback which will observe when the user reaches to the edges of
+        // the list and update the database with extra data.
+        val boundaryCallback =
+            RigItemsBoundaryCallback(
+                rigItemDocId = rigId,
+                rigItemsRef = firestore.collection(RIGS_ITEM_COLLECTION),
+                handleResponse = this::insertIntooRigPartsDb,
+                ioExecutor = ioExecutor
             )
+
+        // We use toLiveData Kotlin extension function here, you could also use LivePagedListBuilder
+        val livePagedList = db.items().rigParts(rigId).toLiveData(
+            pageSize = 10,
+            boundaryCallback = boundaryCallback
         )
 
-        val refreshState = Transformations.switchMap(sourceFactory.sourceLiveData) {
-            it.initialLoad
-        }
         return Listing(
             pagedList = livePagedList,
-            networkState = Transformations.switchMap(sourceFactory.sourceLiveData) {
-                it.networkState
-            },
+            networkState = boundaryCallback.networkState,
             retry = {
-                //                sourceFactory.sourceLiveData.value?.retryAllFailed()
+                boundaryCallback.helper.retryAllFailed()
             },
-            refresh = {
-                sourceFactory.sourceLiveData.value?.invalidate()
-            },
-            refreshState = refreshState
+            refresh = {},
+            refreshState = MutableLiveData()
         )
     }
 
@@ -528,7 +481,7 @@ class DashboardRepository(
         return batchWrite.commit()
     }
 
-    override fun addItemToRig(
+    override fun addRigPart(
         firebaseUser: FirebaseUser,
         rigItem: Rig,
         feedItem: FeedItem
@@ -541,22 +494,31 @@ class DashboardRepository(
         val rigItemRef = firestore.collection(RIGS_ITEM_COLLECTION).document(rigItem.id)
             .collection(RIGS_ITEM_COLLECTION).document()
 
-        val feedItemMap = hashMapOf<String, Any?>()
-        feedItemMap["id"] = feedItem.id
-        feedItemMap["name"] = feedItem.name
-        feedItemMap[SELLER] = feedItem.seller
-        feedItemMap["price"] = feedItem.price.replace("PHP", "").replace("P", "")
-        feedItemMap["docId"] = rigItemRef.id
-        feedItemMap["postDate"] = feedItem.date
-        feedItemMap["linkId"] = feedItem.linkId
+        val rigPartMap = hashMapOf<String, Any?>()
+        rigPartMap["name"] = feedItem.name
+        rigPartMap[SELLER] = feedItem.seller
+        rigPartMap["price"] = feedItem.price.replace("PHP", "").replace("P", "")
+        rigPartMap["docId"] = rigItemRef.id
+        rigPartMap["postDate"] = feedItem.date
+        rigPartMap["linkId"] = feedItem.linkId
 
         batchWrite.update(rigRef, "itemCount", FieldValue.increment(1))
-        batchWrite.set(rigItemRef, feedItemMap)
+        batchWrite.set(rigItemRef, rigPartMap)
+
+        // ADd To Room
+        ioExecutor.execute {
+            db.runInTransaction {
+                db.items().insertRigPart(RigPart().mapToObject(rigPartMap).apply {
+                    rigParentId = rigItem.id
+                    firstLetterIndex = this.name.first().toUpperCase().toString()
+                })
+            }
+        }
 
         return batchWrite.commit()
     }
 
-    override fun addSavedItemToRig(
+    override fun addSavedToRigPart(
         firebaseUser: FirebaseUser,
         rigItem: Rig,
         feedItem: Saved
@@ -569,16 +531,26 @@ class DashboardRepository(
         val rigItemRef = firestore.collection(RIGS_ITEM_COLLECTION).document(rigItem.id)
             .collection(RIGS_ITEM_COLLECTION).document()
 
-        val feedItemMap = hashMapOf<String, Any?>()
-        feedItemMap["name"] = feedItem.name
-        feedItemMap[SELLER] = feedItem.seller
-        feedItemMap["price"] = feedItem.price.replace("PHP", "").replace("P", "")
-        feedItemMap["docId"] = rigItemRef.id
-        feedItemMap["postDate"] = feedItem.date
-        feedItemMap["linkId"] = feedItem.linkId
+        val rigPartMap = hashMapOf<String, Any?>()
+        rigPartMap["name"] = feedItem.name
+        rigPartMap[SELLER] = feedItem.seller
+        rigPartMap["price"] = feedItem.price.replace("PHP", "").replace("P", "")
+        rigPartMap["docId"] = rigItemRef.id
+        rigPartMap["postDate"] = feedItem.date
+        rigPartMap["linkId"] = feedItem.linkId
 
         batchWrite.update(rigRef, "itemCount", FieldValue.increment(1))
-        batchWrite.set(rigItemRef, feedItemMap)
+        batchWrite.set(rigItemRef, rigPartMap)
+
+        // ADd To Room
+        ioExecutor.execute {
+            db.runInTransaction {
+                db.items().insertRigPart(RigPart().mapToObject(rigPartMap).apply {
+                    rigParentId = rigItem.id
+                    firstLetterIndex = this.name.first().toUpperCase().toString()
+                })
+            }
+        }
 
         return batchWrite.commit()
     }
@@ -598,7 +570,7 @@ class DashboardRepository(
         return batchWrite.commit()
     }
 
-    override fun deleteRigItem(rigId: String, rigItemId: String): Task<Void> {
+    override fun deleteRigPart(rigId: String, partId: String): Task<Void> {
 
         val batchWrite: WriteBatch = firestore.batch()
 
@@ -606,11 +578,18 @@ class DashboardRepository(
         val rigRef = firestore.collection(RIGS_COLLECTION).document(rigId)
         val rigItemRef = firestore
             .collection(RIGS_ITEM_COLLECTION).document(rigId)
-            .collection(RIGS_ITEM_COLLECTION).document(rigItemId)
+            .collection(RIGS_ITEM_COLLECTION).document(partId)
         batchWrite.delete(rigItemRef)
 
         // Decrement Rig Item Count Task
         batchWrite.update(rigRef, "itemCount", FieldValue.increment(-1))
+
+        // Remove From Room
+        ioExecutor.execute {
+            db.runInTransaction {
+                db.items().removeRigPart(rigId = rigId, partId = partId)
+            }
+        }
 
         return batchWrite.commit()
     }
@@ -731,6 +710,7 @@ class DashboardRepository(
         ioExecutor.execute {
             db.runInTransaction( Callable {
                 db.items().nukeSavedItems()
+                db.items().nukeAllRigParts()
             })
             networkState.postValue(NetworkState.LOADED)
         }
@@ -741,6 +721,54 @@ class DashboardRepository(
 
 
 
+/**
+ * When refreshRigParts is called, we simply run a fresh network request and when it arrives, clear
+ * the database table and insertFeeds all new items in a transaction.
+ * <p>
+ * Since the PagedList already uses a database bound data source, it will automatically be
+ * updated after the database transaction is finished.
+ */
+//@MainThread
+//private fun refreshRigParts(rigItemDocId: String): LiveData<NetworkState> {
+//    val networkState = MutableLiveData<NetworkState>()
+//    networkState.value = NetworkState.LOADING
+//
+//    val rigItemsRef = firestore.collection(RIGS_ITEM_COLLECTION)
+//
+//    val initialQuery = rigItemsRef.document(rigItemDocId)
+//        .collection(RIGS_ITEM_COLLECTION)
+//        .limit(ITEM_PER_PAGE_20)
+//
+//    try {
+//        initialQuery.get().addOnCompleteListener { task ->
+//            val rigPartList = mutableListOf<RigPart>()
+//            if (task.isSuccessful) {
+//
+//                val querySnapshot = task.result
+//
+//                for (document in querySnapshot!!) {
+//                    val savedItem = document.toObject(RigPart::class.java)
+//                    rigPartList.add(savedItem)
+//                }
+//
+//                ioExecutor.execute {
+//                    db.runInTransaction {
+//                        db.items().nukeRigParts(rigItemDocId)
+//                        insertIntooRigPartsDb(rigPartList)
+//                    }
+//                    // since we are in bg thread now, post the result.
+//                    networkState.postValue(NetworkState.LOADED)
+//                }
+//            } else {
+//                networkState.value = NetworkState.error(task.exception?.message)
+//            }
+//        }
+//    } catch (ioException: IOException) {
+//        networkState.value = NetworkState.error(ioException.message)
+//    }
+//
+//    return networkState
+//}
 
 
 

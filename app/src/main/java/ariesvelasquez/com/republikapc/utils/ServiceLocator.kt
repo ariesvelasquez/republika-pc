@@ -19,10 +19,9 @@ package ariesvelasquez.com.republikapc.utils
 import android.app.Application
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import ariesvelasquez.com.republikapc.Const.RIGS_COLLECTION
 import ariesvelasquez.com.republikapc.Const.USERS_COLLECTION
 import ariesvelasquez.com.republikapc.api.TipidPCApi
-import ariesvelasquez.com.republikapc.db.TipidPCDatabase
+import ariesvelasquez.com.republikapc.db.RepublikaPCDatabase
 import ariesvelasquez.com.republikapc.repository.auth.AuthRepository
 import ariesvelasquez.com.republikapc.repository.dashboard.DashboardRepository
 import ariesvelasquez.com.republikapc.repository.dashboard.IDashboardRepository
@@ -90,7 +89,7 @@ open class DefaultServiceLocator(val app: Application) : ServiceLocator {
     private val NETWORK_IO = Executors.newFixedThreadPool(5)
 
     private val db by lazy {
-        TipidPCDatabase.create(app)
+        RepublikaPCDatabase.create(app)
     }
 
     private val api by lazy {

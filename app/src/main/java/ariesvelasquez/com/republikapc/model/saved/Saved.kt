@@ -27,7 +27,7 @@ data class Saved(
             seller = hashMap[Const.SELLER]?.toString()!!
             price = hashMap[Const.PRICE]?.toString()!!
             postDate = hashMap[Const.POST_DATE]?.toString()!!
-            postDate = hashMap[Const.LINK_ID]?.toString()!!
+            linkId = hashMap[Const.LINK_ID]?.toString()!!
         }
     }
 }

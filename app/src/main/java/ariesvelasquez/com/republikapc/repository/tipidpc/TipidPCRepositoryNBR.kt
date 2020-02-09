@@ -2,7 +2,7 @@ package ariesvelasquez.com.republikapc.repository.tipidpc
 
 @Deprecated("For Now")
 class TipidPCRepositoryNBR() {
-//    private val tipidPcDao: TipidPCDao,
+//    private val tipidPcDao: RepublikaPCDao,
 //    private val tipidPcService: TipidPCApi,
 //    private val executors: AppExecutors = AppExecutors()) {
 //

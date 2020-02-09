@@ -1,26 +1,16 @@
-package ariesvelasquez.com.republikapc.repository.dashboard
+package ariesvelasquez.com.republikapc.repository.dashboard.saved
 
 import androidx.annotation.MainThread
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import ariesvelasquez.com.republikapc.Const
-import ariesvelasquez.com.republikapc.api.TipidPCApi
 import ariesvelasquez.com.republikapc.androidx.PagingRequestHelper
-import ariesvelasquez.com.republikapc.model.error.Error
-import ariesvelasquez.com.republikapc.model.feeds.FeedItem
-import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
 import ariesvelasquez.com.republikapc.model.saved.Saved
-import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.utils.createStatusLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
-import com.google.gson.Gson
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.Executor
@@ -33,7 +23,7 @@ import java.util.concurrent.Executor
  * rate limiting using the PagingRequestHelper class.
  */
 class SavedBoundaryCallback (
-    private val savedReference: CollectionReference,
+    savedReference: CollectionReference,
     private val handleResponse: (list: List<Saved>) -> Unit,
     private val ioExecutor: Executor
 ) : PagedList.BoundaryCallback<Saved>() {
@@ -45,7 +35,6 @@ class SavedBoundaryCallback (
 
     val helper = PagingRequestHelper(ioExecutor)
     val networkState = helper.createStatusLiveData()
-    val isEmpty = MutableLiveData<Boolean>()
 
     init {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
@@ -74,8 +63,6 @@ class SavedBoundaryCallback (
                             val savedItem = document.toObject(Saved::class.java)
                             savedList.add(savedItem)
                         }
-                        Timber.e("onZeroItemsLoaded > isEmpty " + savedList.isEmpty())
-                        isEmpty.value = (savedList.isEmpty())
 
                         // Now get the last item from the list, this will be used as reference
                         // what to fetch next.

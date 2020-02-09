@@ -13,16 +13,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import ariesvelasquez.com.republikapc.R
-import ariesvelasquez.com.republikapc.RepublikaPC
-import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.model.rigparts.RigPart
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.BaseActivity
+import ariesvelasquez.com.republikapc.ui.dashboard.rigparts.RigPartsAdapter
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
-import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.FeedItemsAdapter
+import ariesvelasquez.com.republikapc.ui.search.SearchActivity
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import ariesvelasquez.com.republikapc.utils.Tools
 import ariesvelasquez.com.republikapc.utils.extensions.action
+import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
 import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.firebase.auth.FirebaseUser
 import com.google.gson.Gson
@@ -31,15 +32,15 @@ import kotlinx.android.synthetic.main.activity_rig_items.toolbar
 import kotlinx.android.synthetic.main.rig_items_total_bottom_sheet.*
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.android.synthetic.main.toolbar.view.*
-import timber.log.Timber
 
 class RigItemsActivity : BaseActivity() {
 
-    private lateinit var rigItemsAdapter: FeedItemsAdapter
+    private lateinit var rigItemsAdapter: RigPartsAdapter
 
     private lateinit var rigItemReference: Rig
 
     private var rigItemsTotal = 0
+    private var hasList = false
 
     private val dashboardViewModel: DashboardViewModel by viewModels {
         object : ViewModelProvider.Factory {
@@ -72,14 +73,14 @@ class RigItemsActivity : BaseActivity() {
 
     private fun initOnClicks() {
         backButton.setOnClickListener { onBackPressed() }
+        buttonSearch.setOnClickListener { launchActivity<SearchActivity> {  } }
     }
 
     private fun setupRigList() {
-        rigItemsAdapter = FeedItemsAdapter(
-            FeedItemsAdapter.RIG_ITEM_VIEW_TYPE,
-            { dashboardViewModel.refreshRigItems() }
+        rigItemsAdapter = RigPartsAdapter(
+            RigPartsAdapter.RIG_PART_VIEW_TYPE,
+            { dashboardViewModel.refreshRigParts() }
             ) { v, pos, item ->
-
 
             // OnItemClick: Validate if the viewer is also the owner of the rig
             var isOwner = false
@@ -90,15 +91,15 @@ class RigItemsActivity : BaseActivity() {
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
 
-        rigItemList.layoutManager = linearLayoutManager
-        rigItemList.adapter = rigItemsAdapter
+        rigPartList.layoutManager = linearLayoutManager
+        rigPartList.adapter = rigItemsAdapter
 
-        refreshSwipe.setOnRefreshListener {
-            dashboardViewModel.refreshRigItems()
-        }
+//        refreshSwipe.setOnRefreshListener {
+//            dashboardViewModel.refreshRigParts()
+//        }
     }
 
-    private fun showItemDetails(owner: Boolean, item: FeedItem) {
+    private fun showItemDetails(owner: Boolean, item: RigPart) {
 
         if (!owner) return
 
@@ -106,21 +107,21 @@ class RigItemsActivity : BaseActivity() {
             action(
                 getString(R.string.delete),
                 ContextCompat.getColor(context, R.color.colorBlue)) {
-                Timber.e("CLicked " + item.name)
                 deleteRigItem(item)
             }
         }
     }
 
-    private fun deleteRigItem(item: FeedItem) {
-        dashboardViewModel.deleteRigItem(rigItemReference.id, item.docId)
+    private fun deleteRigItem(item: RigPart) {
+        dashboardViewModel.removeRigPart(rigItemReference.id, item.docId)
     }
 
     private fun initRigItemList() {
-        dashboardViewModel.getRigItems(rigItemReference.id)
+        dashboardViewModel.getRigParts(rigItemReference.id)
 
-        dashboardViewModel.rigItems.observe(this, Observer<PagedList<FeedItem>> {
+        dashboardViewModel.rigParts.observe(this, Observer<PagedList<RigPart>> {
             rigItemsAdapter.submitList(it)
+            handleListUI(it.snapshot())
         })
         dashboardViewModel.rigItemsNetworkState.observe(this, Observer {
             rigItemsAdapter.setNetworkState(it)
@@ -128,9 +129,11 @@ class RigItemsActivity : BaseActivity() {
         })
         dashboardViewModel.deleteRigItemNetworkState.observe(this, Observer {
             setItemDeleteNetworkState(it)
+            setTotalNetworkState(it)
         })
         dashboardViewModel.rigItemsRefreshState.observe(this, Observer {
-            refreshSwipe.isRefreshing = it == NetworkState.LOADING
+//            refreshSwipe.isRefreshing = it == NetworkState.LOADING
+            setTotalNetworkState(it)
         })
     }
 
@@ -146,6 +149,44 @@ class RigItemsActivity : BaseActivity() {
                 // Show Error Prompt
                 Toast.makeText(this, it?.msg, Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    private fun handleListUI(it: MutableList<RigPart>) {
+
+        if (!mIsUserLoggedIn) {
+            linearLayoutPlaceHolder.visibility = View.GONE
+            rigPartList.visibility = View.GONE
+            linearLayoutSignIn.visibility = View.VISIBLE
+            return
+        } else {
+            linearLayoutSignIn.visibility = View.GONE
+        }
+
+        if (!hasList && it.isNotEmpty()) {
+            // When the list is not empty, and recyclerView is still gone
+            this.hasList = true
+            showHidePlaceholder(show = false)
+        } else if (it.isEmpty() && hasList) {
+            // When the list is empty, and recyclerView is still visible
+            this.hasList = false
+            showHidePlaceholder(show = true)
+        } else if (hasList && it.isNotEmpty()) {
+            // When the list is not empty, and recyclerView is still visible
+            showHidePlaceholder(show = false)
+        } else {
+            // List is Empty, hasList is false
+            showHidePlaceholder(true)
+        }
+    }
+
+    private fun showHidePlaceholder(show: Boolean) {
+        if (show) {
+            rigPartList.visibility = View.GONE
+            linearLayoutPlaceHolder.visibility = View.VISIBLE
+        } else {
+            rigPartList.visibility = View.VISIBLE
+            linearLayoutPlaceHolder.visibility = View.GONE
         }
     }
 

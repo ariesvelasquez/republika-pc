@@ -67,6 +67,8 @@
     <string name="loading_many_data_may_take_some_time">Loading many data may take some time...</string>
     <string name="back_to_top">Back to top</string>
     <string name="you_have_not_save_any_items_yet">You have no saved items.</string>
+    <string name="you_have_not_parts_for_this_rig_yet">You have no parts for this rig items.</string>
     <string name="search_items">Search items</string>
     <string name="check_for_sale_items">Check for sale items</string>
+    <string name="refresh">Refresh</string>
 </resources>

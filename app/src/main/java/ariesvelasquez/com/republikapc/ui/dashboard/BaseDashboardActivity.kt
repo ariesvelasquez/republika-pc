@@ -130,7 +130,7 @@ abstract class BaseDashboardActivity : BaseActivity(),
     }
 
     override fun onItemAddedToRig(rigItem: Rig, feedItemReference: FeedItem) {
-        viewModel.addItemToRig(rigItem, feedItemReference)
+        viewModel.addRigPart(rigItem, feedItemReference)
     }
 
     override fun onItemSave(feedItem: FeedItem) {
@@ -154,7 +154,7 @@ abstract class BaseDashboardActivity : BaseActivity(),
     }
 
     override fun onSavedItemAddedToRIg(rigItem: Rig, savedItemReference: Saved) {
-        viewModel.addSavedItemToRig(rigItem, savedItemReference)
+        viewModel.addSavedToRigPart(rigItem, savedItemReference)
     }
 
     override fun onGoToLink(linkId: String) {

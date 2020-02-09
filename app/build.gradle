@@ -114,6 +114,9 @@ dependencies {
     // Firebase Crashlytics
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
+    // PrettyTime
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+
     // Other
     implementation 'me.zhanghai.android.fastscroll:library:1.1.0'
 

@@ -33,6 +33,7 @@ data class FeedItem(
     var isEmptyItem : Boolean = false
 ) {
     var indexInResponse: Int = -1
+    var lastRefresh: String = ""
 }
 
 //    @ColumnInfo(collate = ColumnInfo.NOCASE)

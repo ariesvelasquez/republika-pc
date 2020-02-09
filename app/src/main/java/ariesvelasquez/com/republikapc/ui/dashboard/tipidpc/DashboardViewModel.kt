@@ -14,6 +14,7 @@ import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.repository.dashboard.IDashboardRepository
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.MetadataChanges
+import timber.log.Timber
 
 class DashboardViewModel(private val repository: IDashboardRepository) : ViewModel() {
 
@@ -127,28 +128,26 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
      */
     private var rigId: String = ""
     private val isRigItemsInitialized = MutableLiveData<Boolean>()
-    private val rigItemsRepoResult = map(isRigItemsInitialized) { repository.rigItems(rigId) }
-    val rigItems = Transformations.switchMap(rigItemsRepoResult) { it.pagedList }
+    private val rigItemsRepoResult = map(isRigItemsInitialized) { repository.rigParts(rigId) }
+    val rigParts = Transformations.switchMap(rigItemsRepoResult) { it.pagedList }
     val rigItemsNetworkState = Transformations.switchMap(rigItemsRepoResult) { it.networkState }
     val rigItemsRefreshState = Transformations.switchMap(rigItemsRepoResult) { it.refreshState }
     val addItemToRigNetworkState = MutableLiveData<NetworkState>()
     val deleteRigItemNetworkState = MutableLiveData<NetworkState>()
 
     // RIG_ITEMS_COLLECTION
-    fun getRigItems(rigId: String): Boolean {
+    fun getRigParts(rigId: String): Boolean {
         this.rigId = rigId
         this.isRigItemsInitialized.value = true
-//        this.rigItemsRepoResult.value?.refresh?.invoke()
+        this.rigItemsRepoResult.value?.refresh?.invoke()
         return true
     }
 
     // Add Item To Rig
-    fun addItemToRig(rigItem: Rig, feedItem: FeedItem) {
+    fun addRigPart(rigItem: Rig, feedItem: FeedItem) {
         addItemToRigNetworkState.postValue(NetworkState.LOADING)
-        repository.addItemToRig(this.firebaseUserModel.value!!, rigItem, feedItem)
+        repository.addRigPart(this.firebaseUserModel.value!!, rigItem, feedItem)
             .addOnSuccessListener {
-                RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
-                refreshRigItems()
                 addItemToRigNetworkState.postValue(NetworkState.LOADED)
             }.addOnFailureListener {
                 val error = NetworkState.error(it.message)
@@ -157,12 +156,12 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     }
 
     // Add Item To Rig
-    fun addSavedItemToRig(rigItem: Rig, savedItem: Saved) {
+    fun addSavedToRigPart(rigItem: Rig, savedItem: Saved) {
         addItemToRigNetworkState.postValue(NetworkState.LOADING)
-        repository.addSavedItemToRig(this.firebaseUserModel.value!!, rigItem, savedItem)
+        repository.addSavedToRigPart(this.firebaseUserModel.value!!, rigItem, savedItem)
             .addOnSuccessListener {
-                RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
-                refreshRigItems()
+//                RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
+//                refreshRigParts()
                 addItemToRigNetworkState.postValue(NetworkState.LOADED)
             }.addOnFailureListener {
                 val error = NetworkState.error(it.message)
@@ -170,11 +169,11 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
             }
     }
 
-    fun deleteRigItem(rigId: String, rigItemId: String) {
+    fun removeRigPart(rigId: String, rigItemId: String) {
         deleteRigItemNetworkState.postValue(NetworkState.LOADING)
-        repository.deleteRigItem(rigId, rigItemId).addOnSuccessListener {
-            RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
-            refreshRigItems()
+        repository.deleteRigPart(rigId, rigItemId).addOnSuccessListener {
+//            RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
+//            refreshRigParts()
             deleteRigItemNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
             val error = NetworkState.error(it.message)
@@ -182,7 +181,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         }
     }
 
-    fun refreshRigItems() {
+    fun refreshRigParts() {
         rigItemsRepoResult.value?.refresh?.invoke()
     }
 
@@ -194,7 +193,6 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     val isSavedInitialized = MutableLiveData<Boolean>()
     private val savedRepoResult = map(isSavedInitialized) { repository.saved() }
     val saved = Transformations.switchMap(savedRepoResult) { it.pagedList }
-    val isSavedListEmpty = Transformations.switchMap(savedRepoResult) {it.isEmpty}
     val savedNetworkState = Transformations.switchMap(savedRepoResult) { it.networkState }
     val savedRefreshState = Transformations.switchMap(savedRepoResult) { it.refreshState }
     val saveItemNetworkState = MutableLiveData<NetworkState>()

@@ -1,4 +1,4 @@
-package ariesvelasquez.com.republikapc.repository.dashboard
+package ariesvelasquez.com.republikapc.repository.dashboard.feeds
 
 import androidx.annotation.MainThread
 import androidx.paging.PagedList
@@ -7,7 +7,6 @@ import ariesvelasquez.com.republikapc.androidx.PagingRequestHelper
 import ariesvelasquez.com.republikapc.model.error.Error
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
-import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.utils.createStatusLiveData
 import com.google.gson.Gson
 import retrofit2.Call

@@ -8,32 +8,27 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
-import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.model.rigparts.RigPart
 import ariesvelasquez.com.republikapc.utils.Tools
 
-class ItemsOfRigViewHolder(view: View, private val onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit) : RecyclerView.ViewHolder(view) {
+class RigPartViewHolder(view: View, private val onClickCallback: (v: View, position: Int, item: RigPart) -> Unit) : RecyclerView.ViewHolder(view) {
 
     private var tools = Tools().numberFormatter
 
     private val mainView: ConstraintLayout = view.findViewById(R.id.constraintLayoutParent)
     private val name: TextView = view.findViewById(R.id.name)
     private val sellerName: TextView = view.findViewById(R.id.textViewSellerName)
-    private val page: TextView = view.findViewById(R.id.textViewItemDescription)
     private val price: TextView = view.findViewById(R.id.textViewPrice)
-    private var item : FeedItem? = null
+    private var item : RigPart? = null
 
     init {
         view.setOnClickListener {
 
-            //            item?.itemurl?.let { url ->
-//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-//                view.context.startActivity(intent)
-//            }
         }
     }
 
     @SuppressLint("SetTextI18n")
-    fun bind(item: FeedItem, position: Int) {
+    fun bind(item: RigPart, position: Int) {
         this.item = item
         name.text = item.name ?: "loading"
         sellerName.text = item.seller
@@ -44,7 +39,6 @@ class ItemsOfRigViewHolder(view: View, private val onClickCallback: (v: View, po
             replace("P", "")
 
         price.text = tools?.format(itemPriceClean.toDouble()) + ".00"
-        page.text = item.page.toString()
 
         mainView.setOnClickListener {
             onClickCallback.invoke(it, position, item)
@@ -66,14 +60,14 @@ class ItemsOfRigViewHolder(view: View, private val onClickCallback: (v: View, po
     }
 
     companion object {
-        fun create(parent: ViewGroup, onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit): ItemsOfRigViewHolder {
+        fun create(parent: ViewGroup, onClickCallback: (v: View, position: Int, item: RigPart) -> Unit): RigPartViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_recycler_view_rig_item, parent, false)
-            return ItemsOfRigViewHolder(view, onClickCallback)
+                .inflate(R.layout.item_recycler_view_rig_part, parent, false)
+            return RigPartViewHolder(view, onClickCallback)
         }
     }
 
-    fun updateScore(item: FeedItem?) {
+    fun updateScore(item: RigPart?) {
         this.item = item
 //        score.text = "${item?.score ?: 0}"
     }

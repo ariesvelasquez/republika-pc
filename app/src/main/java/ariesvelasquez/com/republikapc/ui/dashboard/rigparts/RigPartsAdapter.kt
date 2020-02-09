@@ -1,20 +1,22 @@
-package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
+package ariesvelasquez.com.republikapc.ui.dashboard.rigparts
 
 import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.model.rigparts.RigPart
 import ariesvelasquez.com.republikapc.repository.NetworkState
+import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.RigPartViewHolder
+import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.NetworkStateViewHolder
 
 
-class FeedItemsAdapter(
-    private val viewTypeParam: Int = FEED_VIEW_TYPE,
+class RigPartsAdapter(
+    private val viewTypeParam: Int = RIG_PART_VIEW_TYPE,
     private val retryCallback: () -> Unit,
-    private val onClickCallback: (v: View, position: Int ,item: FeedItem) -> Unit
+    private val onClickCallback: (v: View, position: Int ,item: RigPart) -> Unit
 )
-    : PagedListAdapter<FeedItem, RecyclerView.ViewHolder>(POST_COMPARATOR) {
+    : PagedListAdapter<RigPart, RecyclerView.ViewHolder>(POST_COMPARATOR) {
 
     private var networkState: NetworkState? = null
 
@@ -25,9 +27,7 @@ class FeedItemsAdapter(
         currentRecycledItem = position
 
         when (getItemViewType(position)) {
-            FEED_VIEW_TYPE -> { (holder as FeedsItemViewHolder).bind(getItem(position)!!, position) }
-            SELLER_ITEM_VIEW_TYPE -> (holder as TipidPCSellerItemsViewHolder).bind(getItem(position)!!, position)
-            SELLER_VIEW_TYPE -> (holder as TipidPCSellerViewHolder).bind(getItem(position)!!, position)
+            RIG_PART_VIEW_TYPE -> (holder as RigPartViewHolder).bind(getItem(position)!!, position)
             ERROR_VIEW_TYPE -> (holder as NetworkStateViewHolder).bindTo(
                 networkState)
         }
@@ -42,7 +42,6 @@ class FeedItemsAdapter(
             when (getItemViewType(position)) {
 //                FEED_VIEW_TYPE -> (holder as FeedsItemViewHolder).bind(getItem(position)!!, position)
 //                RIG_ITEM_VIEW_TYPE -> (holder as RigPartViewHolder).bind(getItem(position)!!, position)
-                SELLER_ITEM_VIEW_TYPE -> (holder as TipidPCSellerItemsViewHolder).updatePrice(item)
                 ERROR_VIEW_TYPE -> (holder as NetworkStateViewHolder).bindTo(
                     networkState)
             }
@@ -53,9 +52,7 @@ class FeedItemsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            FEED_VIEW_TYPE -> FeedsItemViewHolder.create(parent, onClickCallback)
-            SELLER_ITEM_VIEW_TYPE -> TipidPCSellerItemsViewHolder.create(parent, onClickCallback)
-            SELLER_VIEW_TYPE -> TipidPCSellerViewHolder.create(parent, onClickCallback)
+            RIG_PART_VIEW_TYPE -> RigPartViewHolder.create(parent, onClickCallback)
             ERROR_VIEW_TYPE -> NetworkStateViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
@@ -109,28 +106,26 @@ class FeedItemsAdapter(
     companion object {
 
         const val ERROR_VIEW_TYPE = 0
-        const val FEED_VIEW_TYPE = 1
-        const val SELLER_ITEM_VIEW_TYPE = 2
-        const val SELLER_VIEW_TYPE = 3
+        const val RIG_PART_VIEW_TYPE = 1
 
         private val PAYLOAD_SCORE = Any()
-        val POST_COMPARATOR = object : DiffUtil.ItemCallback<FeedItem>() {
-            override fun areContentsTheSame(oldItem: FeedItem, newItem: FeedItem): Boolean =
+        val POST_COMPARATOR = object : DiffUtil.ItemCallback<RigPart>() {
+            override fun areContentsTheSame(oldItem: RigPart, newItem: RigPart): Boolean =
                 oldItem == newItem
 
-            override fun areItemsTheSame(oldItem: FeedItem, newItem: FeedItem): Boolean =
-                oldItem.id == newItem.id && oldItem.isFeed == newItem.isFeed
+            override fun areItemsTheSame(oldItem: RigPart, newItem: RigPart): Boolean =
+                oldItem.docId == newItem.docId
 
-            override fun getChangePayload(oldItem: FeedItem, newItem: FeedItem): Any? {
-                return if (sameExceptScore(oldItem, newItem)) {
-                    PAYLOAD_SCORE
-                } else {
-                    null
-                }
+            override fun getChangePayload(oldItem: RigPart, newItem: RigPart): Any? {
+//                return if (sameExceptScore(oldItem, newItem)) {
+//                    PAYLOAD_SCORE
+//                } else {
+                    return null
+//                }
             }
         }
 
-        private fun sameExceptScore(oldItem: FeedItem, newItem: FeedItem): Boolean {
+        private fun sameExceptScore(oldItem: RigPart, newItem: RigPart): Boolean {
             // DON'T do this copy in a real app, it is just convenient here for the demo :)
             // because reddit randomizes scores, we want to pass it as a payload to minimize
             // UI updates between refreshes

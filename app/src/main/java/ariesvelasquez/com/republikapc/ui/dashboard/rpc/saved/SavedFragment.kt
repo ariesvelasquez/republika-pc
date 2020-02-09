@@ -86,12 +86,12 @@ class SavedFragment : DashboardFragment() {
     }
 
     private fun initSwipeToRefresh() {
-        dashboardViewModel.savedRefreshState.observe( viewLifecycleOwner, Observer {
-            rootView.swipeRefreshSaved.isRefreshing = it == NetworkState.LOADING
-        })
-        rootView.swipeRefreshSaved.setOnRefreshListener {
-            dashboardViewModel.refreshSaved()
-        }
+//        dashboardViewModel.savedRefreshState.observe( viewLifecycleOwner, Observer {
+//            rootView.swipeRefreshSaved.isRefreshing = it == NetworkState.LOADING
+//        })
+//        rootView.swipeRefreshSaved.setOnRefreshListener {
+//            dashboardViewModel.refreshSaved()
+//        }
     }
 
     private fun initAdapter() {

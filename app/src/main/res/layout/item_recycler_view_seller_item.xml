@@ -12,17 +12,21 @@
     android:orientation="vertical">
     
     <TextView
-        android:id="@+id/textViewItemDescription"
-        android:layout_width="wrap_content"
+        android:id="@+id/textViewLastRefresh"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="8sp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="55"
-        android:visibility="invisible"
         android:layout_marginTop="@dimen/view_padding"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:paddingBottom="@dimen/view_padding"
+        android:paddingTop="@dimen/view_padding"
+        style="@style/TextAppearance.TileSecondary"
+        android:textAllCaps="false"
+        android:textColor="@color/colorBlue"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        tools:text="List updated 2 days ago"
+        tools:visibility="visible"/>
     
     <TextView
         android:id="@+id/name"
@@ -35,7 +39,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLastRefresh"
         tools:text="Hopper UX: The Right Ways To Ask" />
     
     <ImageView

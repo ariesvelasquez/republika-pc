@@ -1,7 +1,10 @@
 package ariesvelasquez.com.republikapc.ui.selleritems
 
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.os.Handler
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -55,9 +58,11 @@ class SellerItemsActivity : BaseDashboardActivity() {
         // Get Intent Data
         mSellerName = intent.getStringExtra(SELLER_NAME_REFERENCE)
 
-        // Set Title
+        // Set Toolbar
         toolbar.textViewToolbarTitle.text = mSellerName
         toolbar.textViewToolbarTitle.setTextColor(ContextCompat.getColor(this, R.color.colorDarkGray))
+        toolbar.overflowIcon?.setColorFilter(ContextCompat.getColor(this, R.color.colorDarkGray), PorterDuff.Mode.SRC_ATOP)
+        setSupportActionBar(toolbar)
 
         initOnClicks()
 
@@ -69,6 +74,26 @@ class SellerItemsActivity : BaseDashboardActivity() {
         handleSaveItemState()
 
         dashboardViewModel.showSellerItems(mSellerName)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.seller_items_menu, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+        return when (item?.itemId) {
+            R.id.menuRefresh -> {
+                dashboardViewModel.refreshSellerItems()
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     private fun initOnClicks() {
@@ -96,8 +121,9 @@ class SellerItemsActivity : BaseDashboardActivity() {
         recyclerViewSellerItemList.adapter = sellerItemsAdapter
 
         refreshSwipe.setOnRefreshListener {
-            dashboardViewModel.refreshSellerItems()
+//            dashboardViewModel.refreshSellerItems()
         }
+        refreshSwipe.isEnabled = false
 
         // Init Items
         dashboardViewModel.sellerItems.observe( this, Observer<PagedList<FeedItem>> {

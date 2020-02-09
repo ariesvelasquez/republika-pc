@@ -3,10 +3,11 @@ package ariesvelasquez.com.republikapc.db
 import androidx.paging.DataSource
 import androidx.room.*
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
+import ariesvelasquez.com.republikapc.model.rigparts.RigPart
 import ariesvelasquez.com.republikapc.model.saved.Saved
 
 @Dao
-interface TipidPCDao {
+interface RepublikaPCDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFeeds(items: List<FeedItem>)
@@ -43,7 +44,7 @@ interface TipidPCDao {
     fun insertSaved(items: List<Saved>)
 
     /*
-     * Fetch all items from feed_items
+     * Fetch all items from saved_items
      */
     @Query("SELECT * FROM saved_items ORDER BY firstLetterIndex ASC")
     fun savedItems(): DataSource.Factory<Int, Saved>
@@ -55,5 +56,27 @@ interface TipidPCDao {
     fun removeItem(docId: String)
 
     @Insert
-    fun inserItem(saved: Saved)
+    fun insertSavedItem(saved: Saved)
+
+
+    /*
+     * Fetch all items from rig_parts
+     */
+    @Query("SELECT * FROM rig_parts WHERE rigParentId = :rigId ORDER BY firstLetterIndex ASC")
+    fun rigParts(rigId: String): DataSource.Factory<Int, RigPart>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertRigParts(items: List<RigPart>)
+
+    @Insert
+    fun insertRigPart(rigPart: RigPart)
+
+    @Query("DELETE FROM rig_parts WHERE docId = :partId AND rigParentId = :rigId")
+    fun removeRigPart(rigId: String, partId: String)
+
+    @Query("DELETE FROM rig_parts WHERE rigParentId = :rigId")
+    fun nukeRigParts(rigId: String)
+
+    @Query("DELETE FROM rig_parts")
+    fun nukeAllRigParts()
 }

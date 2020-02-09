@@ -40,5 +40,8 @@
 -dontwarn org.shaded.apache.**
 -dontwarn org.ietf.jgss.**
 
+# PrettyTime
+-keep class org.ocpsoft.prettytime.i18n.**
+
 # Only necessary if you downloaded the SDK jar directly instead of from maven.
 -keep class com.shaded.fasterxml.jackson.** { *; }

@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.utils.Tools
+import org.ocpsoft.prettytime.PrettyTime
+import java.text.SimpleDateFormat
+import java.util.*
 
 class TipidPCSellerItemsViewHolder(view: View, private val onClickCallback: (v: View, position: Int, item: FeedItem) -> Unit) : RecyclerView.ViewHolder(view) {
 
@@ -18,6 +21,7 @@ class TipidPCSellerItemsViewHolder(view: View, private val onClickCallback: (v: 
     private val mainView: ConstraintLayout = view.findViewById(R.id.constraintLayoutParent)
     private val name: TextView = view.findViewById(R.id.name)
     private val price: TextView = view.findViewById(R.id.textViewPrice)
+    private val lastRefreshView: TextView = view.findViewById(R.id.textViewLastRefresh)
     private var item : FeedItem? = null
 
     init {
@@ -35,6 +39,16 @@ class TipidPCSellerItemsViewHolder(view: View, private val onClickCallback: (v: 
 //        this.item = item
         name.text = item.name
         price.text = tools?.format(item.price.removePrefix("PHP").toDouble()) + ".00"
+
+        if (position == 0) {
+            val prettifiedDate = Tools().lastUpdatePrettyTimeFormatter(item.lastRefresh)
+            if (prettifiedDate.isNotEmpty()) {
+                lastRefreshView.visibility = View.VISIBLE
+                lastRefreshView.text = prettifiedDate
+            }
+        } else {
+            lastRefreshView.visibility = View.GONE
+        }
 
         mainView.setOnClickListener {
             onClickCallback.invoke(it, position, item)
