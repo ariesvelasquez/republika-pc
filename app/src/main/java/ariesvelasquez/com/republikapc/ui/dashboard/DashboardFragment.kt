@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import timber.log.Timber
@@ -22,6 +23,10 @@ abstract class DashboardFragment: Fragment() {
     protected var mIsRigInitialized: Boolean = false
     protected var mIsSavedInitialized: Boolean = false
     protected var mIsFollowedInitialized: Boolean = false
+
+    val getVerticalStaggeredLayoutManager by lazy {
+        StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+    }
 
     val dashboardViewModel: DashboardViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
@@ -55,9 +60,9 @@ abstract class DashboardFragment: Fragment() {
             mIsRigInitialized = it
         })
 
-        dashboardViewModel.isSavedInitialized.observe( viewLifecycleOwner, Observer {
-            mIsSavedInitialized = it
-        })
+//        dashboardViewModel.isSavedInitialized.observe( viewLifecycleOwner, Observer {
+//            mIsSavedInitialized = it
+//        })
 
         dashboardViewModel.isFollowedInitialized.observe( viewLifecycleOwner, Observer {
             mIsFollowedInitialized = it

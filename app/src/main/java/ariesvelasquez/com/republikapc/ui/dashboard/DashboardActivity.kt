@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
+import androidx.paging.ExperimentalPagingApi
 import androidx.viewpager.widget.ViewPager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.RepublikaPC
@@ -23,10 +24,15 @@ import ariesvelasquez.com.republikapc.ui.search.SearchActivity
 import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
 import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.main_toolbar.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 
+@ExperimentalCoroutinesApi
+@ExperimentalPagingApi
+@AndroidEntryPoint
 class DashboardActivity : BaseDashboardActivity() {
 
     private lateinit var viewPager: ViewPager
@@ -83,19 +89,19 @@ class DashboardActivity : BaseDashboardActivity() {
     override fun onResume() {
         super.onResume()
 
-        if (mCurrentMenuFragment == R.id.navigation_rigs && RepublikaPC.getGlobalFlags().shouldRefreshRigs) {
-            RepublikaPC.getGlobalFlags().shouldRefreshRigs = false
+        if (mCurrentMenuFragment == R.id.navigation_rigs && RepublikaPC.globalFlags.shouldRefreshRigs) {
+            RepublikaPC.globalFlags.shouldRefreshRigs = false
             viewModel.refreshRigs()
         }
 
-        if (mCurrentMenuFragment == R.id.navigation_rigs && RepublikaPC.getGlobalFlags().shouldRefreshFollowed) {
-            RepublikaPC.getGlobalFlags().shouldRefreshFollowed = false
+        if (mCurrentMenuFragment == R.id.navigation_rigs && RepublikaPC.globalFlags.shouldRefreshFollowed) {
+            RepublikaPC.globalFlags.shouldRefreshFollowed = false
             viewModel.refreshFollowed()
         }
 
-        if (mCurrentMenuFragment == R.id.navigation_rigs && RepublikaPC.getGlobalFlags().shouldRefreshSaved) {
-            RepublikaPC.getGlobalFlags().shouldRefreshSaved = false
-            viewModel.refreshSaved()
+        if (mCurrentMenuFragment == R.id.navigation_rigs && RepublikaPC.globalFlags.shouldRefreshSaved) {
+            RepublikaPC.globalFlags.shouldRefreshSaved = false
+//            viewModel.refreshSaved()
         }
     }
 
@@ -148,9 +154,7 @@ class DashboardActivity : BaseDashboardActivity() {
                 NetworkState.LOADED -> {
                     finishedLoading()
                     showSnackBar(getString(R.string.item_saved))
-                    viewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
                 }
-                NetworkState.LOADING -> {}
                 else -> {
                     // Show Error Prompt
                     Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
@@ -159,22 +163,22 @@ class DashboardActivity : BaseDashboardActivity() {
         })
 
         // Saved Item Deleted
-        viewModel.deleteSavedItemNetworkState.observe(this, Observer {
-            when (it) {
-                NetworkState.LOADING -> { startLoading() }
-                NetworkState.LOADED -> {
-                    savedItemBottomSheet.dismiss()
-                    finishedLoading()
-                    showSnackBar(getString(R.string.item_deleted))
-                    viewModel.deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
-                }
-                NetworkState.LOADING -> {}
-                else -> {
-                    // Show Error Prompt
-                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
-                }
-            }
-        })
+//        viewModel.deleteSavedItemNetworkState.observe(this, Observer {
+//            when (it) {
+//                NetworkState.LOADING -> { startLoading() }
+//                NetworkState.LOADED -> {
+//                    savedItemBottomSheet.dismiss()
+//                    finishedLoading()
+//                    showSnackBar(getString(R.string.item_deleted))
+//                    viewModel.deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
+//                }
+//                NetworkState.LOADING -> {}
+//                else -> {
+//                    // Show Error Prompt
+//                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
+//                }
+//            }
+//        })
     }
 
     private fun startLoading() {
@@ -221,8 +225,8 @@ class DashboardActivity : BaseDashboardActivity() {
             R.id.navigation_tipid_pc -> viewPager.currentItem = 0
             R.id.navigation_rigs -> {
                 viewPager.currentItem = 1
-                if (RepublikaPC.getGlobalFlags().shouldRefreshRigs) {
-                    RepublikaPC.getGlobalFlags().shouldRefreshRigs = false
+                if (RepublikaPC.globalFlags.shouldRefreshRigs) {
+                    RepublikaPC.globalFlags.shouldRefreshRigs = false
                     viewModel.refreshRigs()
                 }
             }

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
+import timber.log.Timber
 
 
 class FeedItemsAdapter(
@@ -95,13 +96,13 @@ class FeedItemsAdapter(
         var total = 0.00
         currentList?.forEach {
             val toBeAdded = it.price
-                .replace("PHP", "")
-                .replace("HP", "")
-                .replace("P", "")
-                .toDouble()
+                ?.replace("PHP", "")
+                ?.replace("HP", "")
+                ?.replace("P", "")
+                ?.toDouble()
 
 
-            total = total.plus(toBeAdded)
+            total = total.plus(toBeAdded ?: 0.0)
         }
         return total
     }

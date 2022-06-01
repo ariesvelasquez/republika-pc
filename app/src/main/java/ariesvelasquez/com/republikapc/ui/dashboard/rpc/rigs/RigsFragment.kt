@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -21,6 +22,7 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_rigs.view.*
 import timber.log.Timber
 
+@ExperimentalPagingApi
 class RigsFragment : DashboardFragment() {
 
     private lateinit var rootView: View
@@ -43,10 +45,10 @@ class RigsFragment : DashboardFragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         rootView =  inflater.inflate(R.layout.fragment_rigs, container, false)
 
-        initSwipeToRefresh()
-        initAdapter()
+//        initSwipeToRefresh()
+//        initAdapter()
 
-        initRigList()
+
 
         return rootView
     }
@@ -59,7 +61,8 @@ class RigsFragment : DashboardFragment() {
     override fun onResume() {
         super.onResume()
         if (mIsUserLoggedIn and !mIsRigInitialized) {
-            dashboardViewModel.showRigs()
+//            dashboardViewModel.showRigs()
+//            initRigList()
         }
     }
 
@@ -74,7 +77,7 @@ class RigsFragment : DashboardFragment() {
     }
 
     private fun initSwipeToRefresh() {
-        dashboardViewModel.rigRefreshState.observe(this, Observer {
+        dashboardViewModel.rigRefreshState.observe(viewLifecycleOwner, Observer {
             rootView.swipeRefreshRigs.isRefreshing = it == NetworkState.LOADING
         })
         rootView.swipeRefreshRigs.setOnRefreshListener {
@@ -119,12 +122,12 @@ class RigsFragment : DashboardFragment() {
     }
 
     private fun initRigList() {
-        dashboardViewModel.rigs.observe(this, Observer<PagedList<Rig>> {
+        dashboardViewModel.rigs.observe(viewLifecycleOwner, Observer<PagedList<Rig>> {
             adapter.submitList(it)
 
             Timber.e("RIGGGGZZZZ Items count " + adapter.itemCount)
         })
-        dashboardViewModel.rigNetworkState.observe(this, Observer {
+        dashboardViewModel.rigNetworkState.observe(viewLifecycleOwner, Observer {
             adapter.setNetworkState(it)
         })
     }

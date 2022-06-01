@@ -1,89 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
-    
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:elevation="-1dp">
-        
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar"/>
-        
-        <!--<androidx.appcompat.widget.Toolbar-->
-        <!--android:id="@+id/toolbar"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="?attr/actionBarSize"-->
-        <!--android:background="#ffffff"-->
-        <!--app:layout_scrollFlags="scroll|enterAlways|snap"-->
-        <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
-        
-    </com.google.android.material.appbar.AppBarLayout>
-    
-    <LinearLayout
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="vm"
+            type="ariesvelasquez.com.republikapc.ui.selleritems.SellerViewModel" />
+
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="?attr/actionBarSize">
-        
-    
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/refreshSwipe"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-            
-            <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/toolbarLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                
-                <TextView
-                    style="@style/TextAppearance.TileTertiary"
-                    android:id="@+id/textViewEmptyNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    android:text="@string/loading_many_data_may_take_some_time"/>
-                
-                
-    
-<!--                <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView-->
-<!--                    android:id="@+id/recyclerViewSellerItemList"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    app:fastScrollPopupBgColor="@color/colorAccent"-->
-<!--                    app:fastScrollPopupTextColor="@android:color/primary_text_dark"-->
-<!--                    app:fastScrollThumbColor="@color/colorAccent" />-->
-    
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewSellerItemList"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorSmoke"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-                
-            </androidx.constraintlayout.widget.ConstraintLayout>
-            
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-        
-        <include
-            android:visibility="gone"
-            layout="@layout/rig_items_total_bottom_sheet"/>
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                app:expandedTitleTextAppearance="@style/CollapsedText"
+                app:expandedTitleMarginStart="@dimen/grid_16"
+                android:background="@drawable/bg_gradient_item_section"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-    </LinearLayout>
-    
-   
-    
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="120dp"
+                    android:padding="@dimen/grid_16"
+                    android:layout_marginBottom="@dimen/grid_8">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    <TextView
+                        android:id="@+id/textViewItemCount"
+                        style="@style/Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:text="@string/label_tipid_pc_dot_com_small_caps"
+                        android:textAllCaps="false"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:layout_collapseMode="pin"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            <include
+                android:id="@+id/viewActions"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                app:actionState="@{vm.actionState}"
+                layout="@layout/layout_seller_actions" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:backgroundTint="@color/colorBlue"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/refreshSwipe"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/primary"
+                android:layout_weight="1">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        style="@style/TextAppearance.TileTertiary"
+                        android:id="@+id/textViewEmptyNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:text="@string/loading_many_data_may_take_some_time"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewSellerItemList"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_rounded_top"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <include
+                android:visibility="gone"
+                layout="@layout/rig_items_total_bottom_sheet"/>
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

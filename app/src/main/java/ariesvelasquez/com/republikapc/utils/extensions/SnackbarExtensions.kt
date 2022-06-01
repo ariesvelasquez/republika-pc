@@ -9,7 +9,7 @@ inline fun View.snack(@StringRes  messageRes: Int, length: Int = Snackbar.LENGTH
     snack(resources.getString(messageRes), length, hasMargin, f)
 }
 
-inline fun View.snack(message: String, length: Int = Snackbar.LENGTH_LONG, hasMargin: Boolean = true, f: Snackbar.() -> Unit) {
+inline fun View.snack(message: String, length: Int = Snackbar.LENGTH_LONG, hasMargin: Boolean = true, f: Snackbar.() -> Unit? = {}) {
     val snack = Snackbar.make(this, message, length)
     snack.f()
 

@@ -3,6 +3,7 @@ package ariesvelasquez.com.republikapc.api
 import ariesvelasquez.com.republikapc.Const
 import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -44,7 +45,7 @@ interface TipidPCApi {
 
         fun create() : TipidPCApi {
             return Retrofit.Builder()
-                .baseUrl(HttpUrl.parse(API_BASE_URL)!!)
+                .baseUrl(API_BASE_URL.toHttpUrlOrNull()!!)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()

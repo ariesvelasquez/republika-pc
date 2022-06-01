@@ -13,7 +13,7 @@ import ariesvelasquez.com.republikapc.utils.Tools
 
 class RigPartViewHolder(view: View, private val onClickCallback: (v: View, position: Int, item: RigPart) -> Unit) : RecyclerView.ViewHolder(view) {
 
-    private var tools = Tools().numberFormatter
+    private var tools = Tools.numberFormatter
 
     private val mainView: ConstraintLayout = view.findViewById(R.id.constraintLayoutParent)
     private val name: TextView = view.findViewById(R.id.name)

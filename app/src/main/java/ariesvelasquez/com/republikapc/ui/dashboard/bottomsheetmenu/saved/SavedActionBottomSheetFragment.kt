@@ -1,7 +1,6 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.saved
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,20 +10,23 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
+import ariesvelasquez.com.republikapc.Const
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigItemsAdapter
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
+import ariesvelasquez.com.republikapc.ui.selleritems.SellerItemsActivity
+import ariesvelasquez.com.republikapc.ui.webview.WebViewActivity
 import ariesvelasquez.com.republikapc.utils.ServiceLocator
+import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
 import ariesvelasquez.com.republikapc.utils.extensions.snack
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_saved_action_bottom_sheet.view.*
-import kotlinx.android.synthetic.main.nav_header.*
 
 
 class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
@@ -56,8 +58,8 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.apply {
-            savedItemReference = Gson().fromJson(getString(ARG_RAW_SAVED_ITEM), Saved::class.java)
-            enabledName = getBoolean(ARG_ENABLED_NAME, true)
+            savedItemReference = getSerializable(ARG_SAVED_ITEM) as Saved
+//            enabledName = getBoolean(ARG_ENABLED_NAME, true)
         }
     }
 
@@ -90,21 +92,21 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun handleItemDeletedState() {
-        dashboardViewModel.deleteSavedItemNetworkState.observe( viewLifecycleOwner, Observer {
-            when (it) {
-                NetworkState.LOADING -> {
-                    // Disable the Button after it was clicked
-                }
-                NetworkState.LOADED -> {
-                    rootView.coordinatorLayoutRoot.snack(R.string.item_deleted, hasMargin = false) {}
-                    dashboardViewModel.deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
-                }
-                else -> {  // Show Error
-                    val mess = it.msg
-                    rootView.snack(mess!!) {}
-                }
-            }
-        })
+//        dashboardViewModel.deleteSavedItemNetworkState.observe( viewLifecycleOwner, Observer {
+//            when (it) {
+//                NetworkState.LOADING -> {
+//                    // Disable the Button after it was clicked
+//                }
+//                NetworkState.LOADED -> {
+//                    rootView.coordinatorLayoutRoot.snack(R.string.item_deleted, hasMargin = false) {}
+//                    dashboardViewModel.deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
+//                }
+//                else -> {  // Show Error
+//                    val mess = it.msg
+//                    rootView.snack(mess!!) {}
+//                }
+//            }
+//        })
     }
 
     private fun handleUserStatus() {
@@ -120,9 +122,10 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
             rootView.linearLayoutSave.setOnClickListener {
                 it.isEnabled = false
                 rootView.imageViewDeleteIcon.setImageResource(R.drawable.ic_delete_outline_disabled)
-                rootView.imageViewDeleteText.setTextColor(ContextCompat.getColor(context!!, R.color.colorGray))
+                rootView.imageViewDeleteText.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGray))
 
-                listener?.onItemDelete(savedItemReference)
+                listener?.onItemDelete(savedItemReference, arguments?.getInt(ARG_LIST_POSITION) ?: -1)
+                this.dismiss()
             }
         } else {
             // Disable features only for logged in user.
@@ -132,6 +135,7 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
+    @OptIn(ExperimentalPagingApi::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     @SuppressLint("SetTextI18n")
     private fun setBasicUIDisplayData() {
         // Set Item Name
@@ -143,22 +147,23 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
         rootView.textViewItemDatePosted.text = " • " + savedItemReference.postDate
 
         // Price
-        rootView.textViewPrice.text = savedItemReference.price.removePrefix("P").removePrefix("PHP")
+        rootView.textViewPrice.text = savedItemReference.price?.removePrefix("P")?.removePrefix("PHP")
 
         // Link On Click
         rootView.linearLayoutLink.setOnClickListener {
-            listener?.onGoToLink(savedItemReference.linkId)
+            val url = Const.TIPID_PC_VIEW_ITEM + savedItemReference.linkId
+            context?.launchActivity<WebViewActivity> {
+                putExtra(WebViewActivity.WEB_VIEW_URL, url)
+            }
         }
 
-        if (savedItemReference.postDate.isEmpty()) {
+        if (savedItemReference.postDate?.isEmpty()!!) {
             rootView.textViewItemDatePosted.visibility = View.GONE
         }
 
-        if (!enabledName) {
-            rootView.textViewSellerName.setTextColor(ContextCompat.getColor(context!!, R.color.colorGray))
-        } else {
-            rootView.textViewSellerName.setOnClickListener {
-                listener?.onGoToSellerItems(savedItemReference.seller)
+        rootView.constraintSeller.setOnClickListener {
+            context?.launchActivity<SellerItemsActivity> {
+                putExtra(SellerItemsActivity.SELLER_NAME_REFERENCE, savedItemReference.seller)
             }
         }
     }
@@ -205,16 +210,6 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
         })
     }
 
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnSavedActionInteractionFragmentListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement OnSavedActionInteractionFragmentListener")
-        }
-    }
-
     override fun onDetach() {
         super.onDetach()
         listener = null
@@ -233,24 +228,27 @@ class SavedActionBottomSheetFragment : BottomSheetDialogFragment() {
      */
     interface OnSavedActionInteractionFragmentListener {
         fun showSignUpBottomSheet()
-        fun onGoToLink(linkId: String)
-        fun onGoToSellerItems(sellerName: String)
-        fun onItemDelete(savedItem: Saved)
+        fun onItemDelete(savedItem: Saved, pos: Int)
         fun onSavedItemAddedToRIg(rigItem: Rig, savedItemReference: Saved)
+    }
+
+    fun setListener(callbackListener: OnSavedActionInteractionFragmentListener) {
+        this.listener = callbackListener
     }
 
     companion object {
 
         const val TAG = "SavedActionBottomSheetFragment"
 
-        private const val ARG_RAW_SAVED_ITEM = "rawSavedItem"
-        private const val ARG_ENABLED_NAME = "enableName"
+        private const val ARG_SAVED_ITEM = "rawSavedItem"
+        private const val ARG_LIST_POSITION = "listPosition"
 
         @JvmStatic
-        fun newInstance(rawSavedItem: String, enabledName: Boolean = false) =
+        fun newInstance(savedItem: Saved, listPosition: Int) =
             SavedActionBottomSheetFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_RAW_SAVED_ITEM, rawSavedItem)
+                    putSerializable(ARG_SAVED_ITEM, savedItem)
+                    putInt(ARG_LIST_POSITION, listPosition)
                 }
             }
     }

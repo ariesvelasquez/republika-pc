@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/coordinatorLayoutRoot"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rootBottomSheetCreator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/grid_8"
+        app:cardCornerRadius="@dimen/grid_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/grid_16"
+            android:paddingEnd="@dimen/grid_16"
+            android:paddingTop="@dimen/grid_24"
+            android:background="@drawable/shape_bottom_sheet_dialog_rounded_top"
+            android:paddingBottom="@dimen/grid_36">
+
+            <TextView
+                android:id="@+id/textViewItemName"
+                style="@style/HeadLine6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Ryzen 2600x" />
+
+            <LinearLayout
+                android:id="@+id/linearLayoutPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/grid_20"
+                app:layout_constraintVertical_bias="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textViewItemName">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="1dp"
+                    android:layout_marginEnd="@dimen/view_half_padding"
+                    android:src="@drawable/ic_peso_small"
+                    app:tint="@color/colorWhite"/>
+
+                <TextView
+                    android:id="@+id/textViewPrice"
+                    style="@style/Subtitle1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorWhite"
+                    tools:text="6700" />
+
+            </LinearLayout>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linearLayoutSave"
+                style="@style/RigStat"
+                android:padding="@dimen/grid_16"
+                android:layout_marginTop="@dimen/grid_36"
+                android:background="@drawable/shape_rectangle_rounded_bordered_2dp"
+                app:layout_constraintTop_toBottomOf="@id/linearLayoutPrice"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <ImageView
+                    android:id="@+id/imageViewDeleteIcon"
+                    android:src="@drawable/ic_vector_bookmark"
+                    android:layout_width="@dimen/icon_size_18"
+                    android:layout_height="@dimen/icon_size_18"
+                    app:tint="@color/colorWhite"
+                    android:layout_marginBottom="@dimen/grid_8"/>
+
+                <TextView
+                    android:id="@+id/imageViewDeleteText"
+                    style="@style/TextAppearance.TileTertiary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/save"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorWhite"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <LinearLayout
+                android:id="@+id/linearLayoutLink"
+                style="@style/RigStat"
+                android:padding="@dimen/grid_8"
+                android:layout_marginTop="@dimen/grid_36"
+                android:layout_marginStart="@dimen/grid_12"
+                android:background="@drawable/shape_rectangle_rounded_bordered_2dp"
+                app:layout_constraintTop_toBottomOf="@id/linearLayoutPrice"
+                app:layout_constraintStart_toEndOf="@id/linearLayoutSave">
+
+                <ImageView
+                    android:src="@drawable/ic_cube_send"
+                    android:layout_width="@dimen/icon_size_18"
+                    android:layout_height="@dimen/icon_size_18"
+                    app:tint="@color/colorWhite"
+                    android:layout_marginTop="@dimen/grid_8"
+                    android:layout_marginBottom="@dimen/grid_8"/>
+
+                <TextView
+                    style="@style/TextAppearance.TileTertiary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="@dimen/grid_8"
+                    android:text="@string/tpc_link"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="@dimen/grid_8"
+                    android:textColor="@color/colorWhite"/>
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintSeller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-16dp"
+        android:paddingTop="@dimen/grid_36"
+        android:paddingStart="@dimen/grid_16"
+        android:paddingEnd="@dimen/grid_16"
+        android:paddingBottom="@dimen/grid_24"
+        android:background="@color/colorWhite"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardViewItem">
+
+        <ImageView
+            android:id="@+id/imageViewIcon"
+            android:layout_width="@dimen/icon_size_36"
+            android:layout_height="@dimen/icon_size_36"
+            android:src="@drawable/ic_cube_outline_smoke"
+            android:padding="6dp"
+            android:background="@drawable/shape_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/textViewSellerName"
+            style="@style/Subtitle2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_main_dark"
+            android:layout_marginStart="@dimen/grid_16"
+            app:layout_constraintBottom_toTopOf="@id/subtitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Macha"/>
+
+        <TextView
+            android:id="@+id/subtitle"
+            style="@style/Caption.Light"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_main_dark"
+            android:layout_marginStart="@dimen/grid_16"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewIcon"
+            app:layout_constraintTop_toBottomOf="@id/textViewSellerName"
+            android:text="TipidPC.com"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textViewRigLabel"
+        style="@style/TextAppearance.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/view_padding_3"
+        android:text="@string/add_to_rig"
+        android:textColor="@color/colorGray"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constraintSeller" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewRigList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/view_padding_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewRigLabel"
+        app:layout_constraintVertical_bias="0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

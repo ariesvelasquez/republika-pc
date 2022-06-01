@@ -1,210 +1,173 @@
 package ariesvelasquez.com.republikapc.ui.selleritems
 
-import android.graphics.PorterDuff
 import android.os.Bundle
-import android.os.Handler
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.paging.PagedList
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.ExperimentalPagingApi
+import ariesvelasquez.com.republikapc.Const
 import ariesvelasquez.com.republikapc.R
-import ariesvelasquez.com.republikapc.RepublikaPC
+import ariesvelasquez.com.republikapc.databinding.ActivitySellerItemsBinding
+import ariesvelasquez.com.republikapc.model.LoadState
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
-import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.BaseDashboardActivity
-import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
-import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.FeedItemsAdapter
-import ariesvelasquez.com.republikapc.utils.ServiceLocator
-import ariesvelasquez.com.republikapc.utils.extensions.snack
-import com.google.firebase.auth.FirebaseUser
-import kotlinx.android.synthetic.main.activity_seller_items.*
-import kotlinx.android.synthetic.main.toolbar.*
-import kotlinx.android.synthetic.main.toolbar.toolbar
-import kotlinx.android.synthetic.main.toolbar.view.*
+import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.seller.SellerItemBSFragment
+import ariesvelasquez.com.republikapc.ui.generic.FirestorePagingDataAdapter
+import ariesvelasquez.com.republikapc.ui.selleritems.SellerViewModel.LoadType.CHECK_TPC_FOLLOWED_TASK
+import ariesvelasquez.com.republikapc.ui.selleritems.SellerViewModel.LoadType.FOLLOW_UNFOLLOW_TASK
+import ariesvelasquez.com.republikapc.ui.webview.WebViewActivity
+import ariesvelasquez.com.republikapc.utils.extensions.*
+import ariesvelasquez.com.republikapc.utils.observeResult
+import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import timber.log.Timber
 
+@ExperimentalPagingApi
+@ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class SellerItemsActivity : BaseDashboardActivity() {
 
-    private lateinit var sellerItemsAdapter: FeedItemsAdapter
-
     private lateinit var mSellerName: String
-    private var mListSize = 0
-    private var mItemNetworkState = NetworkState.LOADING
 
-    private val dashboardViewModel: DashboardViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ServiceLocator.instance(this@SellerItemsActivity)
-                    .getDashboardRepository()
-                @Suppress("UNCHECKED_CAST")
-                return DashboardViewModel(repo) as T
-            }
-        }
-    }
+    private lateinit var adapter: FirestorePagingDataAdapter<FeedItem>
+
+    private val mViewModel by viewModels<SellerViewModel>()
+
+    private lateinit var binding: ActivitySellerItemsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_seller_items)
+        binding = ActivitySellerItemsBinding.inflate(this.layoutInflater)
+        binding.lifecycleOwner = this
+        binding.vm = mViewModel
+        setContentView(binding.root)
 
         // Get Intent Data
-        mSellerName = intent.getStringExtra(SELLER_NAME_REFERENCE)
+        mSellerName = intent.getStringExtra(SELLER_NAME_REFERENCE) ?: ""
 
         // Set Toolbar
-        toolbar.textViewToolbarTitle.text = mSellerName
-        toolbar.textViewToolbarTitle.setTextColor(ContextCompat.getColor(this, R.color.colorDarkGray))
-        toolbar.overflowIcon?.setColorFilter(ContextCompat.getColor(this, R.color.colorDarkGray), PorterDuff.Mode.SRC_ATOP)
-        setSupportActionBar(toolbar)
-
+        initToolbar()
+        initAdapter()
+        initViewModel()
         initOnClicks()
 
-        handleRigState()
-
-        setupSellerItemList()
-
-        handleAddItemToRigCreationState()
-        handleSaveItemState()
-
-        dashboardViewModel.showSellerItems(mSellerName)
+        mViewModel.checkIfTPCSellerIsFollowed(mSellerName)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.seller_items_menu, menu)
-        return true
+    private fun initAdapter() {
+        initSwipeToRefresh()
+        adapter = FirestorePagingDataAdapter(
+            R.layout.item_recycler_view_seller_item,
+            FeedItem.Companion.DiffCallback()
+        )
+
+        adapter.setOnClickCallback { item, pos ->
+            val rawItem = Gson().toJson(item)
+            val sellerItemBSFragment = SellerItemBSFragment.newInstance(rawItem, pos)
+//            sellerItemBSFragment.setListener(this)
+            sellerItemBSFragment.show(supportFragmentManager, SellerItemBSFragment.TAG)
+        }
+
+        adapter.addLoadStateListener {
+//            Timber.e("it.sourceRefreshState() ${it.sourceRefreshState()}")
+            mViewModel.updateSyncState(it.mediatorRefreshState())
+        }
+
+        FastScrollerBuilder(binding.recyclerViewSellerItemList)
+            .build()
+
+        binding.recyclerViewSellerItemList.layoutManager = getVerticalLinearLayoutManager
+        binding.recyclerViewSellerItemList.adapter = adapter
     }
 
+    private fun initToolbar() {
+        binding.toolbarLayout.title = mSellerName
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+        }
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
+    }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-
-        return when (item?.itemId) {
-            R.id.menuRefresh -> {
-                dashboardViewModel.refreshSellerItems()
-                true
-            }
-            else -> {
-                super.onOptionsItemSelected(item)
+    private fun initViewModel() {
+        lifecycleScope.launch {
+            mViewModel.apply {
+                sellerItemsPagedList(mSellerName).collectLatest {
+                    adapter.submitData(it)
+                }
             }
         }
+
+        mViewModel.apply {
+            loadState.observe(this@SellerItemsActivity) {
+                when (it) {
+                    is LoadState.Error -> {
+                        showSimplePrompt(it.e.message ?: "Unknown Error")
+                    }
+                    is LoadState.Loaded -> {
+                        when (it.type) {
+                            FOLLOW_UNFOLLOW_TASK -> {
+                                checkIfTPCSellerIsFollowed(mSellerName)
+                            }
+                        }
+                    }
+                    is LoadState.Loading -> {
+                        when (it.type) {
+                            CHECK_TPC_FOLLOWED_TASK,
+                            FOLLOW_UNFOLLOW_TASK ->
+                                followButtonLoadingState(true)
+                        }
+                    }
+                }
+            }
+
+            isTPCSellerFollowed.observeResult(this@SellerItemsActivity) {
+                binding.viewActions.textViewFollow.text = if (it) "Followed" else "Follow"
+                binding.viewActions.imageViewFollow.setImageDrawable(
+                    Const.Drawables.getFollowUnfollowIcon(this@SellerItemsActivity, it)
+                )
+                followButtonLoadingState(false)
+            }
+        }
+    }
+
+    private fun followButtonLoadingState(isLoading: Boolean) {
+        binding.viewActions.apply {
+            btnFollow.isEnabled = !isLoading
+            imageViewFollow.visibleGone(!isLoading)
+            progressFollowUnfollow.visibleGone(isLoading)
+        }
+    }
+
+    private fun initSwipeToRefresh() {
+        binding.refreshSwipe.isEnabled = false
     }
 
     private fun initOnClicks() {
-        backButton.setOnClickListener { onBackPressed() }
-    }
-
-    private fun setupSellerItemList() {
-        sellerItemsAdapter = FeedItemsAdapter(
-            FeedItemsAdapter.SELLER_ITEM_VIEW_TYPE,
-            { dashboardViewModel.refreshSellerItems() }
-        ) { v, pos, feedItem ->
-
-            Timber.e("clicked Seller Item link_id " + feedItem.linkId)
-
-            onTPCItemClicked(feedItem, false)
+        binding.viewActions.linearLayoutSync.setOnClickListener {
+            adapter.refresh()
         }
-
-        val linearLayoutManager = LinearLayoutManager(this)
-        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-
-        FastScrollerBuilder(recyclerViewSellerItemList)
-            .build()
-
-        recyclerViewSellerItemList.layoutManager = linearLayoutManager
-        recyclerViewSellerItemList.adapter = sellerItemsAdapter
-
-        refreshSwipe.setOnRefreshListener {
-//            dashboardViewModel.refreshSellerItems()
+        binding.viewActions.btnFollow.setOnClickListener {
+            mViewModel.followUnfollowTPCSeller(mSellerName)
         }
-        refreshSwipe.isEnabled = false
-
-        // Init Items
-        dashboardViewModel.sellerItems.observe( this, Observer<PagedList<FeedItem>> {
-            sellerItemsAdapter.submitList(it)
-        })
-
-        dashboardViewModel.sellerItemsRefreshState.observe( this, Observer {
-            refreshSwipe.isRefreshing = it == NetworkState.LOADING
-        })
-
-        dashboardViewModel.sellerItemsNetworkState.observe( this, Observer {
-            sellerItemsAdapter.setNetworkState(it)
-        })
-    }
-
-    private fun handleRigState() {
-        // init rigs
-        viewModel.showRigs()
-    }
-
-    private fun startLoading() {
-        progressBarLoader.visibility = View.VISIBLE
-    }
-
-    private fun finishedLoading() {
-        Handler().postDelayed({
-            progressBarLoader.visibility = View.GONE
-        }, 1000)
+        binding.viewActions.linearLayoutLink.setOnClickListener {
+            val url = Const.TIPID_PC_VIEW_SELLER + mSellerName
+            this.launchToSellerWebActivity(url)
+        }
     }
 
     override fun handleAddItemToRigCreationState() {
-        viewModel.addItemToRigNetworkState.observe(this, Observer {
-            when (it) {
-                NetworkState.LOADING -> { startLoading() }
-                NetworkState.LOADED -> {
-                    finishedLoading()
-                    showSnackBar(getString(R.string.added_to_rig_success))
-                }
-                NetworkState.LOADING -> {}
-                else -> {
-                    // Show Error Prompt
-                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
-                }
-            }
-        })
+
     }
 
     override fun handleSaveItemState() {
-        viewModel.saveItemNetworkState.observe(this, Observer {
-            when (it) {
-                NetworkState.LOADING -> { startLoading() }
-                NetworkState.LOADED -> {
-                    finishedLoading()
-                    showSnackBar(getString(R.string.item_saved))
-                    viewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
-                }
-                NetworkState.LOADING -> {}
-                else -> {
-                    // Show Error Prompt
-                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
-                }
-            }
-        })
 
-        // Saved Item Deleted
-        viewModel.deleteSavedItemNetworkState.observe(this, Observer {
-            when (it) {
-                NetworkState.LOADING -> { startLoading() }
-                NetworkState.LOADED -> {
-                    savedItemBottomSheet.dismiss()
-                    finishedLoading()
-                    showSnackBar(getString(R.string.item_deleted))
-                    viewModel.deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
-                }
-                NetworkState.LOADING -> {}
-                else -> {
-                    // Show Error Prompt
-                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
-                }
-            }
-        })
     }
 
     companion object {
@@ -212,12 +175,6 @@ class SellerItemsActivity : BaseDashboardActivity() {
     }
 
     private fun showSnackBar(message: String) {
-        val successDialog = AlertDialog.Builder(this)
-            .setMessage("New Rig has been created")
-            .setOnCancelListener {  }
-
-        recyclerViewSellerItemList.snack(message) {
-
-        }
+        binding.root.snack("Test")
     }
 }

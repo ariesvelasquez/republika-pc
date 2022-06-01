@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -25,6 +26,7 @@ import kotlinx.android.synthetic.main.search_toolbar.*
 import timber.log.Timber
 
 
+@ExperimentalPagingApi
 class SearchActivity : BaseDashboardActivity() {
 
     private lateinit var searchItemsAdapter: FeedItemsAdapter
@@ -125,11 +127,7 @@ class SearchActivity : BaseDashboardActivity() {
             FeedItemsAdapter.SELLER_VIEW_TYPE,
             { viewModel.retrySearchedSellers() }) { v, pos, feedItem ->
 
-//            onTPCItemClicked(feedItem)
-
-            onTPCSellerClicked(feedItem.seller)
-
-            Timber.e("Clicked TPC Seller From Search " + feedItem.name)
+            feedItem.seller?.let { onTPCSellerClicked(it) }
         }
 
         recyclerViewSeller.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL)
@@ -226,39 +224,39 @@ class SearchActivity : BaseDashboardActivity() {
     }
 
     override fun handleSaveItemState() {
-        viewModel.saveItemNetworkState.observe(this, Observer {
-            when (it) {
-                NetworkState.LOADING -> { startLoading() }
-                NetworkState.LOADED -> {
-                    finishedLoading()
-                    showSnackBar(getString(R.string.item_saved))
-                    viewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
-                }
-                NetworkState.LOADING -> {}
-                else -> {
-                    // Show Error Prompt
-                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
-                }
-            }
-        })
+//        viewModel.saveItemNetworkState.observe(this, Observer {
+//            when (it) {
+//                NetworkState.LOADING -> { startLoading() }
+//                NetworkState.LOADED -> {
+//                    finishedLoading()
+//                    showSnackBar(getString(R.string.item_saved))
+//                    viewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
+//                }
+//                NetworkState.LOADING -> {}
+//                else -> {
+//                    // Show Error Prompt
+//                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
+//                }
+//            }
+//        })
 
         // Saved Item Deleted
-        viewModel.deleteSavedItemNetworkState.observe(this, Observer {
-            when (it) {
-                NetworkState.LOADING -> { startLoading() }
-                NetworkState.LOADED -> {
-                    savedItemBottomSheet.dismiss()
-                    finishedLoading()
-                    showSnackBar(getString(R.string.item_deleted))
-                    viewModel.deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
-                }
-                NetworkState.LOADING -> {}
-                else -> {
-                    // Show Error Prompt
-                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
-                }
-            }
-        })
+//        viewModel.deleteSavedItemNetworkState.observe(this, Observer {
+//            when (it) {
+//                NetworkState.LOADING -> { startLoading() }
+//                NetworkState.LOADED -> {
+//                    savedItemBottomSheet.dismiss()
+//                    finishedLoading()
+//                    showSnackBar(getString(R.string.item_deleted))
+//                    viewModel.deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
+//                }
+//                NetworkState.LOADING -> {}
+//                else -> {
+//                    // Show Error Prompt
+//                    Toast.makeText(this, it.msg, Toast.LENGTH_LONG).show()
+//                }
+//            }
+//        })
     }
 
     private fun startLoading() {

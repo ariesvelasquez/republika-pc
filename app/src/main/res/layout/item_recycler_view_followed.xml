@@ -1,29 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayoutParent"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="@dimen/view_padding_20"
-    android:paddingEnd="@dimen/view_padding_20"
-    android:background="?android:selectableItemBackground"
-    android:paddingBottom="@dimen/view_padding"
-    android:orientation="vertical">
-    
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="0dp"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="ariesvelasquez.com.republikapc.model.saved.Saved" />
+
+        <variable
+            name="pos"
+            type="Integer" />
+
+        <import type="android.view.View" />
+
+        <import type="ariesvelasquez.com.republikapc.utils.Tools" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayoutParent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding"
-        android:textColor="@color/text_main_dark"
-        style="@style/TextAppearance.RigTitle"
-        android:textSize="@dimen/font_size_inputs"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="Hopper UX: The Right Ways To Ask" />
-    
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:background="?android:selectableItemBackground"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/grid_16"
+        android:paddingEnd="@dimen/view_padding_20"
+        android:paddingTop="@dimen/grid_16"
+        app:itemHeight2="@{item.visible}"
+        android:paddingBottom="@dimen/grid_16">
+
+        <ImageView
+            android:id="@+id/imageViewIcon"
+            android:layout_width="@dimen/icon_size_36"
+            android:layout_height="@dimen/icon_size_36"
+            android:src="@drawable/ic_cube_outline_smoke"
+            android:padding="6dp"
+            android:background="@drawable/shape_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/name"
+            style="@style/Subtitle2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_main_dark"
+            android:layout_marginStart="@dimen/grid_16"
+            android:text="@{item.seller}"
+            app:layout_constraintBottom_toTopOf="@id/subtitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewIcon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Macha"/>
+
+        <TextView
+            android:id="@+id/subtitle"
+            style="@style/Caption.Light"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_main_dark"
+            android:layout_marginStart="@dimen/grid_16"
+            android:textSize="12sp"
+            app:source="@{item.saveType}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewIcon"
+            app:layout_constraintTop_toBottomOf="@id/name"
+            tools:text="TipidPC.com"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

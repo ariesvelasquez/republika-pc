@@ -21,7 +21,8 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import ariesvelasquez.com.republikapc.Const.USERS_COLLECTION
 import ariesvelasquez.com.republikapc.api.TipidPCApi
-import ariesvelasquez.com.republikapc.db.RepublikaPCDatabase
+import ariesvelasquez.com.republikapc.datasource.local.RepublikaPCDatabase
+import ariesvelasquez.com.republikapc.datasource.firestore.saved.SavedFirestoreService
 import ariesvelasquez.com.republikapc.repository.auth.AuthRepository
 import ariesvelasquez.com.republikapc.repository.dashboard.DashboardRepository
 import ariesvelasquez.com.republikapc.repository.dashboard.IDashboardRepository
@@ -73,6 +74,8 @@ interface ServiceLocator {
     fun getDiskIOExecutor(): Executor
 
     fun getTipidPCApi(): TipidPCApi
+
+    fun getSavedFirestoreService() : SavedFirestoreService
 }
 
 /**
@@ -117,6 +120,7 @@ open class DefaultServiceLocator(val app: Application) : ServiceLocator {
         return DashboardRepository(
             db = db,
             firestore = firestoreRef,
+            savedFirestoreService = getSavedFirestoreService(),
             tipidPCApi = getTipidPCApi(),
             ioExecutor = getDiskIOExecutor()
         )
@@ -141,5 +145,9 @@ open class DefaultServiceLocator(val app: Application) : ServiceLocator {
     override fun getDiskIOExecutor(): Executor = DISK_IO
 
     override fun getTipidPCApi(): TipidPCApi = api
+
+    override fun getSavedFirestoreService(): SavedFirestoreService {
+        return  SavedFirestoreService(firestoreRef, firebaseAuth)
+    }
 }
 

@@ -17,7 +17,7 @@ class SavedItemViewHolder(val view: View, private val onClickCallback: (v: View,
 
     private var context = view.context
 
-    private var tools = Tools().numberFormatter
+    private var tools = Tools.numberFormatter
 
     init {
         view.setOnClickListener {}

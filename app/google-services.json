@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "99764930943-qv875ad0031m5lnoou2rt2kc6jhm8dvt.apps.googleusercontent.com",
+          "client_id": "99764930943-01riqb4avn5mqk82kvh7kslm4sll5m65.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ariesvelasquez.republikapc",
-            "certificate_hash": "99904a2edf8b9fef335c342ee52a90bbdc38d367"
+            "certificate_hash": "742831952db8ec6cdc71f2b0136502e2acb79696"
           }
         },
         {
@@ -52,11 +52,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "99764930943-co1t1d683522t598k27t6m9ar83e1fqa.apps.googleusercontent.com",
+          "client_id": "99764930943-ngr7ths6tlkjlj23ar1aaojtlbpuu0rf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ariesvelasquez.republikapc.dev",
-            "certificate_hash": "99904a2edf8b9fef335c342ee52a90bbdc38d367"
+            "certificate_hash": "4c67b6fe38fc97b4bbda7d647cbae67d883bff7a"
           }
         },
         {

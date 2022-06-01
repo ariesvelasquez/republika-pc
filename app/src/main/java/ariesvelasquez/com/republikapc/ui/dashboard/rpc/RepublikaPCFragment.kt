@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.paging.ExperimentalPagingApi
 import androidx.viewpager.widget.ViewPager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.RepublikaPC
@@ -17,7 +19,9 @@ import ariesvelasquez.com.republikapc.ui.dashboard.rpc.saved.SavedFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.items.PartsFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigsFragment
 import kotlinx.android.synthetic.main.fragment_republika_pc.view.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalPagingApi
 class RepublikaPCFragment : DashboardFragment() {
 
     private lateinit var rootView: View
@@ -58,22 +62,22 @@ class RepublikaPCFragment : DashboardFragment() {
 
                 // On page change, if selected is Rigs Fragment, Check if need to refresh
                 if (position == 0) {
-                    if (RepublikaPC.getGlobalFlags().shouldRefreshRigs) {
-                        RepublikaPC.getGlobalFlags().shouldRefreshRigs = false
+                    if (RepublikaPC.globalFlags.shouldRefreshRigs) {
+                        RepublikaPC.globalFlags.shouldRefreshRigs = false
                         dashboardViewModel.refreshRigs()
                     }
                 }
 
                 if (position == 1) {
-                    if (RepublikaPC.getGlobalFlags().shouldRefreshSaved) {
-                        RepublikaPC.getGlobalFlags().shouldRefreshSaved = false
-                        dashboardViewModel.refreshSaved()
+                    if (RepublikaPC.globalFlags.shouldRefreshSaved) {
+                        RepublikaPC.globalFlags.shouldRefreshSaved = false
+//                        dashboardViewModel.refreshSaved()
                     }
                 }
 
                 if (position == 2) {
-                    if (RepublikaPC.getGlobalFlags().shouldRefreshFollowed) {
-                        RepublikaPC.getGlobalFlags().shouldRefreshFollowed = false
+                    if (RepublikaPC.globalFlags.shouldRefreshFollowed) {
+                        RepublikaPC.globalFlags.shouldRefreshFollowed = false
                         dashboardViewModel.refreshFollowed()
                     }
                 }
@@ -115,7 +119,11 @@ class RepublikaPCFragment : DashboardFragment() {
 
     }
 
-    private class RPCFragmentPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+    @ExperimentalCoroutinesApi
+    @ExperimentalPagingApi
+    private class RPCFragmentPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm,
+        BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+    ) {
 
         override fun getItem(position: Int): Fragment {
             return when (position) {

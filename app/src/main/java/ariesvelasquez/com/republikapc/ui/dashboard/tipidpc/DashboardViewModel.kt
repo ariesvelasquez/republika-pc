@@ -1,20 +1,22 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.tipidpc
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.*
 import androidx.lifecycle.Transformations.map
-import androidx.lifecycle.ViewModel
 import ariesvelasquez.com.republikapc.RepublikaPC
+import ariesvelasquez.com.republikapc.model.ResultState
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.model.user.User
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.repository.dashboard.IDashboardRepository
+import ariesvelasquez.com.republikapc.utils.SingleLiveEvent
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.MetadataChanges
-import timber.log.Timber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.lang.Exception
 
 class DashboardViewModel(private val repository: IDashboardRepository) : ViewModel() {
 
@@ -86,7 +88,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     fun createRig(rigName: String) {
         createRigNetworkState.postValue(NetworkState.LOADING)
         repository.createRig(this.firebaseUserModel.value!!, rigName).addOnSuccessListener {
-            RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
+            RepublikaPC.globalFlags.shouldRefreshRigs = true
             refreshRigs()
             createRigNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
@@ -112,7 +114,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         deleteRigNetworkState.postValue(NetworkState.LOADING)
 
         repository.deleteRig(this.firebaseUserModel.value!!, rigId).addOnSuccessListener {
-            RepublikaPC.getGlobalFlags().shouldRefreshRigs = true
+            RepublikaPC.globalFlags.shouldRefreshRigs = true
             refreshRigs()
             deleteRigNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
@@ -190,52 +192,54 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     /**
      * Saved Items Vars
      */
-    val isSavedInitialized = MutableLiveData<Boolean>()
-    private val savedRepoResult = map(isSavedInitialized) { repository.saved() }
-    val saved = Transformations.switchMap(savedRepoResult) { it.pagedList }
-    val savedNetworkState = Transformations.switchMap(savedRepoResult) { it.networkState }
-    val savedRefreshState = Transformations.switchMap(savedRepoResult) { it.refreshState }
-    val saveItemNetworkState = MutableLiveData<NetworkState>()
-    val deleteSavedItemNetworkState = MutableLiveData<NetworkState>()
-
+//    val isSavedInitialized = MutableLiveData<Boolean>()
+//    private val savedRepoResult = map(isSavedInitialized) { repository.saved() }
+//    val saved = Transformations.switchMap(savedRepoResult) { it.pagedList }
+//    val savedNetworkState = Transformations.switchMap(savedRepoResult) { it.networkState }
+//    val savedRefreshState = Transformations.switchMap(savedRepoResult) { it.refreshState }
+    val saveItemNetworkState = SingleLiveEvent<NetworkState>()
+//    val deleteSavedItemNetworkState = MutableLiveData<NetworkState>()
+//
     fun save(feedItem: FeedItem) {
         saveItemNetworkState.postValue(NetworkState.LOADING)
-
-        repository.saveItem(this.firebaseUserModel.value!!, feedItem).addOnSuccessListener {
-//            RepublikaPC.getGlobalFlags().shouldRefreshSaved = true
-//            refreshSaved()
-            saveItemNetworkState.postValue(NetworkState.LOADED)
-        }.addOnFailureListener {
-            val error = NetworkState.error(it.message)
-            saveItemNetworkState.postValue(error)
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    repository.saveItem(feedItem)
+                }
+                saveItemNetworkState.postValue(NetworkState.LOADED)
+            } catch (e: Exception) {
+                saveItemNetworkState.postValue(NetworkState.error(e.message))
+            }
         }
-    }
 
-    fun refreshSaved() {
-        savedRepoResult.value?.refresh?.invoke()
     }
+//
+//    fun refreshSaved() {
+//        savedRepoResult.value?.refresh?.invoke()
+//    }
+//
+//    fun showSaved(): Boolean {
+//        this.isSavedInitialized.value = true
+//        return true
+//    }
+//
+//    fun cancelSaved() {
+//        this.isSavedInitialized.value = false
+//    }
 
-    fun showSaved(): Boolean {
-        this.isSavedInitialized.value = true
-        return true
-    }
-
-    fun cancelSaved() {
-        this.isSavedInitialized.value = false
-    }
-
-    fun deleteSaved(savedId: String) {
-        deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
-
-        repository.deleteSaved(this.firebaseUserModel.value!!, savedId).addOnSuccessListener {
-//            RepublikaPC.getGlobalFlags().shouldRefreshSaved = true
-//            refreshSaved()
-            deleteSavedItemNetworkState.postValue(NetworkState.LOADED)
-        }.addOnFailureListener {
-            val error = NetworkState.error(it.message)
-            deleteSavedItemNetworkState.postValue(error)
-        }
-    }
+//    fun deleteSaved(savedId: String) {
+//        deleteSavedItemNetworkState.postValue(NetworkState.LOADING)
+//
+//        repository.deleteSaved(this.firebaseUserModel.value!!, savedId).addOnSuccessListener {
+////            RepublikaPC.getGlobalFlags().shouldRefreshSaved = true
+////            refreshSaved()
+//            deleteSavedItemNetworkState.postValue(NetworkState.LOADED)
+//        }.addOnFailureListener {
+//            val error = NetworkState.error(it.message)
+//            deleteSavedItemNetworkState.postValue(error)
+//        }
+//    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -269,7 +273,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
         isUserFollowedSeller.value = false
         checkUserFollowedState.postValue(NetworkState.LOADING)
 
-        repository.checkUserFollowedSeller(sellerName).get().addOnSuccessListener {snapshot ->
+        repository.checkUserFollowedSeller(sellerName).get().addOnSuccessListener { snapshot ->
             isUserFollowedSeller.value = snapshot.exists()
             checkUserFollowedState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
@@ -281,7 +285,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     fun followSeller(sellerName: String) {
         followUnfollowSellerNetworkState.postValue(NetworkState.LOADING)
         repository.followSeller(sellerName).addOnSuccessListener {
-            RepublikaPC.getGlobalFlags().shouldRefreshFollowed = true
+            RepublikaPC.globalFlags.shouldRefreshFollowed = true
             refreshFollowed()
             followUnfollowSellerNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {
@@ -293,7 +297,7 @@ class DashboardViewModel(private val repository: IDashboardRepository) : ViewMod
     fun unfollowSeller(sellerName: String) {
         followUnfollowSellerNetworkState.postValue(NetworkState.LOADING)
         repository.unfollowSeller(sellerName).addOnSuccessListener {
-            RepublikaPC.getGlobalFlags().shouldRefreshFollowed = true
+            RepublikaPC.globalFlags.shouldRefreshFollowed = true
             refreshFollowed()
             followUnfollowSellerNetworkState.postValue(NetworkState.LOADED)
         }.addOnFailureListener {

@@ -22,7 +22,8 @@
         <activity android:name=".ui.auth.AuthActivity" />
         <activity android:name=".ui.search.SearchActivity" />
         <activity android:name=".ui.selleritems.SellerItemsActivity" />
-        <activity android:name=".ui.dashboard.DashboardActivity">
+        <activity android:name=".ui.dashboard.DashboardActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
     

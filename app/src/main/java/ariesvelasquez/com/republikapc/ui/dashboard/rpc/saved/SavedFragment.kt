@@ -5,26 +5,37 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
-import androidx.paging.PagedList
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.ExperimentalPagingApi
+import androidx.recyclerview.widget.DiffUtil
 import ariesvelasquez.com.republikapc.R
+import ariesvelasquez.com.republikapc.model.ResultState
+import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.model.saved.Saved
-import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.DashboardFragment
+import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.saved.SavedActionBottomSheetFragment
+import ariesvelasquez.com.republikapc.ui.generic.FirestorePagingDataAdapter
 import ariesvelasquez.com.republikapc.ui.search.SearchActivity
-import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
+import ariesvelasquez.com.republikapc.utils.extensions.*
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_saved.view.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-class SavedFragment : DashboardFragment() {
+@ExperimentalPagingApi
+@ExperimentalCoroutinesApi
+@AndroidEntryPoint
+class SavedFragment : DashboardFragment(),
+    SavedActionBottomSheetFragment.OnSavedActionInteractionFragmentListener {
 
     private lateinit var rootView: View
-    private lateinit var adapter: SavedItemsAdapter
-
-    private var hasList = false
-    private var hasLoadedInitialList = false
-
     private var listener: OnSavedFragmentInteractionListener? = null
+
+    private val viewModel by viewModels<SavedViewModel>()
+    private lateinit var adapter : FirestorePagingDataAdapter<Saved>
+    private lateinit var savedItemBottomSheet : SavedActionBottomSheetFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,18 +47,48 @@ class SavedFragment : DashboardFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         super.onCreateView(inflater, container, savedInstanceState)
         rootView =  inflater.inflate(R.layout.fragment_saved, container, false)
 
+
         initSwipeToRefresh()
         initAdapter()
-        initSavedList()
         initOnClicks()
+        handleUIState(false)
 
         return rootView
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        initViewModel()
+    }
+
+    private fun initViewModel() {
+        lifecycleScope.launch {
+
+            if (mIsUserLoggedIn and !mIsSavedInitialized) {
+                mIsSavedInitialized = true
+                viewModel.savedPagedList.collectLatest { adapter.submitData(it) }
+            }
+
+            viewModel.deleteTask().observe(viewLifecycleOwner) {
+                when (it) {
+                    is ResultState.Success -> {}
+                    is ResultState.Error -> {
+                        rootView.snack(
+                            it.getErrorIfExists()?.message ?:
+                            getString(R.string.delete_failed)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
 
     private fun initOnClicks() {
         rootView.buttonSignIn.setOnClickListener {
@@ -55,105 +96,11 @@ class SavedFragment : DashboardFragment() {
         }
 
         rootView.buttonSearch.setOnClickListener {
-            context!!.launchActivity<SearchActivity> {}
+            requireContext().launchActivity<SearchActivity> {}
         }
 
         rootView.buttonGoToFeeds.setOnClickListener {
             listener?.onNavigateToTPCFeeds()
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        if (mIsUserLoggedIn and !mIsSavedInitialized) {
-            dashboardViewModel.showSaved()
-        }
-    }
-
-    override fun onUserLoggedOut() {
-//        dashboardViewModel
-        dashboardViewModel.cancelSaved()
-    }
-
-    override fun onUserLoggedIn() {
-        // TEST data
-    }
-
-    private fun initSwipeToRefresh() {
-//        dashboardViewModel.savedRefreshState.observe( viewLifecycleOwner, Observer {
-//            rootView.swipeRefreshSaved.isRefreshing = it == NetworkState.LOADING
-//        })
-//        rootView.swipeRefreshSaved.setOnRefreshListener {
-//            dashboardViewModel.refreshSaved()
-//        }
-    }
-
-    private fun initAdapter() {
-        adapter = SavedItemsAdapter (
-            SavedItemsAdapter.SAVED_ITEMS_VIEW_TYPE,
-            { dashboardViewModel.refreshSaved() }) { v, pos, item ->
-
-            listener?.onSavedItemClicked(item)
-        }
-
-        val linearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        rootView.savedList.layoutManager = linearLayoutManager
-        rootView.savedList.adapter = adapter
-    }
-
-    private fun initSavedList() {
-        dashboardViewModel.saved.observe( viewLifecycleOwner, Observer<PagedList<Saved>> {
-            adapter.submitList(it)
-            handleListUI(it.snapshot())
-//            showHidePlaceholder(show = it.snapshot().isNotEmpty())
-        })
-        dashboardViewModel.savedNetworkState.observe( viewLifecycleOwner, Observer {
-            adapter.setNetworkState(it)
-        })
-    }
-
-    private fun handleListUI(it: MutableList<Saved>) {
-
-        if (!mIsUserLoggedIn) {
-            rootView.linearLayoutPlaceHolder.visibility = View.GONE
-            rootView.savedList.visibility = View.GONE
-            rootView.linearLayoutSignIn.visibility = View.VISIBLE
-            return
-        } else {
-            rootView.linearLayoutSignIn.visibility = View.GONE
-        }
-
-        if (!hasList && it.isNotEmpty()) {
-            // When the list is not empty, and recyclerView is still gone
-            this.hasList = true
-            showHidePlaceholder(show = false)
-        } else if (it.isEmpty() && hasList) {
-            // When the list is empty, and recyclerView is still visible
-            this.hasList = false
-            showHidePlaceholder(show = true)
-        } else if (hasList && it.isNotEmpty()) {
-            // When the list is not empty, and recyclerView is still visible
-            showHidePlaceholder(show = false)
-        } else {
-            // List is Empty, hasList is false
-            showHidePlaceholder(true)
-        }
-    }
-
-    private fun showHidePlaceholder(show: Boolean) {
-        if (show) {
-            rootView.savedList.visibility = View.GONE
-            rootView.linearLayoutPlaceHolder.visibility = View.VISIBLE
-        } else {
-            rootView.savedList.visibility = View.VISIBLE
-            rootView.linearLayoutPlaceHolder.visibility = View.GONE
         }
     }
 
@@ -166,21 +113,93 @@ class SavedFragment : DashboardFragment() {
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
+    private  fun deleteTask(id: String) {
+        viewModel.deleteSaved(id)
+    }
+
+    override fun onUserLoggedOut() {
+
+    }
+
+    override fun onUserLoggedIn() {
+
+    }
+
+    private fun initSwipeToRefresh() {
+        rootView.swipeRefreshSaved.setOnRefreshListener {
+            adapter.refresh()
+        }
+    }
+
+    private fun initAdapter() {
+        adapter = FirestorePagingDataAdapter(
+            R.layout.item_recycler_view_saved,
+            DiffCallback()
+        )
+
+        adapter.setOnClickCallback { item, pos ->
+            savedItemBottomSheet = SavedActionBottomSheetFragment.newInstance(item, pos)
+            savedItemBottomSheet.setListener(this)
+            savedItemBottomSheet.show(childFragmentManager, savedItemBottomSheet.TAG)
+        }
+
+        adapter.addLoadStateListener {
+            rootView.progressSaved.visibleGone(it.isInitialLoading())
+            rootView.swipeRefreshSaved.isRefreshing = it.sourceRefreshState()
+
+            if (it.finishedAppend() || it.finishedPrepend()) {
+                handleUIState(adapter.itemCount > 0)
+            } else {
+                handleUIState(false)
+            }
+        }
+
+        rootView.savedList.layoutManager = getVerticalStaggeredLayoutManager
+        rootView.savedList.adapter = adapter
+    }
+
+    private fun handleUIState(hasItem: Boolean = false) {
+        rootView.apply {
+            linearLayoutSignIn.visibleGone(!mIsUserLoggedIn)
+            linearLayoutPlaceHolder.visibleGone(mIsUserLoggedIn and !hasItem)
+            savedList.visibleGone(mIsUserLoggedIn and hasItem)
+        }
+    }
+
     interface OnSavedFragmentInteractionListener {
         fun onSavedItemClicked(saved: Saved)
         fun showSignUpBottomSheet()
         fun onNavigateToTPCFeeds()
+        fun onTPCSellerClicked(sellerName: String)
+    }
+
+    inner class DiffCallback : DiffUtil.ItemCallback<Saved>() {
+        override fun areItemsTheSame(oldItem: Saved, newItem: Saved): Boolean {
+            return oldItem.docId == newItem.docId
+        }
+
+        override fun areContentsTheSame(oldItem: Saved, newItem: Saved): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    override fun showSignUpBottomSheet() {
+        listener?.showSignUpBottomSheet()
+    }
+
+    override fun onItemDelete(savedItem: Saved, pos: Int) {
+        adapter.snapshot()[pos]?.isVisible = false
+        adapter.notifyItemChanged(pos)
+        viewModel.deleteSaved(savedItem.docId!!)
+    }
+
+    override fun onSavedItemAddedToRIg(rigItem: Rig, savedItemReference: Saved) {
+
     }
 
     companion object {

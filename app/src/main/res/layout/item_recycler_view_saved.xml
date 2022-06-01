@@ -1,84 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayoutParent"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="@dimen/view_padding_20"
-    android:paddingEnd="@dimen/view_padding_20"
-    android:paddingBottom="@dimen/view_padding_10"
-    android:orientation="vertical">
-    
-    <TextView
-        android:id="@+id/textViewItemDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="8sp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="55"
-        android:visibility="invisible"
-        android:layout_marginTop="@dimen/view_padding"
-        app:layout_constraintTop_toTopOf="parent"/>
-    
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding"
-        android:textColor="@color/text_main_dark"
-        style="@style/TextAppearance.RigTitle"
-        android:textSize="@dimen/font_size_inputs"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/textViewSellerName"
-        tools:text="Hopper UX: The Right Ways To Ask" />
-    
-    <TextView
-        android:id="@+id/textViewSellerName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/view_half_padding"
-        style="@style/TextAppearance.TileTertiary"
-        android:textColor="@color/text_helper_dark"
-        android:textSize="@dimen/font_size_caption_small"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        app:layout_constraintBottom_toTopOf="@id/textViewPrice"
-        tools:text="submitted by foo"/>
-    
-    
-    <ImageView
-        android:id="@+id/imageViewPesoIcon"
-        android:layout_width="@dimen/icon_size_12"
-        android:layout_height="@dimen/icon_size_12"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="2dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textViewPrice"
-        app:layout_constraintBottom_toBottomOf="@id/textViewPrice"
-        android:layout_marginEnd="@dimen/view_half_padding"
-        android:src="@drawable/ic_peso_small_gray"/>
-    
-    <TextView
-        android:id="@+id/textViewPrice"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        style="@style/TextAppearance.TilePrimary"
-        android:gravity="start"
-        android:layout_marginBottom="@dimen/view_padding"
-        android:layout_marginStart="@dimen/view_half_padding"
-        android:textColor="@color/text_helper_dark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imageViewPesoIcon"
-        app:layout_constraintTop_toBottomOf="@id/textViewSellerName"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="123.00"/>
+    xmlns:tools="http://schemas.android.com/tools">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <data>
+        <variable
+            name="item"
+            type="ariesvelasquez.com.republikapc.model.saved.Saved" />
+
+        <variable
+            name="pos"
+            type="Integer" />
+
+        <import type="android.view.View"/>
+
+        <import type="ariesvelasquez.com.republikapc.utils.Tools"/>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayoutParent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/shape_rectangle_rounded_bordered"
+        android:padding="@dimen/grid_16"
+        android:layout_marginEnd="@dimen/view_padding"
+        android:layout_marginTop="@dimen/view_half_padding"
+        app:itemHeight="@{item.visible}"
+        android:layout_marginBottom="@dimen/view_half_padding">
+
+        <TextView
+            android:id="@+id/textViewItemDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_padding"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textSize="8sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="55" />
+
+        <TextView
+            android:id="@+id/name"
+            style="@style/Subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_padding"
+            android:textColor="@color/text_main_dark"
+            android:text="@{item.name}"
+            app:layout_constraintBottom_toTopOf="@id/textViewPrice"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Hopper UX: The Right Ways To Ask" />
+
+        <ImageView
+            android:id="@+id/imageViewPesoIcon"
+            android:layout_width="@dimen/icon_size_12"
+            android:layout_height="@dimen/icon_size_12"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="@dimen/view_half_padding"
+            android:src="@drawable/ic_peso_small_gray"
+            app:layout_constraintBottom_toBottomOf="@id/textViewPrice"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textViewPrice" />
+
+        <TextView
+            android:id="@+id/textViewPrice"
+            style="@style/Body1.Light"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/view_half_padding"
+            android:layout_marginBottom="@dimen/grid_20"
+            android:layout_marginTop="@dimen/grid_8"
+            android:gravity="start"
+            android:text="@{item.price}"
+            android:textColor="@color/text_main_dark"
+            app:layout_constraintBottom_toTopOf="@id/imageViewSourceIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewPesoIcon"
+            app:layout_constraintTop_toBottomOf="@id/name"
+            tools:text="123.00" />
+
+        <ImageView
+            android:id="@+id/imageViewSourceIcon"
+            android:layout_width="@dimen/icon_size_24"
+            android:layout_height="@dimen/icon_size_24"
+            android:src="@drawable/ic_cube_outline"
+            android:background="@drawable/shape_rectangle_rounded_green"
+            android:padding="4dp"
+            app:tint="@color/colorTipidPcGreen50"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewPrice" />
+
+        <TextView
+            android:id="@+id/textViewSellerName"
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_helper_dark"
+            android:text="@{item.seller}"
+            android:layout_marginStart="@dimen/grid_8"
+            android:layout_marginBottom="-2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewSourceIcon"
+            app:layout_constraintTop_toTopOf="@id/imageViewSourceIcon"
+            app:layout_constraintBottom_toTopOf="@id/textViewPostedOn"
+            tools:text="submitted by foo" />
+
+        <TextView
+            android:id="@+id/textViewPostedOn"
+            style="@style/TextAppearance.TileTertiary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="tipidpc.com"
+            android:layout_marginTop="-2dp"
+            android:textColor="@color/text_helper_dark"
+            app:layout_constraintTop_toBottomOf="@id/textViewSellerName"
+            app:layout_constraintBottom_toBottomOf="@id/imageViewSourceIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/grid_8"
+            app:layout_constraintStart_toEndOf="@id/imageViewSourceIcon"
+            tools:text="tipidpc.com"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

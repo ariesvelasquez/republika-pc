@@ -23,11 +23,9 @@ interface IDashboardRepository {
 
     fun rigs(): Listing<Rig>
 
-    fun saved(): Listing<Saved>
-
     fun followed(): Listing<Saved>
 
-    fun saveItem(firebaseUser: FirebaseUser, feedItem: FeedItem): Task<Void>
+    suspend fun saveItem(feedItem: FeedItem)
 
     fun deleteRig(firebaseUser: FirebaseUser, rigId: String): Task<Void>
 

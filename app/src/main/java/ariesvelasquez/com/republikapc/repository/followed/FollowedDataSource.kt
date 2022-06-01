@@ -4,9 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.ItemKeyedDataSource
 import ariesvelasquez.com.republikapc.Const
 import ariesvelasquez.com.republikapc.Const.FIRST_LETTER
-import ariesvelasquez.com.republikapc.Const.FOLLOWED_TPC_SELLER_COLLECTION
 import ariesvelasquez.com.republikapc.Const.ITEM_PER_PAGE_20
-import ariesvelasquez.com.republikapc.Const.SELLER
 import ariesvelasquez.com.republikapc.model.saved.Saved
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import com.google.firebase.auth.FirebaseAuth

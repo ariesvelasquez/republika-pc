@@ -1,73 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayoutParent"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/view_padding_2"
-    android:paddingEnd="@dimen/view_padding_2"
-    android:paddingStart="@dimen/view_padding_2"
-    android:orientation="vertical">
-    
-    <TextView
-        android:id="@+id/textViewLastRefresh"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="item"
+            type="ariesvelasquez.com.republikapc.model.feeds.FeedItem" />
+
+        <variable
+            name="pos"
+            type="Integer" />
+
+        <import type="android.view.View"/>
+
+        <import type="ariesvelasquez.com.republikapc.utils.Tools"/>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayoutParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding"
-        android:paddingBottom="@dimen/view_padding"
-        android:paddingTop="@dimen/view_padding"
-        style="@style/TextAppearance.TileSecondary"
-        android:textAllCaps="false"
-        android:textColor="@color/colorBlue"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"
-        tools:text="List updated 2 days ago"
-        tools:visibility="visible"/>
-    
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/view_padding"
-        android:textColor="@color/text_main_dark"
-        style="@style/TextAppearance.RigTitle"
-        android:textSize="@dimen/font_size_inputs"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLastRefresh"
-        tools:text="Hopper UX: The Right Ways To Ask" />
-    
-    <ImageView
-        android:id="@+id/imageViewPesoIcon"
-        android:layout_width="@dimen/icon_size_12"
-        android:layout_height="@dimen/icon_size_12"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="2dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/textViewPrice"
-        app:layout_constraintBottom_toBottomOf="@id/textViewPrice"
-        android:layout_marginEnd="@dimen/view_half_padding"
-        android:src="@drawable/ic_peso_small_gray"/>
-    
-    <TextView
-        android:id="@+id/textViewPrice"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        style="@style/TextAppearance.TilePrimary"
-        android:gravity="start"
-        android:layout_marginBottom="@dimen/view_half_padding"
-        android:layout_marginStart="@dimen/view_half_padding"
-        android:layout_marginTop="@dimen/view_half_padding"
-        android:textColor="@color/text_helper_dark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imageViewPesoIcon"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="123.00"/>
+        android:paddingBottom="@dimen/view_padding_2"
+        android:paddingEnd="@dimen/view_padding_2"
+        android:paddingStart="@dimen/view_padding_2"
+        tools:background="@color/colorSmoke"
+        android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayoutInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/grid_24"
+            android:paddingStart="@dimen/grid_24"
+            android:paddingEnd="@dimen/grid_24"
+            android:layout_marginStart="@dimen/grid_8"
+            android:layout_marginEnd="@dimen/grid_8"
+            android:layout_marginTop="@dimen/grid_24"
+            android:background="@drawable/bg_rounded"
+            android:backgroundTint="@color/primary80"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="@{Tools.isVisibleGone(pos == 0)}"
+            tools:visibility="visible">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintItemCount"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="@{Tools.isVisibleGone(item.totalItems > 10)}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/constraintLastSync"
+                app:layout_constraintTop_toTopOf="@id/constraintLayoutInfo"
+                app:layout_constraintBottom_toBottomOf="@id/constraintLayoutInfo">
+
+                <TextView
+                    android:id="@+id/textViewListedItemsLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    style="@style/Caption.Spaced"
+                    android:textColor="@color/primary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:text="LISTED ITEMS"/>
+
+                <TextView
+                    style="@style/HeadLine4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary"
+                    android:paddingTop="@dimen/grid_4"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textViewListedItemsLabel"
+                    android:text="@{String.valueOf(item.totalItems)}"
+                    tools:text="24"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLastSync"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/constraintItemCount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="@dimen/grid_16"
+                app:layout_constraintVertical_bias="0"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <TextView
+                    android:id="@+id/textViewLastUpdatedLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    style="@style/Caption.Spaced"
+                    android:textColor="@color/primary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:text="LAST SYNCED"/>
+
+                <TextView
+                    android:id="@+id/textViewLastUpdatedPart1"
+                    style="@style/HeadLine4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary"
+                    android:paddingTop="@dimen/grid_4"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textViewLastUpdatedLabel"
+                    app:syncValueCount="@{item.lastRefresh}"
+                    tools:text="13"/>
+
+                <TextView
+                    android:id="@+id/textViewLastUpdatedPart2"
+                    style="@style/Body2"
+                    android:layout_width="0dp"
+                    android:textColor="@color/primary"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-8dp"
+                    android:text="minutes ago"
+                    app:syncValueSub="@{item.lastRefresh}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textViewLastUpdatedPart1"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/constraintLayoutInfo">
+
+            <TextView
+                android:id="@+id/textViewLabelSpacer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/view_padding"
+                android:paddingTop="@dimen/grid_16"
+                android:paddingBottom="@dimen/grid_8"
+                style="@style/Caption.Spaced"
+                android:text="ITEMS"
+                android:textColor="@color/primary"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:visibility="@{Tools.isVisibleGone(pos == 0)}"
+                tools:visibility="visible"/>
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/view_padding"
+                style="@style/Subtitle1"
+                android:text="@{item.name}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewLabelSpacer"
+                tools:text="Hopper UX: The Right Ways To Ask" />
+
+            <ImageView
+                android:id="@+id/imageViewPesoIcon"
+                android:layout_width="@dimen/icon_size_12"
+                android:layout_height="@dimen/icon_size_12"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="2dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/textViewPrice"
+                app:layout_constraintBottom_toBottomOf="@id/textViewPrice"
+                android:layout_marginEnd="@dimen/view_half_padding"
+                android:src="@drawable/ic_peso_small_gray"/>
+
+            <TextView
+                android:id="@+id/textViewPrice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.TilePrimary"
+                android:gravity="start"
+                android:layout_marginBottom="@dimen/view_half_padding"
+                android:layout_marginStart="@dimen/view_half_padding"
+                android:layout_marginTop="@dimen/view_half_padding"
+                android:textColor="@color/text_helper_dark"
+                android:text="@{Tools.formatPrice(item.price)}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/imageViewPesoIcon"
+                app:layout_constraintTop_toBottomOf="@id/name"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="123.00"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

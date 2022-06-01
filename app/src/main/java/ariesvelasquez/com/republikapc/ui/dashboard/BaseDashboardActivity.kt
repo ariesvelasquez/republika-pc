@@ -4,18 +4,18 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.ExperimentalPagingApi
 import ariesvelasquez.com.republikapc.Const
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.model.saved.Saved
-import ariesvelasquez.com.republikapc.ui.BaseActivity
+import ariesvelasquez.com.republikapc.ui.base.BaseActivity
 import ariesvelasquez.com.republikapc.ui.auth.AuthActivity
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.addtorig.AddToRigBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.console.ConsoleBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.createrig.RigCreatorBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.rigdetail.RigDetailBottomSheetFragment
-import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.saved.SavedActionBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.seller.SellerBottomSheetFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.RepublikaPCFragment
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.followed.FollowedFragment
@@ -30,7 +30,10 @@ import ariesvelasquez.com.republikapc.utils.ServiceLocator
 import ariesvelasquez.com.republikapc.utils.extensions.launchActivity
 import com.google.firebase.auth.FirebaseUser
 import com.google.gson.Gson
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
+@ExperimentalPagingApi
 abstract class BaseDashboardActivity : BaseActivity(),
     TipidPCFragment.OnTPCFragmentListener,
     RigsFragment.OnRigFragmentInteractionListener,
@@ -41,14 +44,14 @@ abstract class BaseDashboardActivity : BaseActivity(),
     PartsFragment.OnPartsFragmentInteractionListener,
     RigDetailBottomSheetFragment.OnRigDetailInteractionListener,
     SavedFragment.OnSavedFragmentInteractionListener,
-    SavedActionBottomSheetFragment.OnSavedActionInteractionFragmentListener,
-    SellerBottomSheetFragment.SellerBottomSheetFragmentListener,
+//    SavedActionBottomSheetFragment.OnSavedActionInteractionFragmentListener,
+//    SellerBottomSheetFragment.SellerBottomSheetFragmentListener,
     FollowedFragment.OnFollowedFragmentInteractionListener {
 
     // Create Rig Bottom Sheet
     protected lateinit var createRigBottomSheet : RigCreatorBottomSheetFragment
     protected lateinit var rigDetailBottomSheet : RigDetailBottomSheetFragment
-    protected lateinit var savedItemBottomSheet : SavedActionBottomSheetFragment
+//    protected lateinit var savedItemBottomSheet : SavedActionBottomSheetFragment
 
     protected val viewModel: DashboardViewModel by viewModels {
         object : ViewModelProvider.Factory {
@@ -102,9 +105,9 @@ abstract class BaseDashboardActivity : BaseActivity(),
         sellerBottomSheet.show(supportFragmentManager, sellerBottomSheet.TAG)
     }
 
-    override fun onSellerFollowed(feedItem: FeedItem) {
-
-    }
+//    override fun onSellerFollowed(feedItem: FeedItem) {
+//
+//    }
 
     override fun onRigMenuClicked(rig: Rig) {
         val rawRigRef = Gson().toJson(rig)
@@ -145,17 +148,17 @@ abstract class BaseDashboardActivity : BaseActivity(),
 
     override fun onSavedItemClicked(saved: Saved) {
         val rawSavedItem = Gson().toJson(saved)
-        savedItemBottomSheet = SavedActionBottomSheetFragment.newInstance(rawSavedItem)
-        savedItemBottomSheet.show(supportFragmentManager, savedItemBottomSheet.TAG)
+//        savedItemBottomSheet = SavedActionBottomSheetFragment.newInstance(rawSavedItem)
+//        savedItemBottomSheet.show(supportFragmentManager, savedItemBottomSheet.TAG)
     }
 
-    override fun onItemDelete(savedItem: Saved) {
-        viewModel.deleteSaved(savedItem.docId)
-    }
-
-    override fun onSavedItemAddedToRIg(rigItem: Rig, savedItemReference: Saved) {
-        viewModel.addSavedToRigPart(rigItem, savedItemReference)
-    }
+//    override fun onItemDelete(savedItem: Saved, pos: Int) {
+//        viewModel.deleteSaved(savedItem.docId)
+//    }
+//
+//    override fun onSavedItemAddedToRIg(rigItem: Rig, savedItemReference: Saved) {
+//        viewModel.addSavedToRigPart(rigItem, savedItemReference)
+//    }
 
     override fun onGoToLink(linkId: String) {
         val url = Const.TIPID_PC_VIEW_ITEM + linkId
@@ -164,12 +167,12 @@ abstract class BaseDashboardActivity : BaseActivity(),
         }
     }
 
-    override fun onGoSellerToLink(sellerName: String) {
-        val url = Const.TIPID_PC_VIEW_SELLER + sellerName
-        launchActivity<WebViewActivity> {
-            putExtra(WebViewActivity.WEB_VIEW_URL, url)
-        }
-    }
+//    override fun onGoSellerToLink(sellerName: String) {
+//        val url = Const.TIPID_PC_VIEW_SELLER + sellerName
+//        launchActivity<WebViewActivity> {
+//            putExtra(WebViewActivity.WEB_VIEW_URL, url)
+//        }
+//    }
 
     override fun onLoginInvoked() {
         launchActivity<AuthActivity> {}

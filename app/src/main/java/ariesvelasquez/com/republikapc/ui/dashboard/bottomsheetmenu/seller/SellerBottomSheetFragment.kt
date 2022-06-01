@@ -1,7 +1,6 @@
 package ariesvelasquez.com.republikapc.ui.dashboard.bottomsheetmenu.seller
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import ariesvelasquez.com.republikapc.GlobalFlags
 import ariesvelasquez.com.republikapc.R
-import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.repository.NetworkState
 import ariesvelasquez.com.republikapc.ui.dashboard.rpc.rigs.RigItemsAdapter
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
@@ -70,24 +67,24 @@ class SellerBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun handleItemSaveState() {
-        dashboardViewModel.saveItemNetworkState.observe( viewLifecycleOwner, Observer {
-            when (it) {
-                NetworkState.LOADING -> {
-                    // Disable the Button after it was clicked
-                }
-                NetworkState.LOADED -> {
-                    rootView.coordinatorLayoutRoot.snack(R.string.item_saved, hasMargin = false) {}
-                    dashboardViewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
-                }
-                else -> {
-                    // Show Error
-                    val mess = it.msg
-                    rootView.snack(mess!!) {
-
-                    }
-                }
-            }
-        })
+//        dashboardViewModel.saveItemNetworkState.observe( viewLifecycleOwner, Observer {
+//            when (it) {
+//                NetworkState.LOADING -> {
+//                    // Disable the Button after it was clicked
+//                }
+//                NetworkState.LOADED -> {
+//                    rootView.coordinatorLayoutRoot.snack(R.string.item_saved, hasMargin = false) {}
+//                    dashboardViewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
+//                }
+//                else -> {
+//                    // Show Error
+//                    val mess = it.msg
+//                    rootView.snack(mess!!) {
+//
+//                    }
+//                }
+//            }
+//        })
     }
 
     private fun handleUserStatus() {
@@ -177,6 +174,10 @@ class SellerBottomSheetFragment : BottomSheetDialogFragment() {
             rootView.buttonFollow.setOnClickListener {
                 dashboardViewModel.followSeller(sellerNameReference)
             }
+            this.dismiss()
+            if (arguments?.getInt(ARG_ITEM_POS) != NULL_POS) {
+                listener?.onSellerUnfollowed(arguments?.getInt(ARG_ITEM_POS)!!)
+            }
         }
     }
 
@@ -195,14 +196,8 @@ class SellerBottomSheetFragment : BottomSheetDialogFragment() {
             listener?.onGoToSellerItems(sellerNameReference)
         }
     }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is SellerBottomSheetFragmentListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement SellerBottomSheetFragmentListener")
-        }
+    fun setListener(callbackListener: SellerBottomSheetFragmentListener) {
+        this.listener = callbackListener
     }
 
     override fun onDetach() {
@@ -225,7 +220,7 @@ class SellerBottomSheetFragment : BottomSheetDialogFragment() {
         fun showSignUpBottomSheet()
         fun onGoSellerToLink(linkId: String)
         fun onGoToSellerItems(sellerName: String)
-        fun onSellerFollowed(feedItem: FeedItem)
+        fun onSellerUnfollowed(pos: Int)
     }
 
     companion object {
@@ -233,12 +228,16 @@ class SellerBottomSheetFragment : BottomSheetDialogFragment() {
         const val TAG = "SellerBottomSheetFragment"
 
         private const val ARG_SELLER_NAME = "sellerName"
+        private const val ARG_ITEM_POS = "itemPos"
+
+        const val NULL_POS = -1
 
         @JvmStatic
-        fun newInstance(sellerName: String) =
+        fun newInstance(sellerName: String, itemPos: Int? = null) =
             SellerBottomSheetFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_SELLER_NAME, sellerName)
+                    putInt(ARG_ITEM_POS, itemPos ?: NULL_POS)
                 }
             }
     }

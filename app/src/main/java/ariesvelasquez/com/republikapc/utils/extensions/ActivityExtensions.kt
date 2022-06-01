@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import ariesvelasquez.com.republikapc.Const
+import ariesvelasquez.com.republikapc.ui.webview.WebViewActivity
 
 /**
  * Kotlin Extensions for simpler, easier and funw way
@@ -40,6 +42,12 @@ inline fun <reified T : Any> Context.launchActivity (
         startActivity(intent, options)
     } else {
         startActivity(intent)
+    }
+}
+
+fun Context.launchToSellerWebActivity(url: String) {
+    this.launchActivity<WebViewActivity> {
+        putExtra(WebViewActivity.WEB_VIEW_URL, url)
     }
 }
 

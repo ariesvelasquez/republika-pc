@@ -7,22 +7,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.Config
 import androidx.paging.toLiveData
-import ariesvelasquez.com.republikapc.Const.DOC_ID
 import ariesvelasquez.com.republikapc.Const.FIRST_LETTER
-import ariesvelasquez.com.republikapc.Const.FOLLOWED_TPC_SELLER_COLLECTION
-import ariesvelasquez.com.republikapc.Const.ITEM_PER_PAGE_20
-import ariesvelasquez.com.republikapc.Const.LINK_ID
+import ariesvelasquez.com.republikapc.Const.FOLLOWED_COLLECTION
 import ariesvelasquez.com.republikapc.Const.NAME
 import ariesvelasquez.com.republikapc.Const.OWNER_ID
-import ariesvelasquez.com.republikapc.Const.POST_DATE
-import ariesvelasquez.com.republikapc.Const.PRICE
 import ariesvelasquez.com.republikapc.Const.RIGS_COLLECTION
 import ariesvelasquez.com.republikapc.Const.RIGS_ITEM_COLLECTION
 import ariesvelasquez.com.republikapc.Const.SAVED_COLLECTION
 import ariesvelasquez.com.republikapc.Const.SELLER
 import ariesvelasquez.com.republikapc.Const.USERS_COLLECTION
 import ariesvelasquez.com.republikapc.api.TipidPCApi
-import ariesvelasquez.com.republikapc.db.RepublikaPCDatabase
+import ariesvelasquez.com.republikapc.datasource.local.RepublikaPCDatabase
+import ariesvelasquez.com.republikapc.datasource.firestore.saved.SavedFirestoreService
 import ariesvelasquez.com.republikapc.model.error.Error
 import ariesvelasquez.com.republikapc.model.feeds.FeedItem
 import ariesvelasquez.com.republikapc.model.feeds.FeedItemsResource
@@ -35,7 +31,6 @@ import ariesvelasquez.com.republikapc.repository.dashboard.feeds.FeedBoundaryCal
 import ariesvelasquez.com.republikapc.repository.dashboard.rigitems.RigItemsBoundaryCallback
 import ariesvelasquez.com.republikapc.repository.followed.FollowedDataSourceFactory
 import ariesvelasquez.com.republikapc.repository.rigs.RigDataSourceFactory
-import ariesvelasquez.com.republikapc.repository.dashboard.saved.SavedBoundaryCallback
 import ariesvelasquez.com.republikapc.repository.dashboard.selleritems.SellerItemsBoundaryCallback
 import ariesvelasquez.com.republikapc.repository.search.SearchSellerSourceFactory
 import ariesvelasquez.com.republikapc.repository.search.SearchSourceFactory
@@ -48,13 +43,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import java.io.IOException
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.Executor
 
 class DashboardRepository(
     val db: RepublikaPCDatabase,
+    private val savedFirestoreService: SavedFirestoreService,
     private val firestore: FirebaseFirestore,
     private val tipidPCApi: TipidPCApi,
     private val ioExecutor: Executor
@@ -204,7 +199,7 @@ class DashboardRepository(
         }
 
         // We use toLiveData Kotlin extension function here, you could also use LivePagedListBuilder
-        val livePagedList = db.items().sellerItems(sellerName).toLiveData(
+        val livePagedList = db.items().feedItems().toLiveData(
             pageSize = 7000,
             boundaryCallback = boundaryCallback
         )
@@ -301,75 +296,49 @@ class DashboardRepository(
      */
     @SuppressLint("DefaultLocale")
     private fun insertSavedIntoDb(list: List<Saved>) {
-        db.runInTransaction {
+//        db.runInTransaction {
+//
+//            val itemWithFirstLetterIndex = list.mapIndexed { index, savedItem ->
+//                savedItem.firstLetterIndex = savedItem.name?.first()?.toUpperCase().toString()
+//                savedItem
+//            }
 
-            val itemWithFirstLetterIndex = list.mapIndexed { index, savedItem ->
-                savedItem.firstLetterIndex = savedItem.name.first().toUpperCase().toString()
-                savedItem
-            }
-
-            db.items().insertSaved(itemWithFirstLetterIndex).run {
-                Timber.e("Inserted new saved items %s", list.size)
-            }
-        }
+//            db.items().insertSaved(itemWithFirstLetterIndex).run {
+//                Timber.e("Inserted new saved items %s", list.size)
+//            }
+//        }
     }
 
-    override fun saved(): Listing<Saved> {
-        // create a boundary callback which will observe when the user reaches to the edges of
-        // the list and update the database with extra data.
-        val boundaryCallback =
-            SavedBoundaryCallback(
-                savedReference = firestore.collection(SAVED_COLLECTION),
-                handleResponse = this::insertSavedIntoDb,
-                ioExecutor = ioExecutor
-            )
-
-        // We use toLiveData Kotlin extension function here, you could also use LivePagedListBuilder
-        val livePagedList = db.items().savedItems().toLiveData(
-            pageSize = 10,
-            boundaryCallback = boundaryCallback
-        )
-
-        return Listing(
-            pagedList = livePagedList,
-            networkState = boundaryCallback.networkState,
-            retry = {
-                boundaryCallback.helper.retryAllFailed()
-            },
-            refresh = {},
-            refreshState = MutableLiveData()
-        )
-    }
+//    override fun saved(): Listing<FeedItem> {
+//        // create a boundary callback which will observe when the user reaches to the edges of
+//        // the list and update the database with extra data.
+//        val boundaryCallback =
+//            FeedBoundaryCallback(
+//                savedReference = firestore.collection(SAVED_COLLECTION),
+//                handleResponse = this::insertSavedIntoDb,
+//                ioExecutor = ioExecutor
+//            )
+//
+//        // We use toLiveData Kotlin extension function here, you could also use LivePagedListBuilder
+//        val livePagedList = db.items().feedItems().toLiveData(
+//            pageSize = 10,
+//            boundaryCallback = boundaryCallback
+//        )
+//
+//        return Listing(
+//            pagedList = livePagedList,
+//            networkState = boundaryCallback.networkState,
+//            retry = {
+//                boundaryCallback.helper.retryAllFailed()
+//            },
+//            refresh = {},
+//            refreshState = MutableLiveData()
+//        )
+//    }
 
     @SuppressLint("DefaultLocale")
-    override fun saveItem(firebaseUser: FirebaseUser, feedItem: FeedItem): Task<Void> {
-
-        val batchWrite: WriteBatch = firestore.batch()
-
-        // Counter Ref
-        val savedRef = firestore.collection(SAVED_COLLECTION).document()
-
-        val saveItemMap = hashMapOf<String, Any?>()
-        saveItemMap[DOC_ID] = savedRef.id
-        saveItemMap[OWNER_ID] = firebaseUser.uid
-        saveItemMap[NAME] = feedItem.name
-        saveItemMap[SELLER] = feedItem.seller
-        saveItemMap[PRICE] = feedItem.price.replace("PHP", "").replace("P", "")
-        saveItemMap[POST_DATE] = feedItem.date
-        saveItemMap[LINK_ID] = feedItem.linkId
-
-        batchWrite.set(savedRef, saveItemMap)
-
-        // Remove From Room
-        ioExecutor.execute {
-            db.runInTransaction {
-                db.items().insertSavedItem(Saved().mapToObject(saveItemMap).apply {
-                    firstLetterIndex = this.name.first().toUpperCase().toString()
-                })
-            }
-        }
-
-        return batchWrite.commit()
+    override suspend fun saveItem(feedItem: FeedItem) {
+        return savedFirestoreService.saveFeedItem(feedItem)
     }
 
     override fun deleteSaved(firebaseUser: FirebaseUser, savedId: String): Task<Void> {
@@ -380,7 +349,7 @@ class DashboardRepository(
         // Remove From Room
         ioExecutor.execute {
             db.runInTransaction {
-                db.items().removeItem(savedId)
+//                db.items().removeItem(savedId)
             }
         }
 
@@ -389,7 +358,7 @@ class DashboardRepository(
 
     override fun followed(): Listing<Saved> {
         val sourceFactory = FollowedDataSourceFactory(firestore.collection(
-            FOLLOWED_TPC_SELLER_COLLECTION))
+            FOLLOWED_COLLECTION))
 
         // We use toLiveData Kotlin ext. function here, you could also use LivePagedListBuilder
         val livePagedList = sourceFactory.toLiveData(
@@ -497,7 +466,7 @@ class DashboardRepository(
         val rigPartMap = hashMapOf<String, Any?>()
         rigPartMap["name"] = feedItem.name
         rigPartMap[SELLER] = feedItem.seller
-        rigPartMap["price"] = feedItem.price.replace("PHP", "").replace("P", "")
+        rigPartMap["price"] = feedItem.price?.replace("PHP", "")?.replace("P", "")
         rigPartMap["docId"] = rigItemRef.id
         rigPartMap["postDate"] = feedItem.date
         rigPartMap["linkId"] = feedItem.linkId
@@ -534,7 +503,7 @@ class DashboardRepository(
         val rigPartMap = hashMapOf<String, Any?>()
         rigPartMap["name"] = feedItem.name
         rigPartMap[SELLER] = feedItem.seller
-        rigPartMap["price"] = feedItem.price.replace("PHP", "").replace("P", "")
+        rigPartMap["price"] = feedItem.price?.replace("PHP", "")?.replace("P", "")
         rigPartMap["docId"] = rigItemRef.id
         rigPartMap["postDate"] = feedItem.date
         rigPartMap["linkId"] = feedItem.linkId
@@ -670,7 +639,7 @@ class DashboardRepository(
 
         val combinedUID = firebaseUser!!.uid + "_" + sellerName
 
-        return firestore.collection(FOLLOWED_TPC_SELLER_COLLECTION).document(combinedUID)
+        return firestore.collection(FOLLOWED_COLLECTION).document(combinedUID)
     }
 
     override fun followSeller(sellerName: String): Task<Void> {
@@ -679,7 +648,7 @@ class DashboardRepository(
 
         val combinedUID = firebaseUser!!.uid + "_" + sellerName
 
-        val followedTpcSellerRef = firestore.collection(FOLLOWED_TPC_SELLER_COLLECTION).document(combinedUID)
+        val followedTpcSellerRef = firestore.collection(FOLLOWED_COLLECTION).document(combinedUID)
 
         val followItemMap = hashMapOf<String, Any?>()
         followItemMap[OWNER_ID] = firebaseUser.uid
@@ -696,7 +665,7 @@ class DashboardRepository(
 
         val combinedUID = firebaseUser!!.uid + "_" + sellerName
 
-        val followedTpcSellerRef = firestore.collection(FOLLOWED_TPC_SELLER_COLLECTION).document(combinedUID)
+        val followedTpcSellerRef = firestore.collection(FOLLOWED_COLLECTION).document(combinedUID)
 
         return followedTpcSellerRef.delete()
     }
@@ -709,7 +678,6 @@ class DashboardRepository(
 
         ioExecutor.execute {
             db.runInTransaction( Callable {
-                db.items().nukeSavedItems()
                 db.items().nukeAllRigParts()
             })
             networkState.postValue(NetworkState.LOADED)

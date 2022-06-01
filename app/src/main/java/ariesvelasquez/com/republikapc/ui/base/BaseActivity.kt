@@ -1,18 +1,23 @@
-package ariesvelasquez.com.republikapc.ui
+package ariesvelasquez.com.republikapc.ui.base
 
-import android.content.DialogInterface
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import ariesvelasquez.com.republikapc.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import timber.log.Timber
 
 abstract class BaseActivity : AppCompatActivity(), FirebaseAuth.AuthStateListener {
 
     protected var mIsUserLoggedIn: Boolean = false
+
+    val getVerticalLinearLayoutManager by lazy {
+        LinearLayoutManager(this).apply {
+            orientation = LinearLayoutManager.VERTICAL
+        }
+    }
 
     protected var mFirebaseUser = FirebaseAuth.getInstance().currentUser
     protected val mFirebaseAuth = FirebaseAuth.getInstance()
@@ -61,7 +66,7 @@ abstract class BaseActivity : AppCompatActivity(), FirebaseAuth.AuthStateListene
 //
 //            })
             // negative button text and action
-            .setNegativeButton("Okeeh") { dialog, id ->
+            .setNegativeButton("Okay") { dialog, id ->
                 dialog.cancel()
             }
 

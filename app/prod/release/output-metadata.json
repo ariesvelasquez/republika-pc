@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.ariesvelasquez.republikapc",
+  "variantName": "processProdReleaseResources",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "versionCode": 5,
+      "versionName": "1.2.0",
+      "outputFile": "app-prod-release.apk"
+    }
+  ]
+}

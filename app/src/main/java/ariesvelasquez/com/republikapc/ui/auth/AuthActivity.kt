@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.ExperimentalPagingApi
 import ariesvelasquez.com.republikapc.Const.RC_SIGN_IN
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.user.User
@@ -26,6 +27,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.activity_auth.*
 import timber.log.Timber
 
+@ExperimentalPagingApi
 class AuthActivity : AppCompatActivity() {
 
     private val authViewModel: AuthViewModel by viewModels {

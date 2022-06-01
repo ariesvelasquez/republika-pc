@@ -14,7 +14,20 @@
     <dimen name="view_padding_10">10dp</dimen>
     <dimen name="view_padding_20">20dp</dimen>
     <dimen name="view_padding_30">30dp</dimen>
-    
+
+    <dimen name="grid_0">0dp</dimen>
+    <dimen name="grid_4">4dp</dimen>
+    <dimen name="grid_8">8dp</dimen>
+    <dimen name="grid_12">12dp</dimen>
+    <dimen name="grid_16">16dp</dimen>
+    <dimen name="grid_24">24dp</dimen>
+    <dimen name="grid_28">28dp</dimen>
+    <dimen name="grid_30">30dp</dimen>
+    <dimen name="grid_20">20dp</dimen>
+    <dimen name="grid_36">36dp</dimen>
+    <dimen name="grid_48">48dp</dimen>
+    <dimen name="grid_142">142dp</dimen>
+
     <!--Default font size, per the Android Design Guidelines for Roboto font-->
     <dimen name="font_size_page_title">20sp</dimen>
     <dimen name="font_size_page_title_small">18sp</dimen>
@@ -39,6 +52,7 @@
     
     <!--ICON SIZES-->
     <dimen name="icon_size_12">12dp</dimen>
+    <dimen name="icon_size_16">16dp</dimen>
     <dimen name="icon_size_18">18dp</dimen>
     <dimen name="icon_size_20">20dp</dimen>
     <dimen name="icon_size_24">24dp</dimen>

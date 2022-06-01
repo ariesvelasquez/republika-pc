@@ -90,24 +90,24 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun handleItemSaveState() {
-        dashboardViewModel.saveItemNetworkState.observe( viewLifecycleOwner, Observer {
-            when (it) {
-                NetworkState.LOADING -> {
-                    // Disable the Button after it was clicked
-                }
-                NetworkState.LOADED -> {
-                    rootView.coordinatorLayoutRoot.snack(R.string.item_saved, hasMargin = false) {}
-                    dashboardViewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
-                }
-                else -> {
-                    // Show Error
-                    val mess = it.msg
-                    rootView.snack(mess!!) {
-
-                    }
-                }
-            }
-        })
+//        dashboardViewModel.saveItemNetworkState.observe( viewLifecycleOwner, Observer {
+//            when (it) {
+//                NetworkState.LOADING -> {
+//                    // Disable the Button after it was clicked
+//                }
+//                NetworkState.LOADED -> {
+//                    rootView.coordinatorLayoutRoot.snack(R.string.item_saved, hasMargin = false) {}
+//                    dashboardViewModel.saveItemNetworkState.postValue(NetworkState.LOADING)
+//                }
+//                else -> {
+//                    // Show Error
+//                    val mess = it.msg
+//                    rootView.snack(mess!!) {
+//
+//                    }
+//                }
+//            }
+//        })
     }
 
     private fun handleUserStatus() {
@@ -123,7 +123,7 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
             rootView.linearLayoutSave.setOnClickListener {
                 it.isEnabled = false
                 rootView.imageViewSaveIcon.setImageResource(R.drawable.ic_save_solid_disabled)
-                rootView.imageViewSaveText.setTextColor(ContextCompat.getColor(context!!, R.color.colorGray))
+                rootView.imageViewSaveText.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGray))
 
                 listener?.onItemSave(feedItemReference)
             }
@@ -144,23 +144,25 @@ class AddToRigBottomSheetFragment : BottomSheetDialogFragment() {
         // Date
         rootView.textViewItemDatePosted.text = " • " + feedItemReference.date
         // Price
-        rootView.textViewPrice.text = feedItemReference.price.removePrefix("PHP").removePrefix("P")
+        rootView.textViewPrice.text = feedItemReference.price?.removePrefix("PHP")?.removePrefix("P")
 
         // Link On Click
         rootView.linearLayoutLink.setOnClickListener {
-            listener?.onGoToLink(feedItemReference.linkId)
+            listener?.onGoToLink(feedItemReference.linkId ?: "")
         }
 
         // Tpc User Items On Click
-        if (feedItemReference.date.isEmpty() || feedItemReference.date.equals("Invalid date format", true)) {
+        if (feedItemReference.date == null || feedItemReference.date.equals("Invalid date format", true)) {
             rootView.textViewItemDatePosted.visibility = View.GONE
         }
 
         if (!enabledName) {
-            rootView.textViewSellerName.setTextColor(ContextCompat.getColor(context!!, R.color.colorGray))
+            rootView.textViewSellerName.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorGray))
         } else {
             rootView.textViewSellerName.setOnClickListener {
-                listener?.onTPCSellerClicked(feedItemReference.seller)
+                feedItemReference.seller?.let {
+                    listener?.onTPCSellerClicked(it)
+                }
             }
         }
     }

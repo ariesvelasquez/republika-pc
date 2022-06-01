@@ -7,6 +7,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.Keep
+import ariesvelasquez.com.republikapc.Const
 import ariesvelasquez.com.republikapc.Const.TIPID_PC_BASE_URL
 import ariesvelasquez.com.republikapc.Const.TIPID_PC_RAW_URL
 import ariesvelasquez.com.republikapc.R
@@ -26,7 +27,7 @@ class WebViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_web_view)
 
-        mUrl = intent.getStringExtra(WEB_VIEW_URL)
+        mUrl = intent.getStringExtra(WEB_VIEW_URL) ?: Const.TIPID_PC_BASE_URL
 
         Timber.e("WebviewActivity Url " + mUrl)
 
@@ -37,7 +38,7 @@ class WebViewActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
 
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                view!!.loadUrl(url)
+                view!!.loadUrl(url!!)
 
                 return true
             }

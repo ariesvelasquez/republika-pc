@@ -10,13 +10,14 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import ariesvelasquez.com.republikapc.R
 import ariesvelasquez.com.republikapc.model.rigparts.RigPart
 import ariesvelasquez.com.republikapc.model.rigs.Rig
 import ariesvelasquez.com.republikapc.repository.NetworkState
-import ariesvelasquez.com.republikapc.ui.BaseActivity
+import ariesvelasquez.com.republikapc.ui.base.BaseActivity
 import ariesvelasquez.com.republikapc.ui.dashboard.rigparts.RigPartsAdapter
 import ariesvelasquez.com.republikapc.ui.dashboard.tipidpc.DashboardViewModel
 import ariesvelasquez.com.republikapc.ui.search.SearchActivity
@@ -33,6 +34,7 @@ import kotlinx.android.synthetic.main.rig_items_total_bottom_sheet.*
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.android.synthetic.main.toolbar.view.*
 
+@ExperimentalPagingApi
 class RigItemsActivity : BaseActivity() {
 
     private lateinit var rigItemsAdapter: RigPartsAdapter
@@ -121,7 +123,7 @@ class RigItemsActivity : BaseActivity() {
 
         dashboardViewModel.rigParts.observe(this, Observer<PagedList<RigPart>> {
             rigItemsAdapter.submitList(it)
-            handleListUI(it.snapshot())
+            handleListUI(it.snapshot() as MutableList<RigPart>)
         })
         dashboardViewModel.rigItemsNetworkState.observe(this, Observer {
             rigItemsAdapter.setNetworkState(it)
@@ -199,7 +201,7 @@ class RigItemsActivity : BaseActivity() {
             }
             NetworkState.LOADED -> {
                 val numberFormattedTotal =
-                    Tools().numberFormatter?.format(rigItemsAdapter.getItemTotal().toInt())
+                    Tools.numberFormatter?.format(rigItemsAdapter.getItemTotal().toInt())
                 textViewTotal.text = "$numberFormattedTotal.00"
             }
         }
